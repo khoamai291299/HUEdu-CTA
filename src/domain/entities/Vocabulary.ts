@@ -10,7 +10,6 @@ export class Vocabulary extends BaseEntity {
   public readonly nameVi: string;
   public readonly nameEn: string | null;
   public readonly imagePath: string | null;
-  public readonly categoryId: number;
   public readonly speechTextVi: string | null;
   public readonly speechTextEn: string | null;
   public readonly isDefault: boolean;
@@ -21,7 +20,6 @@ export class Vocabulary extends BaseEntity {
     nameVi: string;
     nameEn?: string | null;
     imagePath?: string | null;
-    categoryId: number;
     speechTextVi?: string | null;
     speechTextEn?: string | null;
     isDefault: boolean;
@@ -33,7 +31,6 @@ export class Vocabulary extends BaseEntity {
     this.nameVi = params.nameVi;
     this.nameEn = params.nameEn ?? null;
     this.imagePath = params.imagePath ?? null;
-    this.categoryId = params.categoryId;
     this.speechTextVi = params.speechTextVi ?? null;
     this.speechTextEn = params.speechTextEn ?? null;
     this.isDefault = params.isDefault;

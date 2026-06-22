@@ -27,6 +27,23 @@
     "title": "Statistics", "mostUsed": "Most used words",
     "totalUsage": "Total usage", "byDay": "By day", "count": "times"
   },
+  "activity": {
+    "title": "Activities",
+    "add": "Add activity",
+    "editTitle": "Edit activity",
+    "nameLabel": "Activity name",
+    "namePlaceholder": "E.g. Drink water",
+    "speechLabel": "Action info",
+    "speechPlaceholder": "E.g. I want to drink water",
+    "imageLabel": "Image (Optional)",
+    "searchPlaceholder": "Search activity...",
+    "arasaacKeyword": "ARASAAC Keyword (English)",
+    "arasaacSearchTitle": "Search ARASAAC",
+    "arasaacSearchPlaceholder": "Enter keyword (e.g., Water, Drink)",
+    "arasaacSearchEmpty": "No images found",
+    "saving": "Saving & Translating...",
+    "duplicate": "This activity already exists!"
+  },
   "settings": {
     "title": "Settings", "vocabulary": "Vocabulary", "vocabularyCategory": "Vocabulary Categories",
     "activity": "Activities", "activityCategory": "Activity Categories", "logout": "Log out",

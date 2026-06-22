@@ -2,19 +2,19 @@
  * src/presentation/screens/DirectCommunicationBoardScreen.tsx
  * Mục đích: Màn chính - bảng giao tiếp trực tiếp: chọn thẻ sẽ phát âm ngay lập tức.
  */
-import React, {useEffect, useState, useMemo} from 'react';
+import React, {useState, useMemo} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
-import {Settings as SettingsIcon, Search as SearchIcon} from 'lucide-react-native';
-import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
+import {Settings as SettingsIcon, Search as SearchIcon, UserRound} from 'lucide-react-native';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useTts} from '@presentation/hooks/useTts';
 import {useResponsiveGrid} from '@presentation/hooks/useResponsiveGrid';
+import {useChildStore} from '@presentation/stores/useChildStore';
 import {IconTile} from '@presentation/components/IconTile';
-import {CategoryChips} from '@presentation/components/CategoryChips';
 import {EmptyState} from '@presentation/components/EmptyState';
+import {StickFigure} from '@presentation/components/StickFigure';
 import {Vocabulary} from '@domain/entities/Vocabulary';
 import {MainTabScreenProps} from '@presentation/navigation/types';
 
@@ -23,15 +23,13 @@ export const DirectCommunicationBoardScreen: React.FC<
 > = ({navigation}) => {
   const {t} = useTranslation();
   const theme = useTheme();
-  const {columns, tileSize, gap} = useResponsiveGrid();
+  const {columns, tileSize, gap, paddingHorizontal} = useResponsiveGrid(16, 24);
 
   const setSearch = useActivityStore(s => s.setSearch);
   const search = useActivityStore(s => s.search);
-  const categories = useActivityStore(s => s.categories);
-  const selectedCategoryIds = useActivityStore(s => s.selectedCategoryIds);
-  const toggleCategory = useActivityStore(s => s.toggleCategory);
   const activities = useActivityStore(s => s.activities);
   const activeChildId = useSettingsStore(s => s.settings.activeChildId);
+  const child = useChildStore(s => s.children.find(c => c.id === activeChildId));
   const language = useSettingsStore(s => s.settings.language);
   const {speakWord} = useTts();
 
@@ -40,24 +38,28 @@ export const DirectCommunicationBoardScreen: React.FC<
   const data = useMemo(() => {
     const q = search.trim().toLowerCase();
     return activities.filter(v => {
-      const matchCat =
-        selectedCategoryIds.size === 0 || selectedCategoryIds.has(v.categoryId);
       const matchSearch =
         q.length === 0 ||
         v.nameVi.toLowerCase().includes(q) ||
         (v.nameEn ?? '').toLowerCase().includes(q);
-      return matchCat && matchSearch;
+      return matchSearch;
     });
-  }, [activities, selectedCategoryIds, search]);
+  }, [activities, search]);
 
-
+  const TONE_COLORS: Record<string, string> = {
+    tone1: '#FFDFC4',
+    tone2: '#F0D5BE',
+    tone3: '#D2996C',
+    tone4: '#AB724B',
+    tone5: '#7B4B2A',
+    tone6: '#4B3322',
+  };
+  const skinToneId = child?.skinTone || 'tone1';
+  const skinColor = TONE_COLORS[skinToneId] || TONE_COLORS.tone1;
 
   const onTilePress = (v: Vocabulary) => {
     speakWord(v);
   };
-
-  const categoryColor = (v: Vocabulary): string | undefined =>
-    categories.find(c => c.id === v.categoryId)?.color;
 
   return (
     <View style={[styles.container, {backgroundColor: 'transparent'}]}>
@@ -71,45 +73,43 @@ export const DirectCommunicationBoardScreen: React.FC<
           icon={() => (
             <SettingsIcon size={24} color={theme.colors.onSurface} />
           )}
-          onPress={() => navigation.navigate('ParentGate')}
+          onPress={() => navigation.navigate('Settings' as any)}
         />
       </Appbar.Header>
 
       {showSearch ? (
         <Searchbar
-          placeholder={t('vocabulary.searchPlaceholder')}
+          placeholder={t('activity.searchPlaceholder')}
           value={search}
           onChangeText={setSearch}
-          style={styles.searchbar}
+          style={[styles.searchbar, {backgroundColor: theme.colors.secondaryContainer}]}
         />
       ) : null}
 
-      <CategoryChips
-        categories={categories}
-        selectedIds={selectedCategoryIds}
-        lang={language}
-        onSelect={toggleCategory}
-      />
 
       <FlatList
         key={columns}
         data={data}
         keyExtractor={item => String(item.id)}
         numColumns={columns}
-        columnWrapperStyle={columns > 1 ? {gap} : undefined}
-        contentContainerStyle={[styles.grid, {gap}]}
+        columnWrapperStyle={columns > 1 ? {gap: gap} : undefined}
+        contentContainerStyle={[styles.grid, {gap: gap, paddingHorizontal: paddingHorizontal}]}
         renderItem={({item}) => (
           <IconTile
             vocabulary={item}
             size={tileSize}
             lang={language}
-            accentColor={categoryColor(item)}
             isDirectPlay={true}
             onPress={onTilePress}
           />
         )}
         ListEmptyComponent={<EmptyState message={t('common.empty')} />}
       />
+
+      {/* Nhân vật góc dưới */}
+      <View style={[styles.avatarContainer, {backgroundColor: 'transparent', borderColor: 'transparent', elevation: 0}]}>
+        <StickFigure faceColor={skinColor} pose="point" size={80} />
+      </View>
     </View>
   );
 };
@@ -118,4 +118,17 @@ const styles = StyleSheet.create({
   container: {flex: 1},
   searchbar: {marginHorizontal: 12, marginTop: 8},
   grid: {padding: 16},
+  avatarContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#000',
+    elevation: 4,
+  },
 });

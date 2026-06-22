@@ -8,40 +8,26 @@ export interface ChildRow {
   id: number;
   name: string;
   avatar_path: string | null;
+  skin_tone: string;
+  region: string;
+  diagnosis: string;
+  birth_year: number;
   created_at: number;
   updated_at: number;
 }
 
-export interface CategoryRow {
-  id: number;
-  name_vi: string;
-  name_en: string;
-  icon: string;
-  color: string;
-  sort_order: number;
-  is_default: number;
-  created_at: number;
-  updated_at: number;
-}
+/** @deprecated Bảng categories đã bị drop (migration 005/006). Giữ lại để tương thích compile. */
+export type CategoryRow = Record<string, any>;
 
-export interface ActivityCategoryRow {
-  id: number;
-  name_vi: string;
-  name_en: string;
-  icon: string;
-  color: string;
-  sort_order: number;
-  is_default: number;
-  created_at: number;
-  updated_at: number;
-}
+/** @deprecated Bảng activity_categories đã bị drop (migration 005/006). Giữ lại để tương thích compile. */
+export type ActivityCategoryRow = Record<string, any>;
 
 export interface VocabularyRow {
   id: number;
   name_vi: string;
   name_en: string | null;
   image_path: string | null;
-  category_id: number;
+
   speech_text_vi: string | null;
   speech_text_en: string | null;
   is_default: number;
@@ -55,7 +41,7 @@ export interface ActivityRow {
   name_vi: string;
   name_en: string | null;
   image_path: string | null;
-  category_id: number;
+
   speech_text_vi: string | null;
   speech_text_en: string | null;
   is_default: number;

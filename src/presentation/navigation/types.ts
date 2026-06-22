@@ -9,27 +9,32 @@ import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 
 export type RootStackParamList = {
   Splash: undefined;
-  Login: undefined;
+  Onboarding: undefined;
   Main: undefined;
-  ParentGate: undefined;
   Settings: undefined;
+};
+
+export type OnboardingStackParamList = {
+  SkinTone: undefined;
+  Region: undefined;
+  Diagnosis: undefined;
+  BirthYear: undefined;
+  ThemeColor: undefined;
+  Voice: undefined;
+  Username: undefined;
 };
 
 export type MainTabParamList = {
   DirectBoard: undefined;
-  Board: undefined;
   DirectCommon: undefined;
-  Favorites: undefined;
 };
 
 export type SettingsStackParamList = {
   SettingsHome: undefined;
   VocabularyList: undefined;
   VocabularyEdit: {id?: number};
-  VocabularyCategoryManagement: undefined;
   ActivityList: undefined;
   ActivityEdit: {id?: number};
-  ActivityCategoryManagement: undefined;
   ChildProfiles: undefined;
   ChildProfileEdit: {id?: number} | undefined;
   StatisticsDashboard: undefined;
@@ -51,3 +56,9 @@ export type MainTabScreenProps<T extends keyof MainTabParamList> =
 
 export type SettingsScreenProps<T extends keyof SettingsStackParamList> =
   NativeStackScreenProps<SettingsStackParamList, T>;
+
+export type OnboardingScreenProps<T extends keyof OnboardingStackParamList> =
+  CompositeScreenProps<
+    NativeStackScreenProps<OnboardingStackParamList, T>,
+    NativeStackScreenProps<RootStackParamList>
+  >;

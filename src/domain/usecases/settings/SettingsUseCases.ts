@@ -30,12 +30,15 @@ export class GetSettingsUseCase extends BaseUseCase<NoParams, AppSettings> {
     const voiceId = all[SettingKey.VOICE_ID] || null;
     const activeRaw = all[SettingKey.ACTIVE_CHILD_ID];
     const activeChildId = activeRaw ? Number(activeRaw) : null;
+    const isOnboardedRaw = all[SettingKey.IS_ONBOARDED];
+    const isOnboarded = isOnboardedRaw === 'true';
 
     return {
       theme,
       language,
       speech: {rate, pitch, voiceId},
       activeChildId,
+      isOnboarded,
     };
   }
 }
@@ -47,6 +50,7 @@ export class UpdateSettingsUseCase extends BaseUseCase<
     rate: number;
     pitch: number;
     voiceId: string | null;
+    isOnboarded: boolean;
   }>,
   void
 > {
@@ -60,6 +64,7 @@ export class UpdateSettingsUseCase extends BaseUseCase<
       rate: number;
       pitch: number;
       voiceId: string | null;
+      isOnboarded: boolean;
     }>,
   ): Promise<void> {
     if (input.theme) {
@@ -86,6 +91,9 @@ export class UpdateSettingsUseCase extends BaseUseCase<
       } else {
         await this.repo.set(SettingKey.VOICE_ID, input.voiceId);
       }
+    }
+    if (input.isOnboarded !== undefined) {
+      await this.repo.set(SettingKey.IS_ONBOARDED, String(input.isOnboarded));
     }
   }
 }

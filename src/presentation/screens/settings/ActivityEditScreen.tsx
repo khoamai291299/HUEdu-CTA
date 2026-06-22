@@ -6,20 +6,21 @@
  */
 import React, {useState} from 'react';
 import {Image, Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import {Button, Chip, HelperText, Text, TextInput, useTheme} from 'react-native-paper';
+import {Button, HelperText, Text, TextInput, useTheme} from 'react-native-paper';
 import {Controller, useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
-import {useSettingsStore} from '@presentation/stores/useSettingsStore';
+
 import {SettingsScreenProps} from '@presentation/navigation/types';
 import {translateText} from '@core/utils/translate';
-import {ICON_NAMES, LucideIcon} from '@presentation/components/LucideIcon';
+import {ArasaacImage} from '@presentation/components/ArasaacImage';
+import {ArasaacPickerModal} from '@presentation/components/ArasaacPickerModal';
 
 interface FormValues {
   nameVi: string;
   speechTextVi: string;
-  categoryId: number | null;
+
   imagePath: string | null;
 }
 
@@ -31,7 +32,7 @@ export const ActivityEditScreen: React.FC<
   const editingId = route.params?.id;
 
   const activityStore = useActivityStore();
-  const language = useSettingsStore(s => s.settings.language);
+
   const [isTranslating, setIsTranslating] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -41,13 +42,13 @@ export const ActivityEditScreen: React.FC<
     defaultValues: {
       nameVi: existing?.nameVi ?? '',
       speechTextVi: existing?.speechTextVi ?? '',
-      categoryId: existing?.categoryId ?? activityStore.categories[0]?.id ?? null,
+
       imagePath: existing?.imagePath ?? null,
     },
   });
 
   const imagePath = watch('imagePath');
-  const categoryId = watch('categoryId');
+
 
   const pickImage = async () => {
     const result = await launchImageLibrary({mediaType: 'photo', quality: 0.8});
@@ -60,9 +61,7 @@ export const ActivityEditScreen: React.FC<
   const onSubmit = async (values: FormValues) => {
     setErrorMsg('');
     const trimmedNameVi = values.nameVi.trim();
-    if (values.categoryId == null) {
-      return;
-    }
+
 
     // Kiểm tra trùng lặp
     const isDuplicate = activityStore.activities.some(
@@ -95,7 +94,7 @@ export const ActivityEditScreen: React.FC<
       nameEn: nameEn || trimmedNameVi,
       speechTextVi: values.speechTextVi.trim() || null,
       speechTextEn: speechEn || null,
-      categoryId: values.categoryId,
+
       imagePath: values.imagePath,
     };
     if (editingId) {
@@ -106,6 +105,7 @@ export const ActivityEditScreen: React.FC<
     navigation.goBack();
   };
 
+  const [showArasaac, setShowArasaac] = useState(false);
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Controller
@@ -116,13 +116,14 @@ export const ActivityEditScreen: React.FC<
           <View>
             <TextInput
               mode="outlined"
-              label="Tên hoạt động (Ví dụ: Uống nước)"
+              label={t('activity.nameLabel')}
+              placeholder={t('activity.namePlaceholder')}
               value={value}
               onChangeText={onChange}
               error={!!fieldState.error || !!errorMsg}
             />
             <HelperText type="error" visible={!!fieldState.error || !!errorMsg}>
-              {errorMsg || t('errors.VALIDATION')}
+              {errorMsg ? t('activity.duplicate') : t('errors.VALIDATION')}
             </HelperText>
           </View>
         )}
@@ -134,8 +135,8 @@ export const ActivityEditScreen: React.FC<
         render={({field: {value, onChange}}) => (
           <TextInput
             mode="outlined"
-            label="Thông tin hành động (Vd: Con muốn đi vệ sinh)"
-            placeholder="Nội dung sẽ được phát âm bằng giọng nói"
+            label={t('activity.speechLabel')}
+            placeholder={t('activity.speechPlaceholder')}
             value={value}
             onChangeText={onChange}
             style={styles.field}
@@ -144,68 +145,24 @@ export const ActivityEditScreen: React.FC<
       />
 
       <Text variant="labelLarge" style={styles.label}>
-        Danh mục hoạt động
+        {t('activity.imageLabel')}
       </Text>
-      <View style={styles.chips}>
-        {activityStore.categories.map(c => {
-          const isSelected = categoryId === c.id;
-          return (
-            <Chip
-              key={c.id}
-              selected={isSelected}
-              onPress={() => setValue('categoryId', c.id)}
-              style={[
-                styles.chip,
-                isSelected ? {backgroundColor: c.color} : {borderColor: c.color, borderWidth: 1, backgroundColor: theme.colors.surface}
-              ]}
-              textStyle={isSelected ? {color: '#fff', fontWeight: 'bold'} : {color: theme.colors.onSurface}}
-              icon={() => (
-                <LucideIcon name={c.icon} size={18} color={isSelected ? '#fff' : theme.colors.onSurface} />
-              )}>
-              {language === 'en' ? c.nameEn : c.nameVi}
-            </Chip>
-          );
-        })}
-      </View>
-
-      <Text variant="labelLarge" style={styles.label}>
-        {t('vocabulary.image')} hoặc Icon
-      </Text>
-      {imagePath?.startsWith('lucide:') ? (
-        <View style={[styles.preview, {alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceVariant}]}>
-          <LucideIcon name={imagePath.replace('lucide:', '')} size={64} color={theme.colors.onSurface} />
-        </View>
-      ) : imagePath ? (
+      {imagePath ? (
         <Image source={{uri: imagePath}} style={styles.preview} />
+      ) : watch('nameVi').trim().length > 0 ? (
+        <View style={[styles.preview, {alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceVariant, overflow: 'hidden'}]}>
+          <ArasaacImage keyword={watch('nameVi').trim()} size={80} />
+          <Text variant="bodySmall" style={{marginTop: 4, opacity: 0.7}}>ARASAAC Auto</Text>
+        </View>
       ) : null}
-      <Button mode="outlined" icon="image" onPress={pickImage} style={styles.field}>
-        {t('vocabulary.pickImage')}
-      </Button>
-
-      <Text variant="labelLarge" style={styles.label}>
-        Icon (chọn thay cho ảnh)
-      </Text>
-      <View style={styles.row}>
-        {ICON_NAMES.map(name => (
-          <Pressable
-            key={name}
-            onPress={() => setValue('imagePath', 'lucide:' + name)}
-            style={[
-              styles.iconBtn,
-              {
-                backgroundColor:
-                  imagePath === 'lucide:' + name
-                    ? theme.colors.primaryContainer
-                    : theme.colors.surfaceVariant,
-              },
-            ]}>
-            <LucideIcon
-              name={name}
-              size={22}
-              color={theme.colors.onSurface}
-            />
-          </Pressable>
-        ))}
+      
+      <View style={{flexDirection: 'row', gap: 12, marginTop: 8}}>
+        <Button mode="outlined" icon="image-search" onPress={() => setShowArasaac(true)} style={{flex: 1}}>
+          ARASAAC
+        </Button>
+        <Button mode="outlined" icon="image" onPress={pickImage} style={{flex: 1}}>
+          {t('vocabulary.pickImage') || 'Thư viện'}
+        </Button>
       </View>
 
       <Button
@@ -213,8 +170,17 @@ export const ActivityEditScreen: React.FC<
         disabled={isTranslating}
         onPress={handleSubmit(onSubmit)}
         style={styles.save}>
-        {isTranslating ? 'Đang lưu & Dịch...' : t('common.save')}
+        {isTranslating ? t('activity.saving') : t('common.save')}
       </Button>
+
+      <ArasaacPickerModal
+        visible={showArasaac}
+        onDismiss={() => setShowArasaac(false)}
+        onSelect={(url) => {
+          setValue('imagePath', url);
+          setShowArasaac(false);
+        }}
+      />
     </ScrollView>
   );
 };

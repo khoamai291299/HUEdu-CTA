@@ -17,7 +17,7 @@ import {
 } from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
-import {useSettingsStore} from '@presentation/stores/useSettingsStore';
+
 import {EmptyState} from '@presentation/components/EmptyState';
 import {SettingsScreenProps} from '@presentation/navigation/types';
 
@@ -26,7 +26,7 @@ export const VocabularyListScreen: React.FC<
 > = ({navigation}) => {
   const {t} = useTranslation();
   const vocabStore = useVocabularyStore();
-  const language = useSettingsStore(s => s.settings.language);
+
 
   const [query, setQuery] = useState('');
   const [toDelete, setToDelete] = useState<number | null>(null);
@@ -39,11 +39,7 @@ export const VocabularyListScreen: React.FC<
       (v.nameEn ?? '').toLowerCase().includes(q),
   );
 
-  const categories = vocabStore.categoriesByType();
-  const catName = (id: number) => {
-    const c = categories.find(x => x.id === id);
-    return c ? (language === 'en' ? c.nameEn : c.nameVi) : '';
-  };
+
 
   return (
     <View style={styles.container}>
@@ -60,7 +56,7 @@ export const VocabularyListScreen: React.FC<
         renderItem={({item}) => (
           <List.Item
             title={item.nameVi}
-            description={`${item.nameEn ?? ''} · ${catName(item.categoryId)}`}
+            description={`${item.nameEn ?? ''}`}
             left={() => <List.Icon icon="card-text-outline" />}
             right={() => (
               <View style={styles.actions}>

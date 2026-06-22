@@ -28,6 +28,23 @@
     "title": "Thống kê", "mostUsed": "Từ dùng nhiều nhất",
     "totalUsage": "Tổng lượt dùng", "byDay": "Theo ngày", "count": "lượt"
   },
+  "activity": {
+    "title": "Hoạt động",
+    "add": "Thêm hoạt động",
+    "editTitle": "Chỉnh sửa hoạt động",
+    "nameLabel": "Tên hoạt động",
+    "namePlaceholder": "Ví dụ: Uống nước",
+    "speechLabel": "Thông tin hành động",
+    "speechPlaceholder": "Ví dụ: Con muốn đi vệ sinh",
+    "imageLabel": "Hình ảnh (Tùy chọn)",
+    "searchPlaceholder": "Tìm kiếm hoạt động...",
+    "arasaacKeyword": "Từ khóa tìm trên ARASAAC (Tiếng Anh/Việt)",
+    "arasaacSearchTitle": "Tìm kiếm ARASAAC",
+    "arasaacSearchPlaceholder": "Nhập từ khóa (Ví dụ: Uống nước, Drink)",
+    "arasaacSearchEmpty": "Không tìm thấy hình ảnh nào",
+    "saving": "Đang lưu & Dịch...",
+    "duplicate": "Hoạt động này đã tồn tại!"
+  },
   "settings": {
     "title": "Cài đặt", "vocabulary": "Quản lý từ vựng", "vocabularyCategory": "Phân loại từ vựng",
     "activity": "Quản lý hoạt động", "activityCategory": "Phân loại hoạt động", "logout": "Đăng xuất",

@@ -11,17 +11,23 @@ import {MessageCircleHeart} from 'lucide-react-native';
 import {useAppInit} from '@presentation/hooks/useAppInit';
 import {ErrorView, LoadingView} from '@presentation/components/StatusView';
 import {RootScreenProps} from '@presentation/navigation/types';
+import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 
 export const SplashScreen: React.FC<RootScreenProps<'Splash'>> = ({
   navigation,
 }) => {
   const {ready, error} = useAppInit();
+  const isOnboarded = useSettingsStore(s => s.settings.isOnboarded);
 
   useEffect(() => {
     if (ready) {
-      navigation.replace('Login');
+      if (isOnboarded) {
+        navigation.replace('Main');
+      } else {
+        navigation.replace('Onboarding');
+      }
     }
-  }, [ready, navigation]);
+  }, [ready, isOnboarded, navigation]);
 
   if (error) {
     return <ErrorView message={error} />;

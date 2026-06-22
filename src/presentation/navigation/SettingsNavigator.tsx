@@ -7,14 +7,12 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useTranslation} from 'react-i18next';
 import {Appbar, useTheme} from 'react-native-paper';
-import {SettingsStackParamList} from './types';
+import {SettingsStackParamList, RootScreenProps} from './types';
 import {SettingsHomeScreen} from '@presentation/screens/settings/SettingsHomeScreen';
 import {VocabularyListScreen} from '@presentation/screens/settings/VocabularyListScreen';
 import {VocabularyEditScreen} from '@presentation/screens/settings/VocabularyEditScreen';
-import {VocabularyCategoryManagementScreen} from '@presentation/screens/settings/VocabularyCategoryManagementScreen';
 import {ActivityListScreen} from '@presentation/screens/settings/ActivityListScreen';
 import {ActivityEditScreen} from '@presentation/screens/settings/ActivityEditScreen';
-import {ActivityCategoryManagementScreen} from '@presentation/screens/settings/ActivityCategoryManagementScreen';
 import {ChildProfilesScreen} from '@presentation/screens/settings/ChildProfilesScreen';
 import {ChildProfileEditScreen} from '@presentation/screens/settings/ChildProfileEditScreen';
 import {StatisticsDashboardScreen} from '@presentation/screens/settings/StatisticsDashboardScreen';
@@ -26,7 +24,7 @@ import {BackupRestoreScreen} from '@presentation/screens/settings/BackupRestoreS
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
-export const SettingsNavigator: React.FC = () => {
+export const SettingsNavigator: React.FC<RootScreenProps<'Settings'>> = () => {
   const {t} = useTranslation();
   const theme = useTheme();
   return (
@@ -56,11 +54,7 @@ export const SettingsNavigator: React.FC = () => {
         component={VocabularyEditScreen}
         options={{title: 'Chỉnh sửa từ vựng'}}
       />
-      <Stack.Screen
-        name="VocabularyCategoryManagement"
-        component={VocabularyCategoryManagementScreen}
-        options={{title: t('settings.vocabularyCategory')}}
-      />
+
       <Stack.Screen
         name="ActivityList"
         component={ActivityListScreen}
@@ -70,11 +64,6 @@ export const SettingsNavigator: React.FC = () => {
         name="ActivityEdit"
         component={ActivityEditScreen}
         options={{title: 'Chỉnh sửa hoạt động'}}
-      />
-      <Stack.Screen
-        name="ActivityCategoryManagement"
-        component={ActivityCategoryManagementScreen}
-        options={{title: t('settings.activityCategory')}}
       />
       <Stack.Screen
         name="ChildProfiles"

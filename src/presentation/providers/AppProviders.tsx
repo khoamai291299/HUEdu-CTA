@@ -31,7 +31,7 @@ export const AppProviders: React.FC<{children: React.ReactNode}> = ({
       ...navBase.colors,
       primary: theme.colors.primary,
       background: theme.colors.background,
-      card: theme.colors.surface,
+      card: theme.colors.background, // Match screen background
       text: theme.colors.onSurface,
       border: theme.colors.outlineVariant,
       notification: theme.colors.error,

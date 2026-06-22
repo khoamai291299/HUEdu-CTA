@@ -9,6 +9,10 @@ import {IBaseRepository} from './IBaseRepository';
 export interface ChildInput {
   name: string;
   avatarPath?: string | null;
+  skinTone?: string;
+  region?: string;
+  diagnosis?: string;
+  birthYear?: number;
 }
 
 export interface IChildRepository extends IBaseRepository<Child> {

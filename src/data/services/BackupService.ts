@@ -26,15 +26,15 @@ export class BackupService implements IBackupService {
   async exportToJson(): Promise<string> {
     const [
       children,
-      categories,
       vocabulary,
+      activities,
       favorites,
       usageHistory,
       settingsRows,
     ] = await Promise.all([
       this.dump('children'),
-      this.dump('categories'),
       this.dump('vocabulary'),
+      this.dump('activities'),
       this.dump('favorites'),
       this.dump('usage_history'),
       this.dump('settings'),
@@ -49,7 +49,7 @@ export class BackupService implements IBackupService {
       app: BACKUP_FORMAT.APP,
       version: BACKUP_FORMAT.VERSION,
       exportedAt: Date.now(),
-      data: {children, categories, vocabulary, favorites, usageHistory, settings},
+      data: {children, categories: [], vocabulary, activities, favorites, usageHistory, settings},
     };
     return JSON.stringify(payload, null, 2);
   }
@@ -86,53 +86,54 @@ export class BackupService implements IBackupService {
       await exec('DELETE FROM usage_history;');
       await exec('DELETE FROM favorites;');
       await exec('DELETE FROM vocabulary;');
-      await exec('DELETE FROM categories;');
+      await exec('DELETE FROM activities;');
       await exec('DELETE FROM children;');
       await exec('DELETE FROM settings;');
 
       for (const c of d.children as Array<Record<string, unknown>>) {
         await exec(
-          `INSERT INTO children (id, name, avatar_path, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?);`,
-          [c.id, c.name, c.avatar_path ?? null, c.created_at, c.updated_at],
-        );
-      }
-      for (const c of d.categories as Array<Record<string, unknown>>) {
-        await exec(
-          `INSERT INTO categories
-            (id, name_vi, name_en, icon, color, sort_order, is_default, created_at, updated_at)
+          `INSERT INTO children (id, name, avatar_path, skin_tone, region, diagnosis, birth_year, created_at, updated_at)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-          [
-            c.id,
-            c.name_vi,
-            c.name_en,
-            c.icon,
-            c.color,
-            c.sort_order,
-            c.is_default,
-            c.created_at,
-            c.updated_at,
-          ],
+          [c.id, c.name, c.avatar_path ?? null, c.skin_tone ?? 'pale', c.region ?? 'North', c.diagnosis ?? 'Unknown', c.birth_year ?? 2020, c.created_at, c.updated_at],
         );
       }
       for (const v of d.vocabulary as Array<Record<string, unknown>>) {
         await exec(
           `INSERT INTO vocabulary
-            (id, name_vi, name_en, image_path, category_id, speech_text_vi, speech_text_en,
+            (id, name_vi, name_en, image_path, speech_text_vi, speech_text_en,
              is_default, sort_order, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
           [
             v.id,
             v.name_vi,
             v.name_en ?? null,
             v.image_path ?? null,
-            v.category_id,
             v.speech_text_vi ?? null,
             v.speech_text_en ?? null,
             v.is_default,
             v.sort_order,
             v.created_at,
             v.updated_at,
+          ],
+        );
+      }
+      for (const a of (d.activities ?? []) as Array<Record<string, unknown>>) {
+        await exec(
+          `INSERT INTO activities
+            (id, name_vi, name_en, image_path, speech_text_vi, speech_text_en,
+             is_default, sort_order, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+          [
+            a.id,
+            a.name_vi,
+            a.name_en ?? null,
+            a.image_path ?? null,
+            a.speech_text_vi ?? null,
+            a.speech_text_en ?? null,
+            a.is_default,
+            a.sort_order,
+            a.created_at,
+            a.updated_at,
           ],
         );
       }
@@ -161,3 +162,4 @@ export class BackupService implements IBackupService {
     logger.info('[BackupService] import done');
   }
 }
+

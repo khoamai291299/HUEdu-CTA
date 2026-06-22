@@ -10,7 +10,6 @@ export interface ActivityInput {
   nameVi: string;
   nameEn?: string | null;
   imagePath?: string | null;
-  categoryId: number;
   speechTextVi?: string | null;
   speechTextEn?: string | null;
   sortOrder?: number;
@@ -20,6 +19,7 @@ export interface ActivityInput {
 export interface IActivityRepository extends IBaseRepository<Activity> {
   create(input: ActivityInput): Promise<Activity>;
   update(id: number, input: Partial<ActivityInput>): Promise<Activity>;
-  getByCategory(categoryId: number): Promise<Activity[]>;
+  getAll(): Promise<Activity[]>;
+  getById(id: number): Promise<Activity | null>;
   search(query: string): Promise<Activity[]>;
 }

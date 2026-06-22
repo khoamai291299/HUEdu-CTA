@@ -10,8 +10,13 @@ export const useResponsiveGrid = (gap = 12, horizontalPadding = 16) => {
   else columns = 3;
   
   // Calculate exact tile size considering all margins/gaps
-  const available = width - horizontalPadding * 2 - gap * (columns - 1);
-  const tileSize = Math.floor(available / columns) - 1;
+  // We use a larger padding here to ensure cards are smaller
+  const maxTileSize = width >= 600 ? 140 : 100;
+  const available = width - horizontalPadding * 4 - gap * (columns - 1);
+  const calculatedSize = Math.floor(available / columns) - 1;
+  const tileSize = Math.min(maxTileSize, calculatedSize);
   
-  return {columns, tileSize, gap};
+  const exactPadding = Math.max(horizontalPadding, (width - (tileSize * columns + gap * (columns - 1))) / 2);
+  
+  return {columns, tileSize, gap, paddingHorizontal: exactPadding};
 };

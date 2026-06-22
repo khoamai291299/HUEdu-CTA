@@ -9,10 +9,11 @@ import {
   Button,
   Searchbar,
   Text,
+  useTheme,
 } from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
-import {useSettingsStore} from '@presentation/stores/useSettingsStore';
+
 import {EmptyState} from '@presentation/components/EmptyState';
 import {SettingsScreenProps} from '@presentation/navigation/types';
 
@@ -20,8 +21,9 @@ export const ActivityListScreen: React.FC<
   SettingsScreenProps<'ActivityList'>
 > = ({navigation}) => {
   const {t} = useTranslation();
+  const theme = useTheme();
   const activityStore = useActivityStore();
-  const language = useSettingsStore(s => s.settings.language);
+
 
   const [query, setQuery] = useState('');
   const [toDelete, setToDelete] = useState<number | null>(null);
@@ -34,18 +36,15 @@ export const ActivityListScreen: React.FC<
       (v.nameEn ?? '').toLowerCase().includes(q),
   );
 
-  const catName = (id: number) => {
-    const c = activityStore.categories.find(x => x.id === id);
-    return c ? (language === 'en' ? c.nameEn : c.nameVi) : '';
-  };
+
 
   return (
     <View style={styles.container}>
       <Searchbar
-        placeholder={t('vocabulary.searchPlaceholder')}
+        placeholder={t('activity.searchPlaceholder')}
         value={query}
         onChangeText={setQuery}
-        style={styles.search}
+        style={[styles.search, {backgroundColor: theme.colors.secondaryContainer}]}
       />
       <FlatList
         contentContainerStyle={{paddingHorizontal: 16, paddingBottom: 80}}
@@ -54,7 +53,7 @@ export const ActivityListScreen: React.FC<
         renderItem={({item}) => (
           <List.Item
             title={item.nameVi}
-            description={`${item.nameEn ?? ''} · ${catName(item.categoryId)}`}
+            description={`${item.nameEn ?? ''}`}
             left={() => <List.Icon icon="card-text-outline" />}
             right={() => (
               <View style={styles.actions}>
@@ -77,7 +76,7 @@ export const ActivityListScreen: React.FC<
 
       <FAB
         icon="plus"
-        label="Thêm hoạt động"
+        label={t('activity.add')}
         style={styles.fab}
         onPress={() => navigation.navigate('ActivityEdit', {})}
       />

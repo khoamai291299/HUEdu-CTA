@@ -9,7 +9,7 @@ import {Vocabulary} from '@domain/entities/Vocabulary';
 import {UsageContext, UsageRecord} from '@domain/entities/UsageRecord';
 import {Activity} from '@domain/entities/Activity';
 import {ActivityCategory} from '@domain/entities/ActivityCategory';
-import {CategoryRow, ChildRow, UsageRow, VocabularyRow, ActivityRow, ActivityCategoryRow} from '@data/models/rows';
+import {ChildRow, UsageRow, VocabularyRow, ActivityRow, CategoryRow, ActivityCategoryRow} from '@data/models/rows';
 
 export const toCategory = (r: CategoryRow): Category =>
   new Category({
@@ -29,6 +29,10 @@ export const toChild = (r: ChildRow): Child =>
     id: r.id,
     name: r.name,
     avatarPath: r.avatar_path,
+    skinTone: r.skin_tone,
+    region: r.region,
+    diagnosis: r.diagnosis,
+    birthYear: r.birth_year,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   });
@@ -39,7 +43,6 @@ export const toVocabulary = (r: VocabularyRow): Vocabulary =>
     nameVi: r.name_vi,
     nameEn: r.name_en,
     imagePath: r.image_path,
-    categoryId: r.category_id,
     speechTextVi: r.speech_text_vi,
     speechTextEn: r.speech_text_en,
     isDefault: r.is_default === 1,
@@ -54,7 +57,6 @@ export const toActivity = (r: ActivityRow): Activity =>
     nameVi: r.name_vi,
     nameEn: r.name_en,
     imagePath: r.image_path,
-    categoryId: r.category_id,
     speechTextVi: r.speech_text_vi,
     speechTextEn: r.speech_text_en,
     isDefault: r.is_default === 1,

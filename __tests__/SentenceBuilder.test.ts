@@ -10,7 +10,6 @@ const makeWord = (id: number, nameVi: string, nameEn: string): Vocabulary =>
     id,
     nameVi,
     nameEn,
-    categoryId: 1,
     isDefault: true,
     sortOrder: id,
     createdAt: 0,

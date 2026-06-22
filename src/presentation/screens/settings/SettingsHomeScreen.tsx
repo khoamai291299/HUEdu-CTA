@@ -11,7 +11,7 @@ import {
   BookA,
   Clock,
   Database,
-  LayoutGrid,
+
   Palette,
   Settings2,
   Sliders,
@@ -19,10 +19,8 @@ import {
   Volume2,
   ChartColumn,
   Activity,
-  LogOut,
 } from 'lucide-react-native';
 import { SettingsScreenProps } from '@presentation/navigation/types';
-import { useSettingsStore } from '@presentation/stores/useSettingsStore';
 
 export const SettingsHomeScreen: React.FC<
   SettingsScreenProps<'SettingsHome'>
@@ -47,19 +45,15 @@ export const SettingsHomeScreen: React.FC<
         {item(<Activity size={24} />, t('settings.activity'), () =>
           navigation.navigate('ActivityList'),
         )}
-        {item(<LayoutGrid size={24} />, t('settings.activityCategory'), () =>
-          navigation.navigate('ActivityCategoryManagement'),
-        )}
       </List.Section>
+      {/* Tạm ẩn Quản lý từ vựng
       <Divider />
       <List.Section>
         {item(<BookA size={24} />, t('settings.vocabulary'), () =>
           navigation.navigate('VocabularyList'),
         )}
-        {item(<LayoutGrid size={24} />, t('settings.vocabularyCategory'), () =>
-          navigation.navigate('VocabularyCategoryManagement'),
-        )}
       </List.Section>
+      */}
       <Divider />
       <List.Section>
         {item(<Users size={24} />, t('settings.profiles'), () =>
@@ -88,15 +82,6 @@ export const SettingsHomeScreen: React.FC<
         )}
       </List.Section>
       <Divider />
-      <List.Item
-        title={t('settings.logout')}
-        left={() => <List.Icon icon={() => <LogOut size={24} color="#E74C3C" />} />}
-        onPress={() => {
-          useSettingsStore.getState().setActiveChildId(null);
-          navigation.getParent()?.navigate('Login');
-        }}
-        titleStyle={{ color: '#E74C3C', fontWeight: 'bold' }}
-      />
       <List.Item
         title="HUEdu-CTA v1.0.0"
         left={() => <List.Icon icon={() => <Settings2 size={24} />} />}

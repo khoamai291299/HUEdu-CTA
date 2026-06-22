@@ -22,6 +22,7 @@ export const SettingKey = {
   PIN_SALT: 'pin_salt',
   ACTIVE_CHILD_ID: 'active_child_id',
   SCHEMA_SEEDED: 'schema_seeded',
+  IS_ONBOARDED: 'is_onboarded',
 } as const;
 
 /** Khoá AsyncStorage (cache nhanh, không phải nguồn chân lý). */
@@ -32,7 +33,7 @@ export const StorageKey = {
 
 /** Giá trị mặc định cho cấu hình. */
 export const Defaults = {
-  THEME: 'light' as const,
+  THEME: 'pale' as const,
   LANGUAGE: 'vi' as const,
   SPEECH_RATE: 0.45,
   SPEECH_PITCH: 1.0,

@@ -10,11 +10,17 @@ import {Migration} from './Migration';
 import {migration001Init} from './migration_001_init';
 import {migration002SplitActivities} from './migration_002_split_activities';
 import {migration003FixUsageHistory} from './migration_003_fix_usage_history';
+import {migration004AddChildFields} from './migration_004_add_child_fields';
+import {migration005RemoveCategories} from './migration_005_remove_categories';
+import {migration006DropCategoryColumns} from './migration_006_drop_category_columns';
 
 const ALL_MIGRATIONS: Migration[] = [
   migration001Init,
   migration002SplitActivities,
   migration003FixUsageHistory,
+  migration004AddChildFields,
+  migration005RemoveCategories,
+  migration006DropCategoryColumns,
 ].sort(
   (a, b) => a.version - b.version,
 );

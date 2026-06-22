@@ -4,10 +4,13 @@
  * Dependency: useSettingsStore, theme.
  */
 import {useMemo} from 'react';
-import {getTheme} from '@core/theme';
+import {getTheme, AppThemeName} from '@core/theme';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
+import {useOnboardingStore} from '@presentation/stores/useOnboardingStore';
 
 export const useAppTheme = () => {
-  const themeName = useSettingsStore(s => s.settings.theme);
+  const {settings} = useSettingsStore();
+  const themeColor = useOnboardingStore(s => s.themeColor);
+  const themeName = settings.isOnboarded ? settings.theme : (themeColor || 'pale') as AppThemeName;
   return useMemo(() => getTheme(themeName), [themeName]);
 };

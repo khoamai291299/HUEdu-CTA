@@ -21,17 +21,6 @@ export class GetAllVocabularyUseCase extends BaseUseCase<NoParams, Vocabulary[]>
   }
 }
 
-export class GetVocabularyByCategoryUseCase extends BaseUseCase<
-  number,
-  Vocabulary[]
-> {
-  constructor(private readonly repo: IVocabularyRepository) {
-    super();
-  }
-  execute(categoryId: number): Promise<Vocabulary[]> {
-    return this.repo.getByCategory(categoryId);
-  }
-}
 
 export class SearchVocabularyUseCase extends BaseUseCase<string, Vocabulary[]> {
   constructor(private readonly repo: IVocabularyRepository) {

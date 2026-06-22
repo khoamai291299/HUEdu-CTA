@@ -15,7 +15,8 @@ HUEdu-CTA (HUEdu - Communication Training App) là một ứng dụng di động
 - **Tùy Biến Thẻ & Giao Diện:** 
   - Thêm, sửa, xóa các thẻ Hoạt động và Từ vựng.
   - Tự do thiết lập màu sắc cho từng danh mục.
-  - Tùy chỉnh ảnh đại diện, màu nền sáng/tối.
+  - Tùy chỉnh ảnh đại diện và màu nền sáng/tối.
+- **Tương Thích Mọi Thiết Bị:** Tự động co giãn cấu trúc lưới hiển thị hoàn hảo trên Điện thoại (Phone), Máy tính bảng (Tablet) và iPad.
 - **Thống Kê Trực Quan:** Báo cáo chi tiết lịch sử và tần suất sử dụng ứng dụng của từng hồ sơ.
 - **Đa Ngôn Ngữ & Giọng Đọc:** Hỗ trợ song ngữ (Tiếng Việt & Tiếng Anh), tùy chỉnh tốc độ, cao độ giọng đọc (TTS).
 - **Hoạt Động Ngoại Tuyến (Offline):** Dữ liệu được lưu trữ an toàn trên thiết bị thông qua SQLite, đảm bảo tốc độ nhanh và không yêu cầu kết nối mạng.
@@ -30,13 +31,14 @@ HUEdu-CTA (HUEdu - Communication Training App) là một ứng dụng di động
 - **Phát âm:** `react-native-tts`.
 - **Đa ngôn ngữ:** `i18next`.
 
-## Hướng Dẫn Cài Đặt (Cho Lập Trình Viên)
+## Hướng Dẫn Cài Đặt và Build APK
+
+Để tự tay trích xuất file APK chuẩn với 100% chức năng:
 
 ### 1. Yêu cầu hệ thống
 - **Node.js**: Phiên bản LTS (>= 18.x).
 - **Java Development Kit (JDK)**: Phiên bản 17 (Cần thiết cho React Native mới).
-- **Android Studio**: Để cài đặt Android SDK và Emulator.
-- Môi trường Android chuẩn bị sẵn sàng biến môi trường (`ANDROID_HOME`).
+- **Android Studio**: Để cài đặt Android SDK 34 và biến môi trường (`ANDROID_HOME`).
 
 ### 2. Tải và thiết lập dự án
 Clone repository về máy:
@@ -50,34 +52,24 @@ Cài đặt các gói phụ thuộc (Dependencies):
 npm install
 ```
 
-### 3. Chạy ứng dụng trong môi trường phát triển
-Đảm bảo đã kết nối với máy ảo Android (Emulator) hoặc điện thoại thật qua USB Debugging.
-
-Chạy Metro Bundler:
-```bash
-npm start
-```
-
-Mở một Terminal khác, thực thi để cài app lên máy:
-```bash
-npm run android
-```
-
-### 4. Xuất file APK (Bản Release)
-Để build bản cài đặt chính thức (APK) không cần Metro:
-
-**Trên Windows:**
+### 3. Xuất file APK (Bản Release)
+Mở một Terminal / PowerShell tại thư mục gốc và chạy các lệnh sau:
 ```powershell
 cd android
 .\gradlew assembleRelease
 cd ..
 ```
-File APK sau khi build sẽ nằm tại đường dẫn: `android\app\build\outputs\apk\release\app-release.apk`
+*(Nếu bạn dùng Mac/Linux, hãy dùng `./gradlew assembleRelease`)*
 
-*Ghi chú: Bản APK gốc mới nhất đã được xuất và đính kèm trong repository (`HUEdu-CTA-v1.0.0-final-6.apk`).*
+File APK sau khi build hoàn tất sẽ nằm tại đường dẫn: 
+`android\app\build\outputs\apk\release\app-release.apk`
+
+*Ghi chú: Bản APK được đóng gói sẵn trong thư mục dự án mang tên `HUEdu-CTA-v1.0.0.apk`.*
 
 ## Tài Liệu & Hướng Dẫn Chi Tiết
-Vui lòng tham khảo file `Guide.md` ở thư mục gốc để đọc tài liệu bàn giao dự án chuyên sâu bao gồm cấu trúc, luồng đi và kỹ thuật triển khai.
+- Vui lòng tham khảo file `Guide.md` để hiểu sâu về kỹ thuật, kiến trúc và luồng dữ liệu.
+- Xem file `Report.md` để có báo cáo đầy đủ về toàn bộ đề tài.
 
 ## Cấp Phép (License)
 Dự án được xây dựng cho mục đích hỗ trợ y tế - giáo dục.
+

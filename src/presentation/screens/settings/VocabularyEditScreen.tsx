@@ -5,19 +5,19 @@
  */
 import React, {useState} from 'react';
 import {Image, Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import {Button, Chip, HelperText, Text, TextInput, useTheme} from 'react-native-paper';
+import {Button, HelperText, Text, TextInput, useTheme} from 'react-native-paper';
 import {Controller, useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
-import {useSettingsStore} from '@presentation/stores/useSettingsStore';
+
 import {SettingsScreenProps} from '@presentation/navigation/types';
 import {translateText} from '@core/utils/translate';
 import {ICON_NAMES, LucideIcon} from '@presentation/components/LucideIcon';
 
 interface FormValues {
   nameVi: string;
-  categoryId: number | null;
+
   imagePath: string | null;
 }
 
@@ -29,7 +29,7 @@ export const VocabularyEditScreen: React.FC<
   const editingId = route.params?.id;
 
   const vocabStore = useVocabularyStore();
-  const language = useSettingsStore(s => s.settings.language);
+
   const [isTranslating, setIsTranslating] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -38,13 +38,13 @@ export const VocabularyEditScreen: React.FC<
   const {control, handleSubmit, setValue, watch} = useForm<FormValues>({
     defaultValues: {
       nameVi: existing?.nameVi ?? '',
-      categoryId: existing?.categoryId ?? vocabStore.categoriesByType()[0]?.id ?? null,
+
       imagePath: existing?.imagePath ?? null,
     },
   });
 
   const imagePath = watch('imagePath');
-  const categoryId = watch('categoryId');
+
 
   const pickImage = async () => {
     const result = await launchImageLibrary({mediaType: 'photo', quality: 0.8});
@@ -57,9 +57,7 @@ export const VocabularyEditScreen: React.FC<
   const onSubmit = async (values: FormValues) => {
     setErrorMsg('');
     const trimmedNameVi = values.nameVi.trim();
-    if (values.categoryId == null) {
-      return;
-    }
+
 
     // Kiểm tra trùng lặp
     const isDuplicate = vocabStore.vocabulary.some(
@@ -86,7 +84,7 @@ export const VocabularyEditScreen: React.FC<
       nameEn: nameEn || trimmedNameVi,
       speechTextVi: null,
       speechTextEn: null,
-      categoryId: values.categoryId,
+
       imagePath: values.imagePath,
     };
     if (editingId) {
@@ -119,30 +117,7 @@ export const VocabularyEditScreen: React.FC<
         )}
       />
 
-      <Text variant="labelLarge" style={styles.label}>
-        Danh mục từ vựng
-      </Text>
-      <View style={styles.chips}>
-        {vocabStore.categoriesByType().map(c => {
-          const isSelected = categoryId === c.id;
-          return (
-            <Chip
-              key={c.id}
-              selected={isSelected}
-              onPress={() => setValue('categoryId', c.id)}
-              style={[
-                styles.chip,
-                isSelected ? {backgroundColor: c.color} : {borderColor: c.color, borderWidth: 1, backgroundColor: theme.colors.surface}
-              ]}
-              textStyle={isSelected ? {color: '#fff', fontWeight: 'bold'} : {color: theme.colors.onSurface}}
-              icon={() => (
-                <LucideIcon name={c.icon} size={18} color={isSelected ? '#fff' : theme.colors.onSurface} />
-              )}>
-              {language === 'en' ? c.nameEn : c.nameVi}
-            </Chip>
-          );
-        })}
-      </View>
+
 
       <Text variant="labelLarge" style={styles.label}>
         {t('vocabulary.image')} hoặc Icon

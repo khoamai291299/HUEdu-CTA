@@ -38,14 +38,6 @@ export class ActivityRepositoryImpl
     return res.rows.map(r => this.toEntity(r));
   }
 
-  async getByCategory(categoryId: number): Promise<Activity[]> {
-    const res = await this.db.executeSql(
-      'SELECT * FROM activities WHERE category_id = ? ORDER BY sort_order ASC, id ASC;',
-      [categoryId],
-    );
-    return res.rows.map(r => this.toEntity(r));
-  }
-
   async search(query: string): Promise<Activity[]> {
     const like = `%${query}%`;
     const res = await this.db.executeSql(
@@ -61,14 +53,13 @@ export class ActivityRepositoryImpl
     const ts = Date.now();
     const res = await this.db.executeSql(
       `INSERT INTO activities
-        (name_vi, name_en, image_path, category_id, speech_text_vi, speech_text_en,
+        (name_vi, name_en, image_path, speech_text_vi, speech_text_en,
          is_default, sort_order, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         input.nameVi,
         input.nameEn ?? null,
         input.imagePath ?? null,
-        input.categoryId,
         input.speechTextVi ?? null,
         input.speechTextEn ?? null,
         input.isDefault ? 1 : 0,
@@ -91,7 +82,6 @@ export class ActivityRepositoryImpl
       name_vi: input.nameVi,
       name_en: input.nameEn,
       image_path: input.imagePath,
-      category_id: input.categoryId,
       speech_text_vi: input.speechTextVi,
       speech_text_en: input.speechTextEn,
       sort_order: input.sortOrder,

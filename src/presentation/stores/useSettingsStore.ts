@@ -25,6 +25,7 @@ interface SettingsState {
   setSpeechPitch: (pitch: number) => Promise<void>;
   setVoice: (voiceId: string | null) => Promise<void>;
   setActiveChildId: (id: number | null) => void;
+  setIsOnboarded: (isOnboarded: boolean) => Promise<void>;
 }
 
 const defaultSettings: AppSettings = {
@@ -36,6 +37,7 @@ const defaultSettings: AppSettings = {
     voiceId: null,
   },
   activeChildId: null,
+  isOnboarded: false,
 };
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
@@ -96,4 +98,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   setActiveChildId: id =>
     set({settings: {...get().settings, activeChildId: id}}),
+
+  setIsOnboarded: async isOnboarded => {
+    await new UpdateSettingsUseCase(getSettingsRepo()).execute({isOnboarded});
+    set({settings: {...get().settings, isOnboarded}});
+  },
 }));

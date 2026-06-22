@@ -10,7 +10,6 @@ export interface VocabularyInput {
   nameVi: string;
   nameEn?: string | null;
   imagePath?: string | null;
-  categoryId: number;
   speechTextVi?: string | null;
   speechTextEn?: string | null;
   sortOrder?: number;
@@ -20,6 +19,7 @@ export interface VocabularyInput {
 export interface IVocabularyRepository extends IBaseRepository<Vocabulary> {
   create(input: VocabularyInput): Promise<Vocabulary>;
   update(id: number, input: Partial<VocabularyInput>): Promise<Vocabulary>;
-  getByCategory(categoryId: number): Promise<Vocabulary[]>;
+  getAll(): Promise<Vocabulary[]>;
+  getById(id: number): Promise<Vocabulary | null>;
   search(query: string): Promise<Vocabulary[]>;
 }

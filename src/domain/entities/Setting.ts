@@ -17,4 +17,5 @@ export interface AppSettings {
   language: AppLanguage;
   speech: SpeechSettings;
   activeChildId: number | null;
+  isOnboarded: boolean;
 }

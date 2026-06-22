@@ -21,17 +21,6 @@ export class GetAllActivityUseCase extends BaseUseCase<NoParams, Activity[]> {
   }
 }
 
-export class GetActivityByCategoryUseCase extends BaseUseCase<
-  number,
-  Activity[]
-> {
-  constructor(private readonly repo: IActivityRepository) {
-    super();
-  }
-  execute(categoryId: number): Promise<Activity[]> {
-    return this.repo.getByCategory(categoryId);
-  }
-}
 
 export class SearchActivityUseCase extends BaseUseCase<string, Activity[]> {
   constructor(private readonly repo: IActivityRepository) {

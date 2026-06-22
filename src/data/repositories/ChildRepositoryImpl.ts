@@ -30,10 +30,14 @@ export class ChildRepositoryImpl
 
   async create(input: ChildInput): Promise<Child> {
     const ts = Date.now();
+    const skinTone = input.skinTone ?? 'pale';
+    const region = input.region ?? 'North';
+    const diagnosis = input.diagnosis ?? 'Unknown';
+    const birthYear = input.birthYear ?? 2020;
     const res = await this.db.executeSql(
-      `INSERT INTO children (name, avatar_path, created_at, updated_at)
-       VALUES (?, ?, ?, ?);`,
-      [input.name, input.avatarPath ?? null, ts, ts],
+      `INSERT INTO children (name, avatar_path, skin_tone, region, diagnosis, birth_year, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+      [input.name, input.avatarPath ?? null, skinTone, region, diagnosis, birthYear, ts, ts],
     );
     const created = await this.getById(res.insertId as number);
     if (!created) {
@@ -52,6 +56,22 @@ export class ChildRepositoryImpl
     if (input.avatarPath !== undefined) {
       fields.push('avatar_path = ?');
       values.push(input.avatarPath);
+    }
+    if (input.skinTone !== undefined) {
+      fields.push('skin_tone = ?');
+      values.push(input.skinTone);
+    }
+    if (input.region !== undefined) {
+      fields.push('region = ?');
+      values.push(input.region);
+    }
+    if (input.diagnosis !== undefined) {
+      fields.push('diagnosis = ?');
+      values.push(input.diagnosis);
+    }
+    if (input.birthYear !== undefined) {
+      fields.push('birth_year = ?');
+      values.push(input.birthYear);
     }
     fields.push('updated_at = ?');
     values.push(Date.now());

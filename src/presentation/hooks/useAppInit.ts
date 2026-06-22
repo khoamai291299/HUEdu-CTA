@@ -9,7 +9,7 @@ import {registerDependencies} from '@core/di/registerDependencies';
 import {Container} from '@core/di/Container';
 import {initI18n} from '@core/i18n';
 import {GlobalErrorHandler} from '@core/errors/GlobalErrorHandler';
-import {getDb, getTts} from '@presentation/di/services';
+import {getDb} from '@presentation/di/services';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useChildStore} from '@presentation/stores/useChildStore';
 import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';

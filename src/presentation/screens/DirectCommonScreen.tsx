@@ -22,7 +22,7 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
 }) => {
   const {t} = useTranslation();
   const theme = useTheme();
-  const {columns, tileSize, gap} = useResponsiveGrid();
+  const {columns, tileSize, gap, paddingHorizontal} = useResponsiveGrid(16, 24);
 
   const activeChildId = useSettingsStore(s => s.settings.activeChildId);
   const activities = useActivityStore(s => s.activities);
@@ -47,10 +47,7 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
     speakWord(v);
   };
 
-  const categories = useActivityStore(s => s.categories);
 
-  const categoryColor = (item: Vocabulary): string | undefined =>
-    categories.find(c => c.id === item.categoryId)?.color;
 
   return (
     <View style={[styles.container, {backgroundColor: 'transparent'}]}>
@@ -58,7 +55,7 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
         <Appbar.Content title={t('tabs.common')} />
         <Appbar.Action
           icon={() => <SettingsIcon size={24} color={theme.colors.onSurface} />}
-          onPress={() => navigation.navigate('ParentGate')}
+          onPress={() => navigation.navigate('Settings' as any)}
         />
       </Appbar.Header>
 
@@ -68,13 +65,12 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
         keyExtractor={item => String(item.id)}
         numColumns={columns}
         columnWrapperStyle={columns > 1 ? {gap} : undefined}
-        contentContainerStyle={[styles.grid, {gap}]}
+        contentContainerStyle={[styles.grid, {gap, paddingHorizontal}]}
         renderItem={({item}) => (
           <IconTile
             vocabulary={item}
             size={tileSize}
             lang={language}
-            accentColor={categoryColor(item)}
             isDirectPlay={true}
             onPress={onTilePress}
           />
