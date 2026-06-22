@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "prefabPath": "C:\\Users\\khoam\\.gradle\\caches\\modules-2\\files-2.1\\com.google.prefab\\cli\\2.1.0\\aa32fec809c44fa531f01dcfb739b5b3304d3050\\cli-2.1.0-all.jar",
+  "packages": [
+    "C:\\HUEdu-CTA\\node_modules\\react-native-reanimated\\android\\build\\intermediates\\prefab_package\\debug\\prefab",
+    "C:\\HUEdu-CTA\\node_modules\\react-native-worklets\\android\\build\\intermediates\\prefab_package\\debug\\prefab",
+    "C:\\Users\\khoam\\.gradle\\caches\\8.13\\transforms\\3e91627a949fdc936db9dd31a7385453\\transformed\\react-android-0.85.0-debug\\prefab",
+    "C:\\Users\\khoam\\.gradle\\caches\\8.13\\transforms\\5231ba3d5e7d6b1a82065a81bb4c9381\\transformed\\hermes-android-250829098.0.10-debug\\prefab",
+    "C:\\Users\\khoam\\.gradle\\caches\\8.13\\transforms\\1c50bd473f95dfa25c59ea4ee2aadfa5\\transformed\\fbjni-0.7.0\\prefab"
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "name": "huedu-cta",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HUEdu-CTA - AAC communication app for autistic children (Vietnam)",
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "tsc": "tsc --noEmit",
+    "build:apk:debug": "cd android && gradlew assembleDebug",
+    "build:apk:release": "cd android && gradlew assembleRelease",
+    "build:bundle:release": "cd android && gradlew bundleRelease"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.1",
+    "@react-navigation/bottom-tabs": "^7.2.0",
+    "@react-navigation/native": "^7.0.14",
+    "@react-navigation/native-stack": "^7.2.0",
+    "i18next": "^24.2.2",
+    "lucide-react-native": "^0.475.0",
+    "react": "19.2.3",
+    "react-hook-form": "^7.54.2",
+    "react-i18next": "^15.4.0",
+    "react-native": "0.85.0",
+    "react-native-fs": "^2.20.0",
+    "react-native-gesture-handler": "^2.22.0",
+    "react-native-image-picker": "^8.0.0",
+    "react-native-paper": "^5.13.1",
+    "react-native-reanimated": "^4.4.1",
+    "react-native-safe-area-context": "^5.1.0",
+    "react-native-screens": "^4.6.0",
+    "react-native-sqlite-storage": "^6.0.1",
+    "react-native-svg": "^15.11.1",
+    "react-native-tts": "^4.1.1",
+    "react-native-vector-icons": "^10.3.0",
+    "react-native-worklets": "^0.9.2",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
+    "@react-native-community/cli": "^15.0.0",
+    "@react-native/babel-preset": "0.85.0",
+    "@react-native/eslint-config": "0.85.0",
+    "@react-native/jest-preset": "^0.86.0",
+    "@react-native/metro-config": "0.85.0",
+    "@react-native/typescript-config": "0.85.0",
+    "@testing-library/react-native": "^13.0.1",
+    "@types/jest": "^29.5.13",
+    "@types/react": "^19.0.0",
+    "@types/react-native-sqlite-storage": "^6.0.5",
+    "@types/react-native-vector-icons": "^6.4.18",
+    "@types/react-test-renderer": "^19.0.0",
+    "babel-jest": "^29.7.0",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.4.2",
+    "react-test-renderer": "19.2.3",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "jest": {
+    "preset": "@react-native/jest-preset",
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "moduleNameMapper": {
+      "^@core/(.*)$": "<rootDir>/src/core/$1",
+      "^@domain/(.*)$": "<rootDir>/src/domain/$1",
+      "^@data/(.*)$": "<rootDir>/src/data/$1",
+      "^@presentation/(.*)$": "<rootDir>/src/presentation/$1"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@react-native|react-native|@react-navigation|react-native-reanimated|react-native-paper|lucide-react-native|react-native-vector-icons)/)"
+    ]
+  }
+}

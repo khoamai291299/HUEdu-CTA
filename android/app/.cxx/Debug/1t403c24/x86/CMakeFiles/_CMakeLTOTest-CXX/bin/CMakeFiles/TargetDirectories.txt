@@ -1,0 +1,4 @@
+C:/HUEdu-CTA/android/app/.cxx/Debug/1t403c24/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
+C:/HUEdu-CTA/android/app/.cxx/Debug/1t403c24/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
+C:/HUEdu-CTA/android/app/.cxx/Debug/1t403c24/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
+C:/HUEdu-CTA/android/app/.cxx/Debug/1t403c24/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir

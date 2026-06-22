@@ -1,0 +1,54 @@
+{
+  "app": {"name": "HUEdu-CTA"},
+  "common": {
+    "save": "Lưu", "cancel": "Huỷ", "delete": "Xoá", "edit": "Sửa",
+    "add": "Thêm", "search": "Tìm kiếm", "confirm": "Xác nhận",
+    "back": "Quay lại", "loading": "Đang tải...", "empty": "Chưa có dữ liệu",
+    "yes": "Có", "no": "Không"
+  },
+  "tabs": {"directBoard": "Giao tiếp", "board": "Ghép câu", "common": "Thường dùng", "favorites": "Yêu thích", "settings": "Cài đặt"},
+  "board": {
+    "speakSentence": "Đọc câu", "clearSentence": "Xoá câu",
+    "emptySentence": "Chạm vào biểu tượng để ghép câu",
+    "allCategories": "Tất cả"
+  },
+  "vocabulary": {
+    "title": "Quản lý từ vựng", "nameVi": "Tên tiếng Việt", "nameEn": "Tên tiếng Anh",
+    "category": "Danh mục", "image": "Hình ảnh", "pickImage": "Chọn ảnh",
+    "addNew": "Thêm từ mới", "editTitle": "Sửa từ", "deleteConfirm": "Xoá từ này?",
+    "searchPlaceholder": "Tìm từ..."
+  },
+  "category": {"title": "Quản lý danh mục", "name": "Tên danh mục", "color": "Màu"},
+  "favorites": {"title": "Từ yêu thích", "empty": "Chưa có từ yêu thích"},
+  "profiles": {
+    "title": "Hồ sơ trẻ", "name": "Tên", "avatar": "Ảnh đại diện",
+    "addNew": "Thêm hồ sơ", "active": "Đang dùng", "setActive": "Chọn hồ sơ này"
+  },
+  "stats": {
+    "title": "Thống kê", "mostUsed": "Từ dùng nhiều nhất",
+    "totalUsage": "Tổng lượt dùng", "byDay": "Theo ngày", "count": "lượt"
+  },
+  "settings": {
+    "title": "Cài đặt", "vocabulary": "Quản lý từ vựng", "vocabularyCategory": "Phân loại từ vựng",
+    "activity": "Quản lý hoạt động", "activityCategory": "Phân loại hoạt động", "logout": "Đăng xuất",
+    "profiles": "Hồ sơ trẻ", "stats": "Thống kê", "history": "Lịch sử sử dụng",
+    "voice": "Giọng đọc", "speech": "Tốc độ & cao độ", "themeLang": "Giao diện & ngôn ngữ",
+    "backup": "Sao lưu & khôi phục", "theme": "Giao diện", "language": "Ngôn ngữ",
+    "light": "Sáng", "dark": "Tối", "rate": "Tốc độ đọc", "pitch": "Cao độ"
+  },
+  "pin": {
+    "enter": "Nhập mã PIN", "setup": "Tạo mã PIN", "wrong": "PIN không đúng",
+    "tooManyAttempts": "Quá nhiều lần thử, vui lòng đợi"
+  },
+  "backup": {
+    "export": "Xuất dữ liệu", "import": "Khôi phục dữ liệu",
+    "exportSuccess": "Đã xuất dữ liệu", "importSuccess": "Đã khôi phục dữ liệu",
+    "importConfirm": "Khôi phục sẽ ghi đè dữ liệu hiện tại. Tiếp tục?"
+  },
+  "errors": {
+    "DATABASE": "Lỗi cơ sở dữ liệu", "TTS": "Không thể phát âm",
+    "VALIDATION": "Dữ liệu không hợp lệ", "NOT_FOUND": "Không tìm thấy",
+    "BACKUP": "Lỗi sao lưu", "UNKNOWN": "Đã xảy ra lỗi",
+    "noVoice": "Thiết bị chưa có giọng tiếng Việt. Hãy cài Google Text-to-Speech."
+  }
+}
