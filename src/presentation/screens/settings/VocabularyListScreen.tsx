@@ -35,8 +35,7 @@ export const VocabularyListScreen: React.FC<
   const data = vocabStore.vocabulary.filter(
     v =>
       q.length === 0 ||
-      v.nameVi.toLowerCase().includes(q) ||
-      (v.nameEn ?? '').toLowerCase().includes(q),
+      v.nameVi.toLowerCase().includes(q),
   );
 
 
@@ -56,7 +55,7 @@ export const VocabularyListScreen: React.FC<
         renderItem={({item}) => (
           <List.Item
             title={item.nameVi}
-            description={`${item.nameEn ?? ''}`}
+            description={item.speechTextVi ?? ''}
             left={() => <List.Icon icon="card-text-outline" />}
             right={() => (
               <View style={styles.actions}>

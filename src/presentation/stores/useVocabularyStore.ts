@@ -83,11 +83,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
     const {vocabulary, search} = get();
     const q = search.trim().toLowerCase();
     return vocabulary.filter(v => {
-      const matchSearch =
-        q.length === 0 ||
-        v.nameVi.toLowerCase().includes(q) ||
-        (v.nameEn ?? '').toLowerCase().includes(q);
-      return matchSearch;
+      return q.length === 0 || v.nameVi.toLowerCase().includes(q);
     });
   },
 

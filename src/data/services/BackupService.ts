@@ -45,7 +45,7 @@ export class BackupService implements IBackupService {
       settings[String(row.key)] = String(row.value);
     }
 
-    const payload: BackupPayload = {
+    const payload = {
       app: BACKUP_FORMAT.APP,
       version: BACKUP_FORMAT.VERSION,
       exportedAt: Date.now(),
@@ -100,16 +100,14 @@ export class BackupService implements IBackupService {
       for (const v of d.vocabulary as Array<Record<string, unknown>>) {
         await exec(
           `INSERT INTO vocabulary
-            (id, name_vi, name_en, image_path, speech_text_vi, speech_text_en,
+            (id, name_vi, image_path, speech_text_vi,
              is_default, sort_order, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
           [
             v.id,
             v.name_vi,
-            v.name_en ?? null,
             v.image_path ?? null,
             v.speech_text_vi ?? null,
-            v.speech_text_en ?? null,
             v.is_default,
             v.sort_order,
             v.created_at,
@@ -120,16 +118,14 @@ export class BackupService implements IBackupService {
       for (const a of (d.activities ?? []) as Array<Record<string, unknown>>) {
         await exec(
           `INSERT INTO activities
-            (id, name_vi, name_en, image_path, speech_text_vi, speech_text_en,
+            (id, name_vi, image_path, speech_text_vi,
              is_default, sort_order, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
           [
             a.id,
             a.name_vi,
-            a.name_en ?? null,
             a.image_path ?? null,
             a.speech_text_vi ?? null,
-            a.speech_text_en ?? null,
             a.is_default,
             a.sort_order,
             a.created_at,

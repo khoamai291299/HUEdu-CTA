@@ -8,13 +8,21 @@ import {StickFigure} from '@presentation/components/StickFigure';
 
 const TONES = [
   {id: 'tone0', color: '#FFFFFF', label: 'Trắng bạch'},
-  {id: 'tone1', color: '#FFDFC4', label: 'Rất sáng'},
-  {id: 'tone2', color: '#F0D5BE', label: 'Sáng'},
-  {id: 'tone3', color: '#D2996C', label: 'Trung bình sáng'},
-  {id: 'tone4', color: '#AB724B', label: 'Trung bình'},
-  {id: 'tone5', color: '#8D5524', label: 'Nâu nhạt'},
-  {id: 'tone6', color: '#7B4B2A', label: 'Ngăm'},
-  {id: 'tone7', color: '#4B3322', label: 'Tối'},
+  {id: 'tone1', color: '#FFF5EE', label: 'Trắng hồng'},
+  {id: 'tone2', color: '#FFDFC4', label: 'Rất sáng'},
+  {id: 'tone3', color: '#F7D5B8', label: 'Sáng ấm'},
+  {id: 'tone4', color: '#F0D5BE', label: 'Sáng'},
+  {id: 'tone5', color: '#E8C4A0', label: 'Sáng vàng'},
+  {id: 'tone6', color: '#DEB887', label: 'Lúa mì'},
+  {id: 'tone7', color: '#D2996C', label: 'Trung bình sáng'},
+  {id: 'tone8', color: '#C68642', label: 'Trung bình'},
+  {id: 'tone9', color: '#B87333', label: 'Đồng'},
+  {id: 'tone10', color: '#AB724B', label: 'Nâu sáng'},
+  {id: 'tone11', color: '#96613D', label: 'Nâu'},
+  {id: 'tone12', color: '#8D5524', label: 'Nâu nhạt'},
+  {id: 'tone13', color: '#7B4B2A', label: 'Ngăm'},
+  {id: 'tone14', color: '#5C3A1E', label: 'Tối'},
+  {id: 'tone15', color: '#4B3322', label: 'Rất tối'},
 ];
 
 export const SkinToneScreen: React.FC<OnboardingScreenProps<'SkinTone'>> = ({navigation}) => {
@@ -22,17 +30,15 @@ export const SkinToneScreen: React.FC<OnboardingScreenProps<'SkinTone'>> = ({nav
   const {skinTone, setSkinTone} = useOnboardingStore();
   const {width} = useWindowDimensions();
 
-  // Lấy màu da từ tông đã chọn, mặc định trắng nhạt
   const selectedColor = TONES.find(t => t.id === skinTone)?.color ?? '#FFDFC4';
   
-  // Tính toán kích thước card để có 4 cột, khoảng cách 12px
   const paddingHorizontal = 24;
-  const gap = 12;
+  const gap = 10;
   const columns = 4;
   const maxContainerWidth = 360;
   const actualWidth = Math.min(width, maxContainerWidth);
   const availableWidth = actualWidth - (paddingHorizontal * 2) - (gap * (columns - 1));
-  const cardSize = Math.min(Math.max(Math.floor(availableWidth / columns), 50), 70);
+  const cardSize = Math.min(Math.max(Math.floor(availableWidth / columns), 45), 60);
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: theme.colors.background}]} edges={['top', 'left', 'right']}>

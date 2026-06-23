@@ -31,18 +31,18 @@ export class SentenceBuilder {
     return [];
   }
 
-  /** Ghép thành chuỗi văn bản đọc theo ngôn ngữ. */
-  static buildText(words: Vocabulary[], lang: 'vi' | 'en'): string {
+  /** Ghép thành chuỗi văn bản đọc. */
+  static buildText(words: Vocabulary[]): string {
     return words
-      .map(w => w.speechText(lang))
+      .map(w => w.speechText())
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim();
   }
 
   /** Ghép thành chuỗi hiển thị (có hoa đầu câu cho dễ đọc). */
-  static buildLabel(words: Vocabulary[], lang: 'vi' | 'en'): string {
-    const text = words.map(w => w.label(lang)).join(' ').trim();
+  static buildLabel(words: Vocabulary[]): string {
+    const text = words.map(w => w.label()).join(' ').trim();
     if (text.length === 0) {
       return '';
     }

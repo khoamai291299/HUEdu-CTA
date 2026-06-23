@@ -6,16 +6,14 @@
 import i18n from 'i18next';
 import {initReactI18next} from 'react-i18next';
 import vi from './locales/vi.json';
-import en from './locales/en.json';
 
-export type AppLanguage = 'vi' | 'en';
+export type AppLanguage = 'vi';
 
 export const initI18n = (language: AppLanguage = 'vi'): typeof i18n => {
   if (!i18n.isInitialized) {
     i18n.use(initReactI18next).init({
       resources: {
         vi: {translation: vi},
-        en: {translation: en},
       },
       lng: language,
       fallbackLng: 'vi',

@@ -5,11 +5,10 @@
 import {SentenceBuilder} from '@domain/usecases/sentence/SentenceBuilder';
 import {Vocabulary} from '@domain/entities/Vocabulary';
 
-const makeWord = (id: number, nameVi: string, nameEn: string): Vocabulary =>
+const makeWord = (id: number, nameVi: string): Vocabulary =>
   new Vocabulary({
     id,
     nameVi,
-    nameEn,
     isDefault: true,
     sortOrder: id,
     createdAt: 0,
@@ -17,9 +16,9 @@ const makeWord = (id: number, nameVi: string, nameEn: string): Vocabulary =>
   });
 
 describe('SentenceBuilder', () => {
-  const con = makeWord(1, 'Con', 'I');
-  const muon = makeWord(2, 'muốn', 'want');
-  const nuoc = makeWord(3, 'nước', 'water');
+  const con = makeWord(1, 'Con');
+  const muon = makeWord(2, 'muốn');
+  const nuoc = makeWord(3, 'nước');
 
   it('addWord trả về mảng mới, không sửa mảng cũ (bất biến)', () => {
     const start: Vocabulary[] = [];
@@ -30,12 +29,7 @@ describe('SentenceBuilder', () => {
 
   it('buildText ghép văn bản tiếng Việt đúng thứ tự', () => {
     const words = [con, muon, nuoc];
-    expect(SentenceBuilder.buildText(words, 'vi')).toBe('Con muốn nước');
-  });
-
-  it('buildText hỗ trợ tiếng Anh', () => {
-    const words = [con, muon, nuoc];
-    expect(SentenceBuilder.buildText(words, 'en')).toBe('I want water');
+    expect(SentenceBuilder.buildText(words)).toBe('Con muốn nước');
   });
 
   it('removeAt và removeLast hoạt động đúng', () => {
@@ -47,9 +41,9 @@ describe('SentenceBuilder', () => {
 
   it('clear trả về mảng rỗng & buildLabel viết hoa đầu câu', () => {
     expect(SentenceBuilder.clear()).toEqual([]);
-    expect(SentenceBuilder.buildLabel([con, muon, nuoc], 'vi')).toBe(
+    expect(SentenceBuilder.buildLabel([con, muon, nuoc])).toBe(
       'Con muốn nước',
     );
-    expect(SentenceBuilder.buildLabel([], 'vi')).toBe('');
+    expect(SentenceBuilder.buildLabel([])).toBe('');
   });
 });

@@ -64,11 +64,7 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
     const {activities, search} = get();
     const q = search.trim().toLowerCase();
     return activities.filter(v => {
-      const matchSearch =
-        q.length === 0 ||
-        v.nameVi.toLowerCase().includes(q) ||
-        (v.nameEn ?? '').toLowerCase().includes(q);
-      return matchSearch;
+      return q.length === 0 || v.nameVi.toLowerCase().includes(q);
     });
   },
 

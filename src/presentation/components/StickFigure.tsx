@@ -21,7 +21,7 @@ export const StickFigure: React.FC<StickFigureProps> = ({faceColor, pose = 'stan
         <G>
           <Line x1="60" y1="85" x2="35" y2="110" stroke="#000" strokeWidth="4.5" strokeLinecap="round" />
           {/* Bent arm similar to the image */}
-          <Path d="M 60 85 L 85 110 L 95 95" stroke="#000" strokeWidth="4.5" fill="none" strokeLinecap="round" strokeJoin="round" />
+          <Path d="M 60 85 L 85 110 L 95 95" stroke="#000" strokeWidth="4.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
         </G>
       ) : (
         <G>

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Modal, View, StyleSheet, FlatList, Image, TouchableOpacity} from 'react-native';
-import {Searchbar, Button, Text, ActivityIndicator, Appbar, useTheme} from 'react-native-paper';
+import {Searchbar, Text, ActivityIndicator, Appbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 
 interface Props {

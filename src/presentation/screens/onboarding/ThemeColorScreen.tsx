@@ -4,7 +4,6 @@ import {Text, Button, useTheme} from 'react-native-paper';
 import {OnboardingScreenProps} from '@presentation/navigation/types';
 import {useOnboardingStore} from '@presentation/stores/useOnboardingStore';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {getTheme, AppThemeName} from '@core/theme';
 
 const THEMES = [
   {id: 'light', color: '#FFFFFF'},
@@ -18,6 +17,11 @@ const THEMES = [
   {id: 'lemon', color: '#FCF3CF'},
   {id: 'rose', color: '#F5B7B1'},
   {id: 'sand', color: '#EDBB99'},
+  {id: 'coral', color: '#F8C4B4'},
+  {id: 'lilac', color: '#D7BDE2'},
+  {id: 'aqua', color: '#A3E4D7'},
+  {id: 'cream', color: '#FAE5D3'},
+  {id: 'silver', color: '#D5D8DC'},
 ];
 
 export const ThemeColorScreen: React.FC<OnboardingScreenProps<'ThemeColor'>> = ({navigation}) => {

@@ -15,7 +15,6 @@ import {ArasaacImage} from './ArasaacImage';
 interface Props {
   vocabulary: Vocabulary;
   size: number;
-  lang: 'vi' | 'en';
   accentColor?: string;
   isFavorite?: boolean;
   isDirectPlay?: boolean;
@@ -26,7 +25,6 @@ interface Props {
 const IconTileComponent: React.FC<Props> = ({
   vocabulary,
   size,
-  lang,
   accentColor,
   isFavorite,
   isDirectPlay,
@@ -34,12 +32,11 @@ const IconTileComponent: React.FC<Props> = ({
   onToggleFavorite,
 }) => {
   const theme = useTheme();
-  const bg = accentColor ?? theme.colors.secondary;
-  const label = vocabulary.label(lang);
+  const bg = accentColor ?? theme.colors.secondaryContainer;
+  const label = vocabulary.label();
   
   // Increase image size to fill more space (max 70%)
-  const imageSize = Math.max(size * 0.65, 48);
-  const fontSize = Math.min(Math.max(size * 0.14, 14), 22);
+  const imageSize = Math.max(size * 0.7, 48);
 
   return (
     <Pressable
@@ -51,7 +48,7 @@ const IconTileComponent: React.FC<Props> = ({
         styles.tile,
         {
           width: size,
-          minHeight: size, // Allow text to expand downward
+          minHeight: size,
           minWidth: TouchTarget.MIN,
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.outlineVariant,
@@ -86,18 +83,11 @@ const IconTileComponent: React.FC<Props> = ({
       </View>
 
       <Text
+        variant="titleMedium"
         numberOfLines={2}
         adjustsFontSizeToFit={true}
         minimumFontScale={0.8}
-        style={[
-          styles.label, 
-          {
-            fontSize, 
-            lineHeight: fontSize * 1.3, 
-            letterSpacing: 0.25, 
-            fontWeight: '600'
-          }
-        ]}
+        style={styles.label}
         ellipsizeMode="tail">
         {label}
       </Text>
@@ -109,7 +99,7 @@ const styles = StyleSheet.create({
   tile: {
     borderRadius: 16,
     borderWidth: 1,
-    padding: 8,
+    padding: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -117,12 +107,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 6,
+    marginBottom: 4,
     marginTop: 0,
   },
-  label: {textAlign: 'center', marginTop: 2, color: '#3A3A3A'},
+  letter: {fontWeight: '700', color: '#3A3A3A'},
+  label: {textAlign: 'center', marginTop: 2, lineHeight: 16},
   favBtn: {position: 'absolute', top: 0, right: 0, zIndex: 2, padding: 8},
-  directPlayIcon: {position: 'absolute', top: 8, left: 8, zIndex: 2, opacity: 0.6},
+  directPlayIcon: {position: 'absolute', top: 6, left: 6, zIndex: 2, opacity: 0.6},
 });
 
 export const IconTile = React.memo(IconTileComponent);

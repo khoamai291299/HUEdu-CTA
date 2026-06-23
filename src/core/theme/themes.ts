@@ -6,7 +6,7 @@
  */
 import {MD3DarkTheme, MD3LightTheme, MD3Theme} from 'react-native-paper';
 
-export type AppThemeName = 'light' | 'dark' | 'forest' | 'ocean' | 'pale' | 'pink' | 'green' | 'lavender' | 'peach' | 'mint' | 'sky' | 'lemon' | 'rose' | 'sand';
+export type AppThemeName = 'light' | 'dark' | 'forest' | 'ocean' | 'pale' | 'pink' | 'green' | 'lavender' | 'peach' | 'mint' | 'sky' | 'lemon' | 'rose' | 'sand' | 'coral' | 'lilac' | 'aqua' | 'cream' | 'silver';
 
 const softColors = {
   primary: '#5B8DEF',
@@ -253,6 +253,91 @@ export const sandTheme: MD3Theme = {
   },
 };
 
+export const coralTheme: MD3Theme = {
+  ...MD3LightTheme,
+  roundness: 8,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#E59866',
+    secondary: '#F8C4B4',
+    background: '#F8C4B4',
+    surface: '#FFFFFF',
+    surfaceVariant: '#FDEDEC',
+    primaryContainer: '#F8C4B4',
+    secondaryContainer: '#F8C4B4',
+    onSurface: '#6E2C00',
+    outline: '#F8C4B4',
+  },
+};
+
+export const lilacTheme: MD3Theme = {
+  ...MD3LightTheme,
+  roundness: 8,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#AF7AC5',
+    secondary: '#D7BDE2',
+    background: '#D7BDE2',
+    surface: '#FFFFFF',
+    surfaceVariant: '#F4ECF7',
+    primaryContainer: '#D7BDE2',
+    secondaryContainer: '#D7BDE2',
+    onSurface: '#512E5F',
+    outline: '#D7BDE2',
+  },
+};
+
+export const aquaTheme: MD3Theme = {
+  ...MD3LightTheme,
+  roundness: 8,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#48C9B0',
+    secondary: '#A3E4D7',
+    background: '#A3E4D7',
+    surface: '#FFFFFF',
+    surfaceVariant: '#E8F8F5',
+    primaryContainer: '#A3E4D7',
+    secondaryContainer: '#A3E4D7',
+    onSurface: '#117864',
+    outline: '#A3E4D7',
+  },
+};
+
+export const creamTheme: MD3Theme = {
+  ...MD3LightTheme,
+  roundness: 8,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#F5B041',
+    secondary: '#FAE5D3',
+    background: '#FAE5D3',
+    surface: '#FFFFFF',
+    surfaceVariant: '#FEF9E7',
+    primaryContainer: '#FAE5D3',
+    secondaryContainer: '#FAE5D3',
+    onSurface: '#7E5109',
+    outline: '#FAE5D3',
+  },
+};
+
+export const silverTheme: MD3Theme = {
+  ...MD3LightTheme,
+  roundness: 8,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#85929E',
+    secondary: '#D5D8DC',
+    background: '#D5D8DC',
+    surface: '#FFFFFF',
+    surfaceVariant: '#EAECEE',
+    primaryContainer: '#D5D8DC',
+    secondaryContainer: '#D5D8DC',
+    onSurface: '#283747',
+    outline: '#D5D8DC',
+  },
+};
+
 export const getTheme = (name: AppThemeName): MD3Theme => {
   switch (name) {
     case 'dark':
@@ -281,6 +366,16 @@ export const getTheme = (name: AppThemeName): MD3Theme => {
       return roseTheme;
     case 'sand':
       return sandTheme;
+    case 'coral':
+      return coralTheme;
+    case 'lilac':
+      return lilacTheme;
+    case 'aqua':
+      return aquaTheme;
+    case 'cream':
+      return creamTheme;
+    case 'silver':
+      return silverTheme;
     case 'light':
     default:
       return lightTheme;

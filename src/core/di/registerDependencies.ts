@@ -21,7 +21,7 @@ import {FavoriteRepositoryImpl} from '@data/repositories/FavoriteRepositoryImpl'
 import {UsageHistoryRepositoryImpl} from '@data/repositories/UsageHistoryRepositoryImpl';
 import {SettingsRepositoryImpl} from '@data/repositories/SettingsRepositoryImpl';
 
-import {LocalTtsService} from '@data/services/LocalTtsService';
+import {VbeeTtsService} from '@data/services/VbeeTtsService';
 import {BackupService} from '@data/services/BackupService';
 
 /**
@@ -73,9 +73,9 @@ export const registerDependencies = (
     c => new SettingsRepositoryImpl(db(c)),
   );
 
-  // TTS: dùng LocalTtsService (react-native-tts). Để thay bằng MockTtsService
-  // khi gặp sự cố R2, chỉ cần đổi dòng dưới thành: () => new MockTtsService().
-  container.registerSingleton(TOKENS.TtsService, () => new LocalTtsService());
+  // TTS: dùng VbeeTtsService (Vbee API + fallback LocalTtsService).
+  // Nếu chưa có API key Vbee, tự động dùng giọng đọc trên máy.
+  container.registerSingleton(TOKENS.TtsService, () => new VbeeTtsService());
 
   container.registerSingleton(
     TOKENS.BackupService,

@@ -2,7 +2,7 @@
  * src/domain/services/ITtsService.ts
  * Mục đích: Hợp đồng Text-To-Speech. UI/domain chỉ phụ thuộc interface này,
  *           KHÔNG gọi trực tiếp react-native-tts (đáp ứng FR-03 & rủi ro R2).
- * OOP: cho phép đa hình (LocalTtsService / MockTtsService).
+ * OOP: cho phép đa hình (LocalTtsService / VbeeTtsService / MockTtsService).
  * Dependency: không.
  */
 export interface TtsVoice {
@@ -11,7 +11,7 @@ export interface TtsVoice {
   language: string;
 }
 
-export type SpeakLanguage = 'vi-VN' | 'en-US';
+export type SpeakLanguage = 'vi-VN';
 
 export interface ITtsService {
   init(): Promise<void>;

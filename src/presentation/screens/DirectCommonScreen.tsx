@@ -32,7 +32,7 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
     return commonIds.map(id => actMap.get(id)).filter(Boolean) as Vocabulary[];
   }, [activities, commonIds]);
   const loadCommon = useActivityStore(s => s.loadCommon);
-  const language = useSettingsStore(s => s.settings.language);
+
   const {speakWord} = useTts();
 
   useFocusEffect(
@@ -70,7 +70,6 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
           <IconTile
             vocabulary={item}
             size={tileSize}
-            lang={language}
             isDirectPlay={true}
             onPress={onTilePress}
           />

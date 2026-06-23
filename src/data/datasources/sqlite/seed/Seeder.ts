@@ -28,7 +28,7 @@ export class Seeder {
     const ts = Date.now();
     await this.db.transaction(async exec => {
 
-      // 1) Vocabulary/Activities (no category_id — tables rebuilt by migration 006)
+      // 1) Vocabulary/Activities (Vietnamese only)
       for (const v of SEED_VOCABULARY) {
         const table = v.type === 'activity' ? 'activities' : 'vocabulary';
         await exec(
@@ -36,7 +36,7 @@ export class Seeder {
             (name_vi, name_en, image_path, speech_text_vi, speech_text_en,
              is_default, sort_order, created_at, updated_at)
            VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?);`,
-          [v.nameVi, v.nameEn, v.imagePath || null, v.speechTextVi || null, v.speechTextEn || null, v.sortOrder, ts, ts],
+          [v.nameVi, null, v.imagePath || null, v.speechTextVi || null, null, v.sortOrder, ts, ts],
         );
       }
 

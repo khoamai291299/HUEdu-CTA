@@ -12,7 +12,6 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
 
 import {SettingsScreenProps} from '@presentation/navigation/types';
-import {translateText} from '@core/utils/translate';
 import {ICON_NAMES, LucideIcon} from '@presentation/components/LucideIcon';
 
 interface FormValues {
@@ -30,7 +29,6 @@ export const VocabularyEditScreen: React.FC<
 
   const vocabStore = useVocabularyStore();
 
-  const [isTranslating, setIsTranslating] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const existing = vocabStore.vocabulary.find(v => v.id === editingId);
@@ -68,23 +66,9 @@ export const VocabularyEditScreen: React.FC<
       return;
     }
 
-    setIsTranslating(true);
-    let nameEn = '';
-    
-    try {
-      nameEn = await translateText(trimmedNameVi, 'vi', 'en');
-    } catch (err) {
-      // Bỏ qua lỗi dịch, fallback về tên tiếng Việt nếu cần
-    }
-    
-    setIsTranslating(false);
-
     const payload = {
       nameVi: trimmedNameVi,
-      nameEn: nameEn || trimmedNameVi,
       speechTextVi: null,
-      speechTextEn: null,
-
       imagePath: values.imagePath,
     };
     if (editingId) {
@@ -161,10 +145,9 @@ export const VocabularyEditScreen: React.FC<
 
       <Button
         mode="contained"
-        disabled={isTranslating}
         onPress={handleSubmit(onSubmit)}
         style={styles.save}>
-        {isTranslating ? 'Đang lưu & Dịch...' : t('common.save')}
+        {t('common.save')}
       </Button>
     </ScrollView>
   );

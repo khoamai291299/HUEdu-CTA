@@ -45,14 +45,13 @@ const Stepper: React.FC<{
 export const SpeechSettingsScreen: React.FC = () => {
   const {t} = useTranslation();
   const speech = useSettingsStore(s => s.settings.speech);
-  const language = useSettingsStore(s => s.settings.language);
   const setRate = useSettingsStore(s => s.setSpeechRate);
   const setPitch = useSettingsStore(s => s.setSpeechPitch);
 
   const test = () =>
     getTts().speak(
-      language === 'en' ? 'Hello, this is a test' : 'Xin chào, đây là giọng thử',
-      language === 'en' ? 'en-US' : 'vi-VN',
+      'Xin chào, đây là giọng thử',
+      'vi-VN',
     );
 
   return (

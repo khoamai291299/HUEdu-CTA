@@ -8,10 +8,8 @@ import { ScrollView } from 'react-native';
 import { Divider, List } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import {
-  BookA,
   Clock,
   Database,
-
   Palette,
   Settings2,
   Sliders,

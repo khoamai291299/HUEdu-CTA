@@ -18,7 +18,7 @@
 						8,
 						9
 					],
-					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -32,7 +32,7 @@
 				},
 				{
 					"build" : "rnasyncstorage_autolinked_build",
-					"jsonFile" : "directory-rnasyncstorage_autolinked_build-Debug-8afa8bf6d5ef28b6e2af.json",
+					"jsonFile" : "directory-rnasyncstorage_autolinked_build-RelWithDebInfo-8afa8bf6d5ef28b6e2af.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -47,7 +47,7 @@
 				},
 				{
 					"build" : "rngesturehandler_codegen_autolinked_build",
-					"jsonFile" : "directory-rngesturehandler_codegen_autolinked_build-Debug-1e2bd6d95d9bc13801e6.json",
+					"jsonFile" : "directory-rngesturehandler_codegen_autolinked_build-RelWithDebInfo-1e2bd6d95d9bc13801e6.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -62,7 +62,7 @@
 				},
 				{
 					"build" : "RNImagePickerSpec_autolinked_build",
-					"jsonFile" : "directory-RNImagePickerSpec_autolinked_build-Debug-1ec0948bf11da8768d5b.json",
+					"jsonFile" : "directory-RNImagePickerSpec_autolinked_build-RelWithDebInfo-1ec0948bf11da8768d5b.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -77,7 +77,7 @@
 				},
 				{
 					"build" : "rnreanimated_autolinked_build",
-					"jsonFile" : "directory-rnreanimated_autolinked_build-Debug-016beb67843f3c45652d.json",
+					"jsonFile" : "directory-rnreanimated_autolinked_build-RelWithDebInfo-016beb67843f3c45652d.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -92,7 +92,7 @@
 				},
 				{
 					"build" : "safeareacontext_autolinked_build",
-					"jsonFile" : "directory-safeareacontext_autolinked_build-Debug-083302b4aa69312faa9a.json",
+					"jsonFile" : "directory-safeareacontext_autolinked_build-RelWithDebInfo-083302b4aa69312faa9a.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -107,7 +107,7 @@
 				},
 				{
 					"build" : "rnscreens_autolinked_build",
-					"jsonFile" : "directory-rnscreens_autolinked_build-Debug-a8614602116e62c1320a.json",
+					"jsonFile" : "directory-rnscreens_autolinked_build-RelWithDebInfo-a8614602116e62c1320a.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -122,7 +122,7 @@
 				},
 				{
 					"build" : "rnsvg_autolinked_build",
-					"jsonFile" : "directory-rnsvg_autolinked_build-Debug-5433fc03d397a2b62e3d.json",
+					"jsonFile" : "directory-rnsvg_autolinked_build-RelWithDebInfo-5433fc03d397a2b62e3d.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -137,7 +137,7 @@
 				},
 				{
 					"build" : "RNVectorIconsSpec_autolinked_build",
-					"jsonFile" : "directory-RNVectorIconsSpec_autolinked_build-Debug-21aaf05944ba50a2965c.json",
+					"jsonFile" : "directory-RNVectorIconsSpec_autolinked_build-RelWithDebInfo-21aaf05944ba50a2965c.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -152,7 +152,7 @@
 				},
 				{
 					"build" : "rnworklets_autolinked_build",
-					"jsonFile" : "directory-rnworklets_autolinked_build-Debug-458c57ff49199b7053cb.json",
+					"jsonFile" : "directory-rnworklets_autolinked_build-RelWithDebInfo-458c57ff49199b7053cb.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.13"
@@ -166,7 +166,7 @@
 					]
 				}
 			],
-			"name" : "Debug",
+			"name" : "RelWithDebInfo",
 			"projects" : 
 			[
 				{
@@ -204,70 +204,70 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-Debug-a765314fb490dbfdac09.json",
+					"jsonFile" : "target-appmodules-RelWithDebInfo-80f1d7cf2994af13d326.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 3,
 					"id" : "react_codegen_RNImagePickerSpec::@f66ee9a2efecfb28bee4",
-					"jsonFile" : "target-react_codegen_RNImagePickerSpec-Debug-daa8799d1ae6b110b58b.json",
+					"jsonFile" : "target-react_codegen_RNImagePickerSpec-RelWithDebInfo-6c306a157c8dd21fa0dd.json",
 					"name" : "react_codegen_RNImagePickerSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 8,
 					"id" : "react_codegen_RNVectorIconsSpec::@479809fae146501fd34d",
-					"jsonFile" : "target-react_codegen_RNVectorIconsSpec-Debug-78d0a159e6f45b491dcc.json",
+					"jsonFile" : "target-react_codegen_RNVectorIconsSpec-RelWithDebInfo-8970820006c5a502b724.json",
 					"name" : "react_codegen_RNVectorIconsSpec",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe",
-					"jsonFile" : "target-react_codegen_rnasyncstorage-Debug-89f90f60060e31d3299a.json",
+					"jsonFile" : "target-react_codegen_rnasyncstorage-RelWithDebInfo-ff5f013b4d05d930ea75.json",
 					"name" : "react_codegen_rnasyncstorage",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec",
-					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-1c01d44dba13b6d9d982.json",
+					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-RelWithDebInfo-27cea21ef22b98c34aa5.json",
 					"name" : "react_codegen_rngesturehandler_codegen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a",
-					"jsonFile" : "target-react_codegen_rnreanimated-Debug-340d92b3b80861586012.json",
+					"jsonFile" : "target-react_codegen_rnreanimated-RelWithDebInfo-1fd9331e2cd1f6be28f9.json",
 					"name" : "react_codegen_rnreanimated",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 6,
 					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
-					"jsonFile" : "target-react_codegen_rnscreens-Debug-83370f7fce2e06310515.json",
+					"jsonFile" : "target-react_codegen_rnscreens-RelWithDebInfo-516e52555bc9be84b391.json",
 					"name" : "react_codegen_rnscreens",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 7,
 					"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65",
-					"jsonFile" : "target-react_codegen_rnsvg-Debug-9fd97e50eb6ae2e9ae5c.json",
+					"jsonFile" : "target-react_codegen_rnsvg-RelWithDebInfo-e5a38e6a8f6c67d6959b.json",
 					"name" : "react_codegen_rnsvg",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 9,
 					"id" : "react_codegen_rnworklets::@68f58d84d4754f193387",
-					"jsonFile" : "target-react_codegen_rnworklets-Debug-181a86085bc5c83b8659.json",
+					"jsonFile" : "target-react_codegen_rnworklets-RelWithDebInfo-f66b444e01dfd5f3bb94.json",
 					"name" : "react_codegen_rnworklets",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 5,
 					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
-					"jsonFile" : "target-react_codegen_safeareacontext-Debug-bb176ee927cff6ae6e12.json",
+					"jsonFile" : "target-react_codegen_safeareacontext-RelWithDebInfo-30fd6a1eaaf6bf90ff3c.json",
 					"name" : "react_codegen_safeareacontext",
 					"projectIndex" : 0
 				}
@@ -277,7 +277,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/HUEdu-CTA/android/app/.cxx/Debug/1t403c24/x86_64",
+		"build" : "C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/x86_64",
 		"source" : "C:/HUEdu-CTA/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
 	},
 	"version" : 

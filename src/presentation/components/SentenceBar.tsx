@@ -12,7 +12,6 @@ import {Vocabulary} from '@domain/entities/Vocabulary';
 
 interface Props {
   words: Vocabulary[];
-  lang: 'vi' | 'en';
   onSpeak: () => void;
   onRemoveLast: () => void;
   onClear: () => void;
@@ -21,7 +20,6 @@ interface Props {
 
 export const SentenceBar: React.FC<Props> = ({
   words,
-  lang,
   onSpeak,
   onRemoveLast,
   onClear,
@@ -48,7 +46,7 @@ export const SentenceBar: React.FC<Props> = ({
                 styles.chip,
                 {backgroundColor: theme.colors.secondaryContainer},
               ]}>
-              <Text variant="titleMedium">{w.label(lang)}</Text>
+              <Text variant="titleMedium">{w.label()}</Text>
             </Pressable>
           ))
         )}

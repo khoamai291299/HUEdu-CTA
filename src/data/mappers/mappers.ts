@@ -41,10 +41,8 @@ export const toVocabulary = (r: VocabularyRow): Vocabulary =>
   new Vocabulary({
     id: r.id,
     nameVi: r.name_vi,
-    nameEn: r.name_en,
     imagePath: r.image_path,
     speechTextVi: r.speech_text_vi,
-    speechTextEn: r.speech_text_en,
     isDefault: r.is_default === 1,
     sortOrder: r.sort_order,
     createdAt: r.created_at,
@@ -55,10 +53,8 @@ export const toActivity = (r: ActivityRow): Activity =>
   new Activity({
     id: r.id,
     nameVi: r.name_vi,
-    nameEn: r.name_en,
     imagePath: r.image_path,
     speechTextVi: r.speech_text_vi,
-    speechTextEn: r.speech_text_en,
     isDefault: r.is_default === 1,
     sortOrder: r.sort_order,
     createdAt: r.created_at,

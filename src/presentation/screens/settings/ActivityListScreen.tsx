@@ -32,8 +32,7 @@ export const ActivityListScreen: React.FC<
   const data = activityStore.activities.filter(
     v =>
       q.length === 0 ||
-      v.nameVi.toLowerCase().includes(q) ||
-      (v.nameEn ?? '').toLowerCase().includes(q),
+      v.nameVi.toLowerCase().includes(q),
   );
 
 
@@ -53,7 +52,7 @@ export const ActivityListScreen: React.FC<
         renderItem={({item}) => (
           <List.Item
             title={item.nameVi}
-            description={`${item.nameEn ?? ''}`}
+            description={item.speechTextVi ?? ''}
             left={() => <List.Icon icon="card-text-outline" />}
             right={() => (
               <View style={styles.actions}>

@@ -8,11 +8,11 @@ describe('MockTtsService (ITtsService)', () => {
   it('speak ghi lại văn bản & ngôn ngữ', async () => {
     const tts = new MockTtsService();
     await tts.speak('Xin chào', 'vi-VN');
-    await tts.speak('Hello', 'en-US');
+    await tts.speak('Hello', 'vi-VN');
 
     expect(tts.spokenTexts).toEqual([
       {text: 'Xin chào', language: 'vi-VN'},
-      {text: 'Hello', language: 'en-US'},
+      {text: 'Hello', language: 'vi-VN'},
     ]);
   });
 

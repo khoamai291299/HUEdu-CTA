@@ -6,7 +6,7 @@ import React, {useState, useMemo} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
-import {Settings as SettingsIcon, Search as SearchIcon, UserRound} from 'lucide-react-native';
+import {Settings as SettingsIcon, Search as SearchIcon} from 'lucide-react-native';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useTts} from '@presentation/hooks/useTts';
@@ -30,7 +30,6 @@ export const DirectCommunicationBoardScreen: React.FC<
   const activities = useActivityStore(s => s.activities);
   const activeChildId = useSettingsStore(s => s.settings.activeChildId);
   const child = useChildStore(s => s.children.find(c => c.id === activeChildId));
-  const language = useSettingsStore(s => s.settings.language);
   const {speakWord} = useTts();
 
   const [showSearch, setShowSearch] = useState(false);
@@ -38,24 +37,30 @@ export const DirectCommunicationBoardScreen: React.FC<
   const data = useMemo(() => {
     const q = search.trim().toLowerCase();
     return activities.filter(v => {
-      const matchSearch =
-        q.length === 0 ||
-        v.nameVi.toLowerCase().includes(q) ||
-        (v.nameEn ?? '').toLowerCase().includes(q);
-      return matchSearch;
+      return q.length === 0 || v.nameVi.toLowerCase().includes(q);
     });
   }, [activities, search]);
 
   const TONE_COLORS: Record<string, string> = {
-    tone1: '#FFDFC4',
-    tone2: '#F0D5BE',
-    tone3: '#D2996C',
-    tone4: '#AB724B',
-    tone5: '#7B4B2A',
-    tone6: '#4B3322',
+    tone0: '#FFFFFF',
+    tone1: '#FFF5EE',
+    tone2: '#FFDFC4',
+    tone3: '#F7D5B8',
+    tone4: '#F0D5BE',
+    tone5: '#E8C4A0',
+    tone6: '#DEB887',
+    tone7: '#D2996C',
+    tone8: '#C68642',
+    tone9: '#B87333',
+    tone10: '#AB724B',
+    tone11: '#96613D',
+    tone12: '#8D5524',
+    tone13: '#7B4B2A',
+    tone14: '#5C3A1E',
+    tone15: '#4B3322',
   };
-  const skinToneId = child?.skinTone || 'tone1';
-  const skinColor = TONE_COLORS[skinToneId] || TONE_COLORS.tone1;
+  const skinToneId = child?.skinTone || 'tone2';
+  const skinColor = TONE_COLORS[skinToneId] || TONE_COLORS.tone2;
 
   const onTilePress = (v: Vocabulary) => {
     speakWord(v);
@@ -98,7 +103,6 @@ export const DirectCommunicationBoardScreen: React.FC<
           <IconTile
             vocabulary={item}
             size={tileSize}
-            lang={language}
             isDirectPlay={true}
             onPress={onTilePress}
           />

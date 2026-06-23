@@ -11,9 +11,10 @@ export interface BackupPayload {
     children: unknown[];
     categories: unknown[];
     vocabulary: unknown[];
+    activities?: unknown[];
     favorites: unknown[];
     usageHistory: unknown[];
-    settings: Record<string, string>;
+    settings?: Record<string, string>;
   };
 }
 

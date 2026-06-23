@@ -1,6 +1,6 @@
 /**
  * src/presentation/hooks/useTts.ts
- * Mục đích: Hook phát âm - bọc SpeakWord/SpeakSentence use case, tự lấy ngôn ngữ &
+ * Mục đích: Hook phát âm - bọc SpeakWord/SpeakSentence use case, tự lấy
  *           hồ sơ đang dùng từ settings store (FR-01,02,03,07).
  * Dependency: services DI, Speak use cases, useSettingsStore, Vocabulary.
  */
@@ -21,14 +21,13 @@ export const useTts = () => {
         await new SpeakWordUseCase(getTts(), getUsageRepo()).execute({
           vocabulary: word,
           childId: settings.activeChildId,
-          lang: settings.language,
           recordUsage,
         });
       } catch (e) {
         logger.warn('[useTts] speakWord failed', e);
       }
     },
-    [settings.activeChildId, settings.language],
+    [settings.activeChildId],
   );
 
   const speakSentence = useCallback(
@@ -37,13 +36,12 @@ export const useTts = () => {
         await new SpeakSentenceUseCase(getTts(), getUsageRepo()).execute({
           words,
           childId: settings.activeChildId,
-          lang: settings.language,
         });
       } catch (e) {
         logger.warn('[useTts] speakSentence failed', e);
       }
     },
-    [settings.activeChildId, settings.language],
+    [settings.activeChildId],
   );
 
   const stop = useCallback(async () => {

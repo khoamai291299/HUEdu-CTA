@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import {StyleSheet, View, ScrollView, TouchableOpacity} from 'react-native';
-import {SegmentedButtons, Text, useTheme} from 'react-native-paper';
+import {Text, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 
@@ -21,15 +21,18 @@ const THEMES = [
   {id: 'lemon', color: '#FCF3CF'},
   {id: 'rose', color: '#F5B7B1'},
   {id: 'sand', color: '#EDBB99'},
+  {id: 'coral', color: '#F8C4B4'},
+  {id: 'lilac', color: '#D7BDE2'},
+  {id: 'aqua', color: '#A3E4D7'},
+  {id: 'cream', color: '#FAE5D3'},
+  {id: 'silver', color: '#D5D8DC'},
 ];
 
 export const ThemeLanguageScreen: React.FC = () => {
   const {t} = useTranslation();
   const themeColors = useTheme();
   const theme = useSettingsStore(s => s.settings.theme);
-  const language = useSettingsStore(s => s.settings.language);
   const setTheme = useSettingsStore(s => s.setTheme);
-  const setLanguage = useSettingsStore(s => s.setLanguage);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -50,17 +53,7 @@ export const ThemeLanguageScreen: React.FC = () => {
         ))}
       </View>
 
-      <Text variant="titleMedium" style={styles.label}>
-        {t('settings.language')}
-      </Text>
-      <SegmentedButtons
-        value={language}
-        onValueChange={v => setLanguage(v as 'vi' | 'en')}
-        buttons={[
-          {value: 'vi', label: 'Tiếng Việt'},
-          {value: 'en', label: 'English'},
-        ]}
-      />
+
     </ScrollView>
   );
 };

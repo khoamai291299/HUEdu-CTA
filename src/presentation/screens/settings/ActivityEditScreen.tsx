@@ -5,7 +5,7 @@
  * Dependency: react-hook-form, react-native-image-picker, i18n.
  */
 import React, {useState} from 'react';
-import {Image, Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import {Image, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, HelperText, Text, TextInput, useTheme} from 'react-native-paper';
 import {Controller, useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
@@ -13,7 +13,6 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
 
 import {SettingsScreenProps} from '@presentation/navigation/types';
-import {translateText} from '@core/utils/translate';
 import {ArasaacImage} from '@presentation/components/ArasaacImage';
 import {ArasaacPickerModal} from '@presentation/components/ArasaacPickerModal';
 
@@ -33,7 +32,6 @@ export const ActivityEditScreen: React.FC<
 
   const activityStore = useActivityStore();
 
-  const [isTranslating, setIsTranslating] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const existing = activityStore.activities.find(v => v.id === editingId);
@@ -72,29 +70,9 @@ export const ActivityEditScreen: React.FC<
       return;
     }
 
-    setIsTranslating(true);
-    let speechEn = '';
-    let nameEn = '';
-    
-    const sourceForSpeech = values.speechTextVi.trim() || trimmedNameVi;
-
-    try {
-      nameEn = await translateText(trimmedNameVi, 'vi', 'en');
-      if (sourceForSpeech) {
-        speechEn = await translateText(sourceForSpeech, 'vi', 'en');
-      }
-    } catch (err) {
-      // Bỏ qua lỗi dịch
-    }
-    
-    setIsTranslating(false);
-
     const payload = {
       nameVi: trimmedNameVi,
-      nameEn: nameEn || trimmedNameVi,
       speechTextVi: values.speechTextVi.trim() || null,
-      speechTextEn: speechEn || null,
-
       imagePath: values.imagePath,
     };
     if (editingId) {
@@ -167,10 +145,9 @@ export const ActivityEditScreen: React.FC<
 
       <Button
         mode="contained"
-        disabled={isTranslating}
         onPress={handleSubmit(onSubmit)}
         style={styles.save}>
-        {isTranslating ? t('activity.saving') : t('common.save')}
+        {t('common.save')}
       </Button>
 
       <ArasaacPickerModal
