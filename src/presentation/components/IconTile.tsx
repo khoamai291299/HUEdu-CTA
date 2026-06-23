@@ -50,8 +50,9 @@ const IconTileComponent: React.FC<Props> = ({
           width: size,
           minHeight: size,
           minWidth: TouchTarget.MIN,
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.outlineVariant,
+          backgroundColor: theme.colors.primaryContainer,
+          borderColor: theme.colors.primary,
+          borderWidth: 1.5,
         },
       ]}>
       {onToggleFavorite ? (

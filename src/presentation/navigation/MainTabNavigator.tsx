@@ -27,7 +27,7 @@ export const MainTabNavigator: React.FC<RootScreenProps<'Main'>> = () => {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.outline,
+        tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
         tabBarStyle: {
           backgroundColor: theme.colors.background,
           borderTopColor: theme.colors.outlineVariant,

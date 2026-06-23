@@ -22,7 +22,6 @@ const TONES = [
   {id: 'tone12', color: '#8D5524', label: 'Nâu nhạt'},
   {id: 'tone13', color: '#7B4B2A', label: 'Ngăm'},
   {id: 'tone14', color: '#5C3A1E', label: 'Tối'},
-  {id: 'tone15', color: '#4B3322', label: 'Rất tối'},
 ];
 
 export const SkinToneScreen: React.FC<OnboardingScreenProps<'SkinTone'>> = ({navigation}) => {

@@ -1,7 +1,7 @@
 # ninja log v5
 27125	36984	8039016780323022	rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/ed250c298231b5d9f8855f79359ac3b4/cpp/react/renderer/components/rnscreens/RNSScreenStackHeaderConfigState.cpp.o	9fd6a3184675ee7f
 10477	21022	8039016620801109	safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir/fb90b541eb518036871fc62fd733e8ad/react/renderer/components/safeareacontext/RNCSafeAreaViewState.cpp.o	12babaf42e42e13c
-1	27	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/armeabi-v7a/CMakeFiles/cmake.verify_globs	c039a3247b71218d
+1	26	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/armeabi-v7a/CMakeFiles/cmake.verify_globs	c039a3247b71218d
 34	4920	8039016459916981	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/States.cpp.o	cf93df469ec345ab
 16428	27124	8039016681988029	rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/708616153b7117719001cdce109e7f35/common/cpp/react/renderer/components/rnscreens/RNSSafeAreaViewState.cpp.o	8552a0a4bc3abb87
 85	5941	8039016470079131	rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/EventEmitters.cpp.o	80ad270e7f8743c1

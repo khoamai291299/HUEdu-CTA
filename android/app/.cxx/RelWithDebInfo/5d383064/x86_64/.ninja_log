@@ -1,6 +1,6 @@
 # ninja log v5
 28287	42869	8039018509045912	rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/708616153b7117719001cdce109e7f35/common/cpp/react/renderer/components/rnscreens/RNSStackHeaderConfigShadowNode.cpp.o	c72bb2d115b28f1f
-1	25	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/x86_64/CMakeFiles/cmake.verify_globs	d827164f86c038fa
+2	25	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/x86_64/CMakeFiles/cmake.verify_globs	d827164f86c038fa
 70346	80926	8039018889827024	rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir/rnworklets-generated.cpp.o	20dfdbdd2ab1374a
 31775	48338	8039018563218211	rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/C_/HUEdu-CTA/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSTabsHostShadowNode.cpp.o	61ad3881ebcc9a53
 14611	22170	8039018302211431	safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir/355f1d91f7e5d8d7b75cb060771da848/android/build/generated/source/codegen/jni/safeareacontext-generated.cpp.o	a3d1e023894d3ea3
@@ -88,5 +88,5 @@
 92079	92247	8039019003023814	C:/HUEdu-CTA/android/app/build/intermediates/cxx/RelWithDebInfo/5d383064/obj/x86_64/libreact_codegen_rnsvg.so	46ae069f791d179d
 100132	100310	8039019083561745	C:/HUEdu-CTA/android/app/build/intermediates/cxx/RelWithDebInfo/5d383064/obj/x86_64/libappmodules.so	3376919302108362
 0	30	0	clean	fb8d774e3240c52d
-37	917	8039043999733041	build.ninja	35abcb278e902f12
-2	24	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/x86_64/CMakeFiles/cmake.verify_globs	d827164f86c038fa
+37	917	8039117537321017	build.ninja	35abcb278e902f12
+1	31	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/x86_64/CMakeFiles/cmake.verify_globs	d827164f86c038fa

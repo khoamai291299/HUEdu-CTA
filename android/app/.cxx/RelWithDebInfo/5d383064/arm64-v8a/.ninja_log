@@ -1,6 +1,6 @@
 # ninja log v5
 58	8206	8039015651395269	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/rnasyncstorage-generated.cpp.o	4b5bc95cb6d6ca2b
-1	28	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/arm64-v8a/CMakeFiles/cmake.verify_globs	2d8e7e2f09345789
+1	24	0	C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/arm64-v8a/CMakeFiles/cmake.verify_globs	2d8e7e2f09345789
 95	8218	8039015651787803	rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/rngesturehandler_codegen-generated.cpp.o	c7c7f94452332961
 12820	25131	8039015820974766	safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir/587f0f164e2c60fc1a5697b7d74c395a/source/codegen/jni/react/renderer/components/safeareacontext/Props.cpp.o	332516a9fd22d6e4
 45	8860	8039015658385403	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/ShadowNodes.cpp.o	8bc1aa05d4529b50

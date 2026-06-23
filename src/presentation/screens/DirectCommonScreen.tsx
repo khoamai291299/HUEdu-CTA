@@ -3,7 +3,7 @@
  * Mục đích: Tab hiển thị 20 từ vựng thông dụng nhất theo cơ chế phát trực tiếp (không ghép câu).
  */
 import React, {useCallback} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
+import {FlatList, StyleSheet, View, useWindowDimensions} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {Appbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
@@ -33,6 +33,17 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
   }, [activities, commonIds]);
   const loadCommon = useActivityStore(s => s.loadCommon);
 
+  const {width} = useWindowDimensions();
+  const itemsPerPage = 9;
+
+  const pages = React.useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < commonActivities.length; i += itemsPerPage) {
+      chunks.push(commonActivities.slice(i, i + itemsPerPage));
+    }
+    return chunks;
+  }, [commonActivities, itemsPerPage]);
+
   const {speakWord} = useTts();
 
   useFocusEffect(
@@ -60,21 +71,31 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
       </Appbar.Header>
 
       <FlatList
-        key={columns}
-        data={commonActivities}
-        keyExtractor={item => String(item.id)}
-        numColumns={columns}
-        columnWrapperStyle={columns > 1 ? {gap} : undefined}
-        contentContainerStyle={[styles.grid, {gap, paddingHorizontal}]}
-        renderItem={({item}) => (
-          <IconTile
-            vocabulary={item}
-            size={tileSize}
-            isDirectPlay={true}
-            onPress={onTilePress}
-          />
+        data={pages}
+        keyExtractor={(_, index) => String(index)}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item: page}) => (
+          <View style={{width, paddingHorizontal, paddingVertical: 16}}>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap}}>
+              {page.map((vocab) => (
+                <IconTile
+                  key={vocab.id}
+                  vocabulary={vocab}
+                  size={tileSize}
+                  isDirectPlay={true}
+                  onPress={onTilePress}
+                />
+              ))}
+            </View>
+          </View>
         )}
-        ListEmptyComponent={<EmptyState message={t('common.empty')} />}
+        ListEmptyComponent={
+          <View style={{width, alignItems: 'center', justifyContent: 'center', paddingTop: 40}}>
+            <EmptyState message={t('common.empty')} />
+          </View>
+        }
       />
     </View>
   );

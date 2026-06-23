@@ -204,7 +204,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-RelWithDebInfo-c1e2557358fe9c0a680a.json",
+					"jsonFile" : "target-appmodules-RelWithDebInfo-eb751defd988cae8e63e.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
@@ -246,14 +246,14 @@
 				{
 					"directoryIndex" : 6,
 					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
-					"jsonFile" : "target-react_codegen_rnscreens-RelWithDebInfo-7b3c1bc9854bb17faeb4.json",
+					"jsonFile" : "target-react_codegen_rnscreens-RelWithDebInfo-89333f71bb33fb53641b.json",
 					"name" : "react_codegen_rnscreens",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 7,
 					"id" : "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65",
-					"jsonFile" : "target-react_codegen_rnsvg-RelWithDebInfo-472d56202a052078c81c.json",
+					"jsonFile" : "target-react_codegen_rnsvg-RelWithDebInfo-de4ea2c1ae3d431d13cb.json",
 					"name" : "react_codegen_rnsvg",
 					"projectIndex" : 0
 				},
@@ -267,7 +267,7 @@
 				{
 					"directoryIndex" : 5,
 					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
-					"jsonFile" : "target-react_codegen_safeareacontext-RelWithDebInfo-017f7d96b5968b95ba32.json",
+					"jsonFile" : "target-react_codegen_safeareacontext-RelWithDebInfo-52b53215c93d128d15ed.json",
 					"name" : "react_codegen_safeareacontext",
 					"projectIndex" : 0
 				}
@@ -277,7 +277,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/arm64-v8a",
+		"build" : "C:/HUEdu-CTA/android/app/.cxx/RelWithDebInfo/5d383064/x86",
 		"source" : "C:/HUEdu-CTA/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
 	},
 	"version" : 

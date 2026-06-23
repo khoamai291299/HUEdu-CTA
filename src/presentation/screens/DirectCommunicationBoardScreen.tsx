@@ -3,7 +3,7 @@
  * Mục đích: Màn chính - bảng giao tiếp trực tiếp: chọn thẻ sẽ phát âm ngay lập tức.
  */
 import React, {useState, useMemo} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
+import {FlatList, StyleSheet, View, useWindowDimensions} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import {Settings as SettingsIcon, Search as SearchIcon} from 'lucide-react-native';
@@ -41,6 +41,17 @@ export const DirectCommunicationBoardScreen: React.FC<
     });
   }, [activities, search]);
 
+  const {width} = useWindowDimensions();
+  const itemsPerPage = 9;
+
+  const pages = useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < data.length; i += itemsPerPage) {
+      chunks.push(data.slice(i, i + itemsPerPage));
+    }
+    return chunks;
+  }, [data, itemsPerPage]);
+
   const TONE_COLORS: Record<string, string> = {
     tone0: '#FFFFFF',
     tone1: '#FFF5EE',
@@ -57,7 +68,6 @@ export const DirectCommunicationBoardScreen: React.FC<
     tone12: '#8D5524',
     tone13: '#7B4B2A',
     tone14: '#5C3A1E',
-    tone15: '#4B3322',
   };
   const skinToneId = child?.skinTone || 'tone2';
   const skinColor = TONE_COLORS[skinToneId] || TONE_COLORS.tone2;
@@ -93,21 +103,31 @@ export const DirectCommunicationBoardScreen: React.FC<
 
 
       <FlatList
-        key={columns}
-        data={data}
-        keyExtractor={item => String(item.id)}
-        numColumns={columns}
-        columnWrapperStyle={columns > 1 ? {gap: gap} : undefined}
-        contentContainerStyle={[styles.grid, {gap: gap, paddingHorizontal: paddingHorizontal}]}
-        renderItem={({item}) => (
-          <IconTile
-            vocabulary={item}
-            size={tileSize}
-            isDirectPlay={true}
-            onPress={onTilePress}
-          />
+        data={pages}
+        keyExtractor={(_, index) => String(index)}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item: page}) => (
+          <View style={{width, paddingHorizontal, paddingVertical: 16}}>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap}}>
+              {page.map((vocab) => (
+                <IconTile
+                  key={vocab.id}
+                  vocabulary={vocab}
+                  size={tileSize}
+                  isDirectPlay={true}
+                  onPress={onTilePress}
+                />
+              ))}
+            </View>
+          </View>
         )}
-        ListEmptyComponent={<EmptyState message={t('common.empty')} />}
+        ListEmptyComponent={
+          <View style={{width, alignItems: 'center', justifyContent: 'center', paddingTop: 40}}>
+            <EmptyState message={t('common.empty')} />
+          </View>
+        }
       />
 
       {/* Nhân vật góc dưới */}
