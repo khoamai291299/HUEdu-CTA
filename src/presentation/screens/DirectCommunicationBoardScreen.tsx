@@ -108,7 +108,7 @@ export const DirectCommunicationBoardScreen: React.FC<
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         renderItem={({item: page}) => (
-          <View style={{width, paddingHorizontal, paddingVertical: 16}}>
+          <View style={{width, paddingHorizontal, paddingTop: 4, paddingBottom: 24}}>
             <View style={{flexDirection: 'row', flexWrap: 'wrap', gap}}>
               {page.map((vocab) => (
                 <IconTile

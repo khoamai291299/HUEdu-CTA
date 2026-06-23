@@ -15,12 +15,12 @@ export const useResponsiveGrid = (gap = 12, horizontalPadding = 16) => {
   const availableWidth = width - horizontalPadding * 2 - gap * (columns - 1);
   const tileSizeFromWidth = Math.floor(availableWidth / columns);
 
-  // Also consider vertical space so tiles don't overflow in landscape
-  // Reserve ~120px for header + tab bar + padding
-  const verticalReserve = isLandscape ? 100 : 160;
+  // Reserve vertical space for: status bar + AppBar header + tab bar + extra padding
+  const verticalReserve = isLandscape ? 180 : 180;
   const availableHeight = height - verticalReserve;
   const tileSizeFromHeight = Math.floor((availableHeight - gap * (rows - 1)) / rows);
 
+  // Use the smaller of width/height-based sizes so nothing overflows
   const tileSize = Math.min(tileSizeFromWidth, tileSizeFromHeight);
 
   const exactPadding = Math.max(

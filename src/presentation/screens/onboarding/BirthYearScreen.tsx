@@ -12,7 +12,8 @@ export const BirthYearScreen: React.FC<OnboardingScreenProps<'BirthYear'>> = ({n
   const {birthYear, setBirthYear} = useOnboardingStore();
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({length: 30}, (_, i) => currentYear - i);
+  // Chỉ cho chọn từ 3 đến 12 tuổi
+  const years = Array.from({length: 10}, (_, i) => currentYear - 3 - i);
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: theme.colors.background}]} edges={['top', 'left', 'right']}>

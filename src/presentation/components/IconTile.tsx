@@ -48,7 +48,7 @@ const IconTileComponent: React.FC<Props> = ({
         styles.tile,
         {
           width: size,
-          minHeight: size,
+          height: size,
           minWidth: TouchTarget.MIN,
           backgroundColor: theme.colors.primaryContainer,
           borderColor: theme.colors.primary,
