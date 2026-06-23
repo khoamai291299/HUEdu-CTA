@@ -23,7 +23,7 @@ export const DirectCommunicationBoardScreen: React.FC<
 > = ({navigation}) => {
   const {t} = useTranslation();
   const theme = useTheme();
-  const {columns, tileSize, gap, paddingHorizontal, itemsPerPage} = useResponsiveGrid(16, 24);
+  const {columns, tileSize, gap, paddingHorizontal, itemsPerPage, isLandscape} = useResponsiveGrid(16, 24);
 
   const setSearch = useActivityStore(s => s.setSearch);
   const search = useActivityStore(s => s.search);
@@ -102,13 +102,14 @@ export const DirectCommunicationBoardScreen: React.FC<
 
 
       <FlatList
+        style={{marginTop: isLandscape ? -12 : 0}}
         data={pages}
         keyExtractor={(_, index) => String(index)}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         renderItem={({item: page}) => (
-          <View style={{width, paddingHorizontal, paddingTop: 4, paddingBottom: 24}}>
+          <View style={{width, paddingHorizontal, paddingTop: 0, paddingBottom: 24}}>
             <View style={{flexDirection: 'row', flexWrap: 'wrap', gap}}>
               {page.map((vocab) => (
                 <IconTile
