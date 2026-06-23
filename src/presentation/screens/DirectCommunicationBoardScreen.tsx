@@ -23,7 +23,7 @@ export const DirectCommunicationBoardScreen: React.FC<
 > = ({navigation}) => {
   const {t} = useTranslation();
   const theme = useTheme();
-  const {columns, tileSize, gap, paddingHorizontal} = useResponsiveGrid(16, 24);
+  const {columns, tileSize, gap, paddingHorizontal, itemsPerPage} = useResponsiveGrid(16, 24);
 
   const setSearch = useActivityStore(s => s.setSearch);
   const search = useActivityStore(s => s.search);
@@ -42,7 +42,6 @@ export const DirectCommunicationBoardScreen: React.FC<
   }, [activities, search]);
 
   const {width} = useWindowDimensions();
-  const itemsPerPage = 9;
 
   const pages = useMemo(() => {
     const chunks = [];

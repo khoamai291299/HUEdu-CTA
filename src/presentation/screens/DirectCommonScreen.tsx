@@ -22,7 +22,7 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
 }) => {
   const {t} = useTranslation();
   const theme = useTheme();
-  const {columns, tileSize, gap, paddingHorizontal} = useResponsiveGrid(16, 24);
+  const {columns, tileSize, gap, paddingHorizontal, itemsPerPage} = useResponsiveGrid(16, 24);
 
   const activeChildId = useSettingsStore(s => s.settings.activeChildId);
   const activities = useActivityStore(s => s.activities);
@@ -34,7 +34,6 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
   const loadCommon = useActivityStore(s => s.loadCommon);
 
   const {width} = useWindowDimensions();
-  const itemsPerPage = 9;
 
   const pages = React.useMemo(() => {
     const chunks = [];
