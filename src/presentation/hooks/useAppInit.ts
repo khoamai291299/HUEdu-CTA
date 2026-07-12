@@ -9,7 +9,7 @@ import {registerDependencies} from '@core/di/registerDependencies';
 import {Container} from '@core/di/Container';
 import {initI18n} from '@core/i18n';
 import {GlobalErrorHandler} from '@core/errors/GlobalErrorHandler';
-import {getDb} from '@presentation/di/services';
+import {getDb, getTts} from '@presentation/di/services';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useChildStore} from '@presentation/stores/useChildStore';
 import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
@@ -44,9 +44,12 @@ export const useAppInit = (): InitState => {
         await useChildStore.getState().ensureActive();
 
         let ttsAvailable = true;
-        // Loại bỏ việc khởi tạo TTS ở màn hình Splash để tránh lỗi treo app hoàn toàn trên LDPlayer
-        // TTS sẽ được khởi tạo "lười" (lazy) khi người dùng bấm nút đọc lần đầu tiên.
-        
+        // Warm-up TTS trong nền (non-blocking) để giảm độ trễ lần bấm đầu tiên.
+        // Không await — không block màn Splash, không crash app nếu TTS lỗi.
+        getTts().init().catch(e =>
+          logger.debug('[useAppInit] TTS warm-up failed (non-critical)', e),
+        );
+
         await useVocabularyStore.getState().load();
         await useActivityStore.getState().load();
         const activeChildId =

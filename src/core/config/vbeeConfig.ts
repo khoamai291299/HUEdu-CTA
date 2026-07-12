@@ -4,12 +4,17 @@
  * LƯU Ý: Thay YOUR_ACCESS_TOKEN bằng token thật từ https://vbee.vn
  */
 
+import { VBEE_APP_ID, VBEE_ACCESS_TOKEN } from '@env';
+
 export const VBEE_CONFIG = {
   /** API endpoint */
-  endpoint: 'https://api.vbee.vn/api/v1/tts',
+  endpoint: 'https://vbee.vn/api/v1/tts',
+
+  /** App ID — lấy từ dashboard Vbee (NẾU CÓ) */
+  appId: VBEE_APP_ID,
 
   /** Access token — thay bằng token thật để kích hoạt Vbee TTS */
-  accessToken: 'YOUR_ACCESS_TOKEN',
+  accessToken: VBEE_ACCESS_TOKEN,
 
   /** Tốc độ đọc mặc định (1 = bình thường) */
   defaultSpeed: 1.0,
@@ -38,19 +43,19 @@ export const VBEE_VOICES: VbeeVoice[] = [
     label: 'Ngọc Huyền',
     desc: 'Nữ · Phổ thông',
     gender: 'female',
-    ageGroup: 'Thanh niên',
+    ageGroup: 'Người lớn',
   },
   {
-    id: 'minhquan',
-    voiceCode: 'hn_male_minhquan_full_48k-fhg',
-    label: 'Minh Quân',
+    id: 'manhdung',
+    voiceCode: 'hn_male_manhdung_news_48k-phg',
+    label: 'Mạnh Dũng',
     desc: 'Nam · Phổ thông',
     gender: 'male',
-    ageGroup: 'Thanh niên',
+    ageGroup: 'Người lớn',
   },
   {
     id: 'nganha',
-    voiceCode: 'hn_female_nganha_full_48k-fhg',
+    voiceCode: 'hn_female_nganha_child_22k-vc',
     label: 'Ngân Hà',
     desc: 'Nữ trẻ em · Nhẹ nhàng',
     gender: 'female',
@@ -58,7 +63,7 @@ export const VBEE_VOICES: VbeeVoice[] = [
   },
   {
     id: 'vietbach',
-    voiceCode: 'hn_male_vietbach_full_48k-fhg',
+    voiceCode: 'hn_male_vietbach_child_22k-vc',
     label: 'Việt Bách',
     desc: 'Nam trẻ em · Vui vẻ',
     gender: 'male',
@@ -66,18 +71,18 @@ export const VBEE_VOICES: VbeeVoice[] = [
   },
   {
     id: 'tuongvy',
-    voiceCode: 'sg_female_tuongvy_full_48k-fhg',
+    voiceCode: 'sg_female_tuongvy_call_44k-fhg',
     label: 'Tường Vy',
     desc: 'Nữ · Nhẹ nhàng',
     gender: 'female',
     ageGroup: 'Thanh niên',
   },
   {
-    id: 'manhdung',
-    voiceCode: 'hn_male_manhdung_full_48k-fhg',
-    label: 'Mạnh Dũng',
+    id: 'minhquan',
+    voiceCode: 'hn_male_minhquan_yt-stable',
+    label: 'Minh Quân',
     desc: 'Nam · Thân thiện',
     gender: 'male',
-    ageGroup: 'Người lớn',
+    ageGroup: 'Thanh niên',
   },
 ];

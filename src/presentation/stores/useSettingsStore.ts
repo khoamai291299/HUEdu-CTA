@@ -84,10 +84,12 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   setVoice: async voiceId => {
-    await new UpdateSettingsUseCase(getSettingsRepo()).execute({voiceId});
+    // Cập nhật TTS TRƯỚC (đồng bộ với Vbee voices) để tránh race condition:
+    // nếu user bấm tile ngay sau khi chọn giọng, currentVoiceCode đã đúng rồi.
     if (voiceId) {
       await getTts().setVoice(voiceId).catch(() => undefined);
     }
+    await new UpdateSettingsUseCase(getSettingsRepo()).execute({voiceId});
     set({
       settings: {
         ...get().settings,

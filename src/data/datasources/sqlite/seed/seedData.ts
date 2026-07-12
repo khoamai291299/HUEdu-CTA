@@ -118,7 +118,7 @@ export const SEED_VOCABULARY: SeedVocabulary[] = [
 
   // --- ACTIVITIES ---
   { nameVi: 'Đi vệ sinh', nameEn: 'Go to toilet', speechTextVi: 'Con muốn đi vệ sinh', speechTextEn: 'I want to go to toilet', categoryKey: 'activity', type: 'activity', sortOrder: 1, imagePath: 'lucide:Bath' },
-  { nameVi: 'Đi ngủ', nameEn: 'Sleep', speechTextVi: 'Con buồn ngủ', speechTextEn: 'I am sleepy', categoryKey: 'activity', type: 'activity', sortOrder: 2, imagePath: 'lucide:Bed' },
+  { nameVi: 'Đi ngủ', nameEn: 'Sleep', speechTextVi: 'Con muốn đi ngủ', speechTextEn: 'I want to sleep', categoryKey: 'activity', type: 'activity', sortOrder: 2, imagePath: 'lucide:Bed' },
   { nameVi: 'Đi dạo', nameEn: 'Walk', speechTextVi: 'Con muốn đi dạo', speechTextEn: 'I want to take a walk', categoryKey: 'activity', type: 'activity', sortOrder: 3, imagePath: 'lucide:Footprints' },
   { nameVi: 'Đi tắm', nameEn: 'Take a bath', speechTextVi: 'Con muốn đi tắm', speechTextEn: 'I want to take a bath', categoryKey: 'activity', type: 'activity', sortOrder: 4, imagePath: 'lucide:Droplets' },
   { nameVi: 'Rửa tay', nameEn: 'Wash hands', speechTextVi: 'Con muốn rửa tay', speechTextEn: 'I want to wash my hands', categoryKey: 'activity', type: 'activity', sortOrder: 5, imagePath: 'lucide:Hand' },

@@ -1,0 +1,7 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.exclusions": [
+        "**/node_modules/**"
+    ],
+    "java.compile.nullAnalysis.mode": "automatic"
+}

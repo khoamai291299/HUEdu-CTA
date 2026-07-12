@@ -26,6 +26,7 @@ SQLite.enablePromise(true);
 
 export class DatabaseService implements IDatabaseService {
   private db: SQLiteDatabase | null = null;
+  private initPromise: Promise<void> | null = null;
 
   private requireDb(): SQLiteDatabase {
     if (!this.db) {
@@ -38,18 +39,25 @@ export class DatabaseService implements IDatabaseService {
     if (this.db) {
       return;
     }
-    try {
-      this.db = await SQLite.openDatabase({
-        name: DB_NAME,
-        location: DB_LOCATION,
-      });
-      await this.db.executeSql('PRAGMA foreign_keys = ON;');
-      await new MigrationRunner(this).run();
-      await new Seeder(this).runIfNeeded();
-      logger.info('[DatabaseService] init done');
-    } catch (e) {
-      throw new DatabaseError('Không thể khởi tạo cơ sở dữ liệu', e);
+    if (this.initPromise) {
+      return this.initPromise;
     }
+    this.initPromise = (async () => {
+      try {
+        this.db = await SQLite.openDatabase({
+          name: DB_NAME,
+          location: DB_LOCATION,
+        });
+        await this.db.executeSql('PRAGMA foreign_keys = ON;');
+        await new MigrationRunner(this).run();
+        await new Seeder(this).runIfNeeded();
+        logger.info('[DatabaseService] init done');
+      } catch (e) {
+        this.initPromise = null;
+        throw new DatabaseError('Không thể khởi tạo cơ sở dữ liệu', e);
+      }
+    })();
+    return this.initPromise;
   }
 
   private mapResult(rs: ResultSet): SqlResult {

@@ -19,6 +19,6 @@ export const TOKENS = {
 
   TtsService: Symbol('TtsService'),
   BackupService: Symbol('BackupService'),
-} as const;
+};
 
 export type Token = (typeof TOKENS)[keyof typeof TOKENS];

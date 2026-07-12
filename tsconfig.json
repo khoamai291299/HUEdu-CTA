@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "strict": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
@@ -7,16 +12,35 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "baseUrl": ".",
     "jsx": "react-native",
     "paths": {
-      "@core/*": ["src/core/*"],
-      "@domain/*": ["src/domain/*"],
-      "@data/*": ["src/data/*"],
-      "@presentation/*": ["src/presentation/*"]
+      "@core/*": [
+        "src/core/*"
+      ],
+      "@domain/*": [
+        "src/domain/*"
+      ],
+      "@data/*": [
+        "src/data/*"
+      ],
+      "@presentation/*": [
+        "src/presentation/*"
+      ]
     }
   },
-  "include": ["src", "__tests__", "index.js", "App.tsx"],
-  "exclude": ["node_modules", "android", "ios"]
+  "include": [
+    "src",
+    "__tests__",
+    "index.js",
+    "App.tsx",
+    "env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "android",
+    "ios"
+  ]
 }

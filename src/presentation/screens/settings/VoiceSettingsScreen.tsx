@@ -10,14 +10,19 @@ import {useTranslation} from 'react-i18next';
 import {getTts} from '@presentation/di/services';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {TtsVoice} from '@domain/services/ITtsService';
-import {LoadingView} from '@presentation/components/StatusView';
+import {VBEE_VOICES} from '@core/config/vbeeConfig';
 
 export const VoiceSettingsScreen: React.FC = () => {
   const {t} = useTranslation();
   const voiceId = useSettingsStore(s => s.settings.speech.voiceId);
   const setVoice = useSettingsStore(s => s.setVoice);
-  const [voices, setVoices] = useState<TtsVoice[] | null>(null);
+  /** voices: khởi tạo sẵn từ VBEE_VOICES để list hiện ngay, không chờ async. */
+  const [voices, setVoices] = useState<TtsVoice[]>(
+    VBEE_VOICES.map(v => ({id: v.id, name: v.label, language: 'vi-VN'})),
+  );
   const [hasVi, setHasVi] = useState(true);
+  /** selectedId: cập nhật tức thì khi bấm (optimistic), không chờ DB write xong. */
+  const [selectedId, setSelectedId] = useState<string | null>(voiceId);
 
   useEffect(() => {
     const load = async () => {
@@ -29,9 +34,17 @@ export const VoiceSettingsScreen: React.FC = () => {
     load();
   }, []);
 
-  if (!voices) {
-    return <LoadingView />;
-  }
+  // Đồng bộ selectedId nếu voiceId trong store thay đổi từ bên ngoài.
+  useEffect(() => {
+    setSelectedId(voiceId);
+  }, [voiceId]);
+
+  /** Chọn giọng: cập nhật UI tức thì, lưu DB trong nền. */
+  const handleSelectVoice = (id: string) => {
+    setSelectedId(id);
+    setVoice(id);
+  };
+
 
   const getVoiceDescription = (item: TtsVoice) => {
     const nameLow = item.name.toLowerCase();
@@ -71,12 +84,12 @@ export const VoiceSettingsScreen: React.FC = () => {
           <List.Item
             title={item.name}
             description={getVoiceDescription(item)}
-            onPress={() => setVoice(item.id)}
+            onPress={() => handleSelectVoice(item.id)}
             right={() => (
               <RadioButton
                 value={item.id}
-                status={voiceId === item.id ? 'checked' : 'unchecked'}
-                onPress={() => setVoice(item.id)}
+                status={selectedId === item.id ? 'checked' : 'unchecked'}
+                onPress={() => handleSelectVoice(item.id)}
               />
             )}
           />
