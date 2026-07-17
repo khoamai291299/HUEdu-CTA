@@ -1,0 +1,349 @@
+diff --git a/src/data/services/LocalTtsService.ts b/src/data/services/LocalTtsService.ts
+index 04efd55..4d93516 100644
+--- a/src/data/services/LocalTtsService.ts
++++ b/src/data/services/LocalTtsService.ts
+@@ -140,4 +140,8 @@ export class LocalTtsService implements ITtsService {
+       v.language.toLowerCase().startsWith(languagePrefix.toLowerCase()),
+     );
+   }
++
++  async preload(_texts: string[], _voiceId?: string): Promise<void> {
++    /* no-op: giọng đọc trên máy phát tức thời, không cần tải trước */
++  }
+ }
+diff --git a/src/data/services/MockTtsService.ts b/src/data/services/MockTtsService.ts
+index f420473..c577493 100644
+--- a/src/data/services/MockTtsService.ts
++++ b/src/data/services/MockTtsService.ts
+@@ -16,6 +16,7 @@ export class MockTtsService implements ITtsService {
+   public rate = 0.5;
+   public pitch = 1.0;
+   public currentVoiceId: string | null = null;
++  public preloadedTexts: string[] = [];
+ 
+   async init(): Promise<void> {
+     /* no-op */
+@@ -54,4 +55,8 @@ export class MockTtsService implements ITtsService {
+       v.language.toLowerCase().startsWith(languagePrefix.toLowerCase()),
+     );
+   }
++
++  async preload(texts: string[], _voiceId?: string): Promise<void> {
++    this.preloadedTexts.push(...texts);
++  }
+ }
+diff --git a/src/data/services/VbeeTtsService.ts b/src/data/services/VbeeTtsService.ts
+index f55edff..88a870b 100644
+--- a/src/data/services/VbeeTtsService.ts
++++ b/src/data/services/VbeeTtsService.ts
+@@ -113,33 +113,48 @@ export class VbeeTtsService implements ITtsService {
+     return Math.abs(hash);
+   }
+ 
+-  /** Khoá cache duy nhất theo cặp (voiceCode + text). */
+-  private getCacheKey(text: string): string {
+-    return String(this.simpleHash(this.currentVoiceCode + text.trim()));
++  /** Khoá cache duy nhất theo cặp (voiceCode + text). voiceCode mặc định là giọng hiện tại. */
++  private getCacheKey(text: string, voiceCode: string = this.currentVoiceCode): string {
++    return String(this.simpleHash(voiceCode + text.trim()));
+   }
+ 
+-  private async speakWithVbee(text: string, externalSignal: AbortSignal): Promise<void> {
+-    // Kiểm tra cache trước — nếu đã có file local thì phát ngay, không cần gọi API
+-    const cacheKey = this.getCacheKey(text);
+-    const cachedPath = this.audioCache.get(cacheKey);
+-    if (cachedPath) {
+-      try {
+-        const exists = await RNFS.exists(cachedPath);
+-        if (exists) {
+-          if (externalSignal.aborted) { return; }
+-          logger.info('[VbeeTtsService] Cache hit, playing:', cachedPath);
+-          await this.playAudioFromPath(cachedPath);
+-          return;
+-        }
+-      } catch (_e) {
+-        // File bị xóa ngoài app, xóa khỏi cache
+-        this.audioCache.delete(cacheKey);
++  /** Tìm voiceCode Vbee theo voiceId; nếu không chỉ định/không tìm thấy thì dùng giọng hiện tại. */
++  private resolveVoiceCode(voiceId?: string): string {
++    if (!voiceId) { return this.currentVoiceCode; }
++    const voice = VBEE_VOICES.find(v => v.id === voiceId);
++    return voice ? voice.voiceCode : this.currentVoiceCode;
++  }
++
++  /**
++   * Đảm bảo audio cho (text, voiceCode) đã có sẵn trên đĩa — tải về nếu chưa có,
++   * KHÔNG phát ra loa. Dùng chung cho speak() (phát ngay) và preload() (tải trước ngầm).
++   * Trả về đường dẫn file local, hoặc null nếu bị hủy giữa chừng.
++   */
++  private async ensureCached(
++    text: string,
++    voiceCode: string,
++    externalSignal: AbortSignal = new AbortController().signal,
++  ): Promise<string | null> {
++    // Đường dẫn cache là xác định (deterministic) theo cacheKey, nên không phụ thuộc
++    // việc audioCache map đã được khôi phục từ đĩa (init()) xong hay chưa.
++    const cacheKey = this.getCacheKey(text, voiceCode);
++    const targetPath = `${RNFS.CachesDirectoryPath}/vbee_${cacheKey}.mp3`;
++    const knownPath = this.audioCache.get(cacheKey) ?? targetPath;
++
++    try {
++      const exists = await RNFS.exists(knownPath);
++      if (exists) {
++        this.audioCache.set(cacheKey, knownPath);
++        return knownPath;
+       }
++    } catch (_e) {
++      // File bị xóa ngoài app, xóa khỏi cache
++      this.audioCache.delete(cacheKey);
+     }
+ 
+-    if (externalSignal.aborted) { return; }
++    if (externalSignal.aborted) { return null; }
+ 
+-    // Kết hợp timeout abort với tín hiệu hủy từ speak mới (externalSignal).
++    // Kết hợp timeout abort với tín hiệu hủy từ bên ngoài (externalSignal).
+     const controller = new AbortController();
+     const timeoutId = setTimeout(() => controller.abort(), VBEE_CONFIG.timeout);
+     const onAbort = () => controller.abort();
+@@ -150,7 +165,7 @@ export class VbeeTtsService implements ITtsService {
+         app_id: VBEE_CONFIG.appId,
+         response_type: 'direct',
+         input_text: text,
+-        voice_code: this.currentVoiceCode,
++        voice_code: voiceCode,
+         audio_type: VBEE_CONFIG.format,
+         speed_rate: String(this.speed),
+         bitrate: 128,
+@@ -168,7 +183,7 @@ export class VbeeTtsService implements ITtsService {
+         signal: controller.signal,
+       });
+ 
+-      if (externalSignal.aborted) { return; }
++      if (externalSignal.aborted) { return null; }
+ 
+       const rawText = await response.text();
+       // Dùng warn để log xuất hiện ngay cả trong bản release (giúp debug).
+@@ -189,10 +204,7 @@ export class VbeeTtsService implements ITtsService {
+         data.data?.audio_link;
+       const audioBase64 = data.audio || data.result?.audio;
+ 
+-      // Đường dẫn file cache theo cacheKey (tên file an toàn, không có ký tự đặc biệt)
+-      const targetPath = `${RNFS.CachesDirectoryPath}/vbee_${cacheKey}.mp3`;
+-
+-      if (externalSignal.aborted) { return; }
++      if (externalSignal.aborted) { return null; }
+ 
+       if (audioUrl) {
+         await this.downloadToPath(audioUrl, targetPath);
+@@ -202,17 +214,55 @@ export class VbeeTtsService implements ITtsService {
+         throw new Error(`No audio data in Vbee response: ${rawText.substring(0, 200)}`);
+       }
+ 
+-      if (externalSignal.aborted) { return; }
++      if (externalSignal.aborted) { return null; }
+ 
+       // Lưu vào cache để lần sau phát ngay không cần gọi API
+       this.audioCache.set(cacheKey, targetPath);
+-      await this.playAudioFromPath(targetPath);
++      return targetPath;
+     } finally {
+       clearTimeout(timeoutId);
+       externalSignal.removeEventListener('abort', onAbort);
+     }
+   }
+ 
++  private async speakWithVbee(text: string, externalSignal: AbortSignal): Promise<void> {
++    const path = await this.ensureCached(text, this.currentVoiceCode, externalSignal);
++    if (!path || externalSignal.aborted) { return; }
++    logger.info('[VbeeTtsService] Playing:', path);
++    await this.playAudioFromPath(path);
++  }
++
++  /**
++   * Tải trước (cache ngầm) audio cho danh sách text — KHÔNG phát ra loa.
++   * Giới hạn số request chạy song song để tránh quá tải API/mạng thiết bị.
++   * voiceId: nếu chỉ định, cache theo giọng đó mà không đổi giọng hiện tại (this.currentVoiceCode).
++   */
++  async preload(texts: string[], voiceId?: string): Promise<void> {
++    if (!this.isVbeeAvailable) { return; }
++
++    const voiceCode = this.resolveVoiceCode(voiceId);
++    const uniqueTexts = Array.from(
++      new Set(texts.map(t => t.trim()).filter(Boolean)),
++    );
++    if (uniqueTexts.length === 0) { return; }
++
++    const concurrency = Math.min(2, uniqueTexts.length);
++    let cursor = 0;
++    const worker = async () => {
++      while (cursor < uniqueTexts.length) {
++        const text = uniqueTexts[cursor++];
++        try {
++          await this.ensureCached(text, voiceCode);
++        } catch (e) {
++          logger.debug('[VbeeTtsService] preload thất bại cho 1 câu (bỏ qua):', text, e);
++        }
++      }
++    };
++
++    await Promise.all(Array.from({length: concurrency}, () => worker()));
++    logger.info(`[VbeeTtsService] Preload hoàn tất (${uniqueTexts.length} câu, voice=${voiceCode}).`);
++  }
++
+   /** Download file audio từ URL về đường dẫn chỉ định. */
+   private async downloadToPath(url: string, filePath: string): Promise<void> {
+     await RNFS.downloadFile({
+diff --git a/src/domain/services/ITtsService.ts b/src/domain/services/ITtsService.ts
+index 51b3e16..3dc89e8 100644
+--- a/src/domain/services/ITtsService.ts
++++ b/src/domain/services/ITtsService.ts
+@@ -23,4 +23,10 @@ export interface ITtsService {
+   setVoice(voiceId: string): Promise<void>;
+   /** Có giọng cho ngôn ngữ chỉ định không (kiểm tra trước khi đọc). */
+   hasVoiceForLanguage(languagePrefix: string): Promise<boolean>;
++  /**
++   * Tải trước (cache ngầm) audio cho danh sách text, KHÔNG phát ra loa.
++   * voiceId: nếu chỉ định, cache theo giọng đó mà không đổi giọng hiện tại của service.
++   * Không được throw lỗi ra ngoài — implementation tự bắt lỗi để không ảnh hưởng luồng chính.
++   */
++  preload(texts: string[], voiceId?: string): Promise<void>;
+ }
+diff --git a/src/presentation/hooks/useAppInit.ts b/src/presentation/hooks/useAppInit.ts
+index 74f7241..ed48066 100644
+--- a/src/presentation/hooks/useAppInit.ts
++++ b/src/presentation/hooks/useAppInit.ts
+@@ -58,6 +58,17 @@ export const useAppInit = (): InitState => {
+           await useVocabularyStore.getState().loadFavorites(activeChildId);
+         }
+ 
++        // Prefetch ngầm audio Vbee cho toàn bộ từ vựng hiện có (không await, không chặn
++        // màn hình chính) — để lần đầu bé bấm một từ đã có sẵn cache, đọc ngay không phải chờ.
++        const vocabularyTexts = useVocabularyStore
++          .getState()
++          .vocabulary.map(v => v.speechText());
++        getTts()
++          .preload(vocabularyTexts)
++          .catch(e =>
++            logger.debug('[useAppInit] Prefetch từ vựng thất bại (non-critical)', e),
++          );
++
+         if (mounted) {
+           setState({ready: true, error: null, ttsAvailable});
+         }
+diff --git a/src/presentation/screens/onboarding/VoiceScreen.tsx b/src/presentation/screens/onboarding/VoiceScreen.tsx
+index 136ee47..ca04cc9 100644
+--- a/src/presentation/screens/onboarding/VoiceScreen.tsx
++++ b/src/presentation/screens/onboarding/VoiceScreen.tsx
+@@ -1,4 +1,4 @@
+-import React, {useState} from 'react';
++import React, {useEffect, useState} from 'react';
+ import {View, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, ActivityIndicator} from 'react-native';
+ import {Text, Button, useTheme} from 'react-native-paper';
+ import {Volume2} from 'lucide-react-native';
+@@ -8,12 +8,35 @@ import {SafeAreaView} from 'react-native-safe-area-context';
+ import {getTts} from '@presentation/di/services';
+ import {VBEE_VOICES} from '@core/config/vbeeConfig';
+ 
++/** Câu mẫu dùng để nghe thử giọng — dùng chung cho preview thật và prefetch ngầm (đảm bảo trùng cache key). */
++const PREVIEW_TEXT = 'Xin chào, tôi là trợ lý hỗ trợ của bạn.';
++
+ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigation}) => {
+   const theme = useTheme();
+   const {width} = useWindowDimensions();
+   const {voiceId, setVoiceId} = useOnboardingStore();
+   const [playingId, setPlayingId] = useState<string | null>(null);
+ 
++  // Prefetch ngầm câu mẫu cho cả 6 giọng ngay khi vào màn hình (tuần tự, không chặn UI),
++  // để lúc bé bấm loa nghe thử thì audio đã có sẵn trong cache, đọc ngay không phải chờ.
++  useEffect(() => {
++    let cancelled = false;
++    const prefetchVoices = async () => {
++      for (const v of VBEE_VOICES) {
++        if (cancelled) return;
++        try {
++          await getTts().preload([PREVIEW_TEXT], v.id);
++        } catch (_e) {
++          // Im lặng bỏ qua — không ảnh hưởng trải nghiệm chọn giọng.
++        }
++      }
++    };
++    prefetchVoices();
++    return () => {
++      cancelled = true;
++    };
++  }, []);
++
+   const handleTestVoice = async (id: string) => {
+     if (playingId) return;
+     setPlayingId(id);
+@@ -21,7 +44,7 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
+       const tts = getTts();
+       // Set Vbee voice before speaking
+       await tts.setVoice(id);
+-      await tts.speak('Xin chào, tôi là trợ lý hỗ trợ của bạn.', 'vi-VN');
++      await tts.speak(PREVIEW_TEXT, 'vi-VN');
+     } catch (e) {
+       console.warn('TTS Error:', e);
+     } finally {
+diff --git a/src/presentation/stores/useSettingsStore.ts b/src/presentation/stores/useSettingsStore.ts
+index d1fef2d..c587dc6 100644
+--- a/src/presentation/stores/useSettingsStore.ts
++++ b/src/presentation/stores/useSettingsStore.ts
+@@ -14,6 +14,7 @@ import {
+   UpdateSettingsUseCase,
+ } from '@domain/usecases/settings/SettingsUseCases';
+ import {getSettingsRepo, getTts} from '@presentation/di/services';
++import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
+ 
+ interface SettingsState {
+   settings: AppSettings;
+@@ -96,6 +97,17 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
+         speech: {...get().settings.speech, voiceId},
+       },
+     });
++
++    // Cache audio hiện có là theo giọng cũ — prefetch ngầm lại toàn bộ từ vựng
++    // cho giọng mới để lần đọc đầu tiên sau khi đổi giọng không phải chờ lâu.
++    if (voiceId) {
++      const vocabularyTexts = useVocabularyStore
++        .getState()
++        .vocabulary.map(v => v.speechText());
++      getTts()
++        .preload(vocabularyTexts, voiceId)
++        .catch(() => undefined);
++    }
+   },
+ 
+   setActiveChildId: id =>
+diff --git a/src/presentation/stores/useVocabularyStore.ts b/src/presentation/stores/useVocabularyStore.ts
+index fcb3baa..d59ba3b 100644
+--- a/src/presentation/stores/useVocabularyStore.ts
++++ b/src/presentation/stores/useVocabularyStore.ts
+@@ -20,6 +20,7 @@ import {
+   getFavoriteRepo,
+   getUsageRepo,
+   getVocabularyRepo,
++  getTts,
+ } from '@presentation/di/services';
+ 
+ interface VocabularyState {
+@@ -102,12 +103,16 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
+   },
+ 
+   addVocabulary: async input => {
+-    await new AddVocabularyUseCase(getVocabularyRepo()).execute(input);
++    const created = await new AddVocabularyUseCase(getVocabularyRepo()).execute(input);
+     await get().load();
++    // Prefetch ngầm audio cho từ vừa thêm — để lần đầu bé bấm từ này không phải chờ gọi Vbee.
++    getTts().preload([created.speechText()]).catch(() => undefined);
+   },
+   updateVocabulary: async (id, input) => {
+-    await new UpdateVocabularyUseCase(getVocabularyRepo()).execute({id, input});
++    const updated = await new UpdateVocabularyUseCase(getVocabularyRepo()).execute({id, input});
+     await get().load();
++    // Nội dung đọc có thể đã đổi — prefetch lại audio cho nội dung mới.
++    getTts().preload([updated.speechText()]).catch(() => undefined);
+   },
+   deleteVocabulary: async id => {
+     await new DeleteVocabularyUseCase(getVocabularyRepo()).execute(id);

@@ -54,4 +54,8 @@ export class MockTtsService implements ITtsService {
       v.language.toLowerCase().startsWith(languagePrefix.toLowerCase()),
     );
   }
+
+  async preload(_texts: string[], _voiceId?: string): Promise<void> {
+    // no-op
+  }
 }

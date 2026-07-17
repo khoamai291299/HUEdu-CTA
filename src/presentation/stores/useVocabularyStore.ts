@@ -20,7 +20,9 @@ import {
   getFavoriteRepo,
   getUsageRepo,
   getVocabularyRepo,
+  getTts,
 } from '@presentation/di/services';
+import { VBEE_VOICES } from '@core/config/vbeeConfig';
 
 interface VocabularyState {
   vocabulary: Vocabulary[];
@@ -104,10 +106,24 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
   addVocabulary: async input => {
     await new AddVocabularyUseCase(getVocabularyRepo()).execute(input);
     await get().load();
+    // Preload TTS cho tất cả các giọng Vbee ngầm ở background
+    const text = input.speechTextVi || input.nameVi;
+    if (text) {
+      VBEE_VOICES.forEach(voice => {
+        getTts().preload([text], voice.id).catch(() => {});
+      });
+    }
   },
   updateVocabulary: async (id, input) => {
     await new UpdateVocabularyUseCase(getVocabularyRepo()).execute({id, input});
     await get().load();
+    // Preload TTS nếu có thay đổi text
+    const text = input.speechTextVi || input.nameVi;
+    if (text) {
+      VBEE_VOICES.forEach(voice => {
+        getTts().preload([text], voice.id).catch(() => {});
+      });
+    }
   },
   deleteVocabulary: async id => {
     await new DeleteVocabularyUseCase(getVocabularyRepo()).execute(id);

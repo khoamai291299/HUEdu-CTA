@@ -25,6 +25,7 @@ interface RnTtsVoice {
 export class LocalTtsService implements ITtsService {
   private initialized = false;
   private engineAvailable = true;
+  private isSpeaking = false;
 
   async init(): Promise<void> {
     if (this.initialized) {
@@ -36,6 +37,8 @@ export class LocalTtsService implements ITtsService {
         Tts.getInitStatus(),
         new Promise((_, reject) => setTimeout(() => reject(new Error('TTS_TIMEOUT')), 1500))
       ]);
+      // Thiết lập ngôn ngữ mặc định ngay khi init để engine sẵn sàng hoàn toàn
+      await Tts.setDefaultLanguage('vi-VN');
       this.initialized = true;
       this.engineAvailable = true;
       logger.info('[LocalTtsService] init success');
@@ -60,23 +63,30 @@ export class LocalTtsService implements ITtsService {
           Tts.getInitStatus(),
           new Promise((_, reject) => setTimeout(() => reject(new Error('TTS_TIMEOUT')), 1500))
         ]);
+        await Tts.setDefaultLanguage(language);
         this.initialized = true;
       }
-      await Tts.setDefaultLanguage(language);
-      await Tts.stop();
-      await Tts.speak(text);
+      // Chỉ stop nếu đang phát để tránh ngắt engine lúc chưa phát gì (gây nuốt chữ lần đầu)
+      if (this.isSpeaking) {
+        await Tts.stop();
+      }
+      this.isSpeaking = true;
+      Tts.speak(text);
+      // Đặt lại flag sau khi phát xong (không await để không block)
+      Tts.addEventListener('tts-finish', () => { this.isSpeaking = false; });
+      Tts.addEventListener('tts-cancel', () => { this.isSpeaking = false; });
     } catch (e: any) {
+      this.isSpeaking = false;
       if (e?.message === 'TTS is not ready') {
         // Cố gắng thử lại 1 lần nữa nếu service native bị chậm
         try {
-          await new Promise(res => setTimeout(res, 500));
+          await new Promise(res => setTimeout(res, 300));
           await Promise.race([
             Tts.getInitStatus(),
             new Promise((_, reject) => setTimeout(() => reject(new Error('TTS_TIMEOUT')), 1500))
           ]);
           this.initialized = true;
-          await Tts.setDefaultLanguage(language);
-          await Tts.speak(text);
+          Tts.speak(text);
           return;
         } catch (retryError) {
           this.engineAvailable = false;
@@ -139,5 +149,9 @@ export class LocalTtsService implements ITtsService {
     return voices.some(v =>
       v.language.toLowerCase().startsWith(languagePrefix.toLowerCase()),
     );
+  }
+
+  async preload(_texts: string[], _voiceId?: string): Promise<void> {
+    // no-op
   }
 }

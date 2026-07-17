@@ -40,12 +40,7 @@ export class Seeder {
         );
       }
 
-      // 2) Default child profile
-      await exec(
-        `INSERT INTO children (name, avatar_path, created_at, updated_at)
-         VALUES (?, NULL, ?, ?);`,
-        [SEED_DEFAULT_CHILD.name, ts, ts],
-      );
+      // 2) Default child profile removed because Onboarding handles it
 
       // 3) Mark seeded
       await exec(

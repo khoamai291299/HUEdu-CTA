@@ -39,16 +39,20 @@ export const useAppInit = (): InitState => {
 
         await getDb().init();
 
+        const { copyTtsAssetsToCache } = require('@core/utils/copyTtsAssetsToCache');
+        await copyTtsAssetsToCache();
+
         await useSettingsStore.getState().load();
         await useChildStore.getState().load();
         await useChildStore.getState().ensureActive();
 
-        let ttsAvailable = true;
-        // Warm-up TTS trong nền (non-blocking) để giảm độ trễ lần bấm đầu tiên.
-        // Không await — không block màn Splash, không crash app nếu TTS lỗi.
-        getTts().init().catch(e =>
-          logger.debug('[useAppInit] TTS warm-up failed (non-critical)', e),
-        );
+        // Khởi tạo TTS và load cache TRƯỚC khi app sẵn sàng để lần bấm đầu tiên phát ngay.
+        const ttsAvailable = true;
+        try {
+          await getTts().init();
+        } catch (e) {
+          logger.debug('[useAppInit] TTS init failed (non-critical)', e);
+        }
 
         await useVocabularyStore.getState().load();
         await useActivityStore.getState().load();

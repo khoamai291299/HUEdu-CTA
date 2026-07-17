@@ -15,7 +15,9 @@ import {
 import {
   getActivityRepo,
   getUsageRepo,
+  getTts,
 } from '@presentation/di/services';
+import { VBEE_VOICES } from '@core/config/vbeeConfig';
 
 interface ActivityState {
   activities: Activity[];
@@ -71,10 +73,22 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
   addActivity: async input => {
     await new AddActivityUseCase(getActivityRepo()).execute(input);
     await get().load();
+    const text = input.speechTextVi || input.nameVi;
+    if (text) {
+      VBEE_VOICES.forEach(voice => {
+        getTts().preload([text], voice.id).catch(() => {});
+      });
+    }
   },
   updateActivity: async (id, input) => {
     await new UpdateActivityUseCase(getActivityRepo()).execute({id, input});
     await get().load();
+    const text = input.speechTextVi || input.nameVi;
+    if (text) {
+      VBEE_VOICES.forEach(voice => {
+        getTts().preload([text], voice.id).catch(() => {});
+      });
+    }
   },
   deleteActivity: async id => {
     await new DeleteActivityUseCase(getActivityRepo()).execute(id);

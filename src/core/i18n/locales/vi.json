@@ -49,7 +49,7 @@
     "title": "Cài đặt", "vocabulary": "Quản lý từ vựng", "vocabularyCategory": "Phân loại từ vựng",
     "activity": "Quản lý hoạt động", "activityCategory": "Phân loại hoạt động", "logout": "Đăng xuất",
     "profiles": "Hồ sơ trẻ", "stats": "Thống kê", "history": "Lịch sử sử dụng",
-    "voice": "Giọng đọc", "speech": "Tốc độ & cao độ", "themeLang": "Giao diện & ngôn ngữ",
+    "voice": "Giọng đọc", "speech": "Tốc độ & cao độ", "themeLang": "Giao diện",
     "backup": "Sao lưu & khôi phục", "theme": "Giao diện", "language": "Ngôn ngữ",
     "light": "Sáng", "dark": "Tối", "rate": "Tốc độ đọc", "pitch": "Cao độ"
   },

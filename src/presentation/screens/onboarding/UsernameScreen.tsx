@@ -31,6 +31,7 @@ export const UsernameScreen: React.FC<OnboardingScreenProps<'Username'>> = ({nav
         diagnosis,
         birthYear,
       });
+      await useChildStore.getState().ensureActive();
 
       // Save app settings
       if (themeColor) {

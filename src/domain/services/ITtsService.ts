@@ -23,4 +23,9 @@ export interface ITtsService {
   setVoice(voiceId: string): Promise<void>;
   /** Có giọng cho ngôn ngữ chỉ định không (kiểm tra trước khi đọc). */
   hasVoiceForLanguage(languagePrefix: string): Promise<boolean>;
+  /** 
+   * Tải trước (cache ngầm) audio cho danh sách text, KHÔNG phát ra loa.
+   * voiceId: nếu chỉ định, cache theo giọng đó mà không đổi giọng hiện tại của service.
+   */
+  preload(texts: string[], voiceId?: string): Promise<void>;
 }

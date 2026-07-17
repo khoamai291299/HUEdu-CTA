@@ -21,7 +21,7 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
       const tts = getTts();
       // Set Vbee voice before speaking
       await tts.setVoice(id);
-      await tts.speak('Xin chào, tôi là trợ lý hỗ trợ của bạn.', 'vi-VN');
+      await tts.speak('... Xin chào, tôi là trợ lý hỗ trợ của bạn.', 'vi-VN');
     } catch (e) {
       console.warn('TTS Error:', e);
     } finally {

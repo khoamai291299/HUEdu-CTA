@@ -72,25 +72,45 @@ export class VbeeTtsService implements ITtsService {
   async speak(text: string, _language: SpeakLanguage): Promise<void> {
     if (!text.trim()) return;
 
-    // Hủy request Vbee đang chạy và dừng audio đang phát trước khi bắt đầu speak mới.
-    if (this.speakController) {
-      this.speakController.abort();
-      this.speakController = null;
-    }
-    try { if (SimpleAudioPlayer) { await SimpleAudioPlayer.stop(); } } catch (_) {}
-    this.localTts.stop().catch(() => {});
-
     if (this.isVbeeAvailable) {
+      // Kiểm tra cache in-memory trước — nếu có file sẵn thì phát ngay, không cần dừng trước
+      const cacheKey = this.getCacheKey(text.trim());
+      const cachedPath = this.audioCache.get(cacheKey);
+      if (cachedPath) {
+        try {
+          const exists = await RNFS.exists(cachedPath);
+          if (exists) {
+            // Hủy request đang chạy (nếu có) rồi phát ngay — không stop audio trước để tránh nuốt chữ
+            if (this.speakController) {
+              this.speakController.abort();
+              this.speakController = null;
+            }
+            logger.info('[VbeeTtsService] Cache hit — playing instantly:', cachedPath);
+            await this.playAudioFromPath(cachedPath);
+            return;
+          } else {
+            this.audioCache.delete(cacheKey);
+          }
+        } catch (_e) {
+          this.audioCache.delete(cacheKey);
+        }
+      }
+
+      // Không có cache — dừng audio cũ rồi tải về và phát
+      if (this.speakController) {
+        this.speakController.abort();
+        this.speakController = null;
+      }
+      try { if (SimpleAudioPlayer) { await SimpleAudioPlayer.stop(); } } catch (_) {}
+      this.localTts.stop().catch(() => {});
+
       const ctrl = new AbortController();
       this.speakController = ctrl;
       try {
         await this.speakWithVbee(text, ctrl.signal);
         return;
       } catch (e) {
-        // Bị hủy bởi speak mới — bỏ qua, không fallback.
         if (ctrl.signal.aborted) { return; }
-        // Vbee thất bại (lỗi API, timeout, mạng...) —
-        // KHÔNG fallback sang Google TTS để tránh đọc sai giọng.
         logger.warn('[VbeeTtsService] Vbee API thất bại (im lặng, không dùng Google TTS):', e);
         return;
       } finally {
@@ -113,33 +133,44 @@ export class VbeeTtsService implements ITtsService {
     return Math.abs(hash);
   }
 
-  /** Khoá cache duy nhất theo cặp (voiceCode + text). */
-  private getCacheKey(text: string): string {
-    return String(this.simpleHash(this.currentVoiceCode + text.trim()));
+  /** Khoá cache duy nhất theo cặp (voiceCode + text). voiceCode mặc định là giọng hiện tại. */
+  private getCacheKey(text: string, voiceCode: string = this.currentVoiceCode): string {
+    return String(this.simpleHash(voiceCode + text.trim()));
   }
 
-  private async speakWithVbee(text: string, externalSignal: AbortSignal): Promise<void> {
-    // Kiểm tra cache trước — nếu đã có file local thì phát ngay, không cần gọi API
-    const cacheKey = this.getCacheKey(text);
-    const cachedPath = this.audioCache.get(cacheKey);
-    if (cachedPath) {
-      try {
-        const exists = await RNFS.exists(cachedPath);
-        if (exists) {
-          if (externalSignal.aborted) { return; }
-          logger.info('[VbeeTtsService] Cache hit, playing:', cachedPath);
-          await this.playAudioFromPath(cachedPath);
-          return;
-        }
-      } catch (_e) {
-        // File bị xóa ngoài app, xóa khỏi cache
-        this.audioCache.delete(cacheKey);
+  /** Tìm voiceCode Vbee theo voiceId; nếu không chỉ định/không tìm thấy thì dùng giọng hiện tại. */
+  private resolveVoiceCode(voiceId?: string): string {
+    if (!voiceId) { return this.currentVoiceCode; }
+    const voice = VBEE_VOICES.find(v => v.id === voiceId);
+    return voice ? voice.voiceCode : this.currentVoiceCode;
+  }
+
+  /**
+   * Đảm bảo audio cho (text, voiceCode) đã có sẵn trên đĩa — tải về nếu chưa có,
+   * KHÔNG phát ra loa. Dùng chung cho speak() (phát ngay) và preload() (tải trước ngầm).
+   * Trả về đường dẫn file local, hoặc null nếu bị hủy giữa chừng.
+   */
+  private async ensureCached(
+    text: string,
+    voiceCode: string,
+    externalSignal: AbortSignal = new AbortController().signal,
+  ): Promise<string | null> {
+    const cacheKey = this.getCacheKey(text, voiceCode);
+    const targetPath = `${RNFS.CachesDirectoryPath}/vbee_${cacheKey}.mp3`;
+    const knownPath = this.audioCache.get(cacheKey) ?? targetPath;
+
+    try {
+      const exists = await RNFS.exists(knownPath);
+      if (exists) {
+        this.audioCache.set(cacheKey, knownPath);
+        return knownPath;
       }
+    } catch (_e) {
+      this.audioCache.delete(cacheKey);
     }
 
-    if (externalSignal.aborted) { return; }
+    if (externalSignal.aborted) { return null; }
 
-    // Kết hợp timeout abort với tín hiệu hủy từ speak mới (externalSignal).
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), VBEE_CONFIG.timeout);
     const onAbort = () => controller.abort();
@@ -150,7 +181,7 @@ export class VbeeTtsService implements ITtsService {
         app_id: VBEE_CONFIG.appId,
         response_type: 'direct',
         input_text: text,
-        voice_code: this.currentVoiceCode,
+        voice_code: voiceCode,
         audio_type: VBEE_CONFIG.format,
         speed_rate: String(this.speed),
         bitrate: 128,
@@ -168,10 +199,9 @@ export class VbeeTtsService implements ITtsService {
         signal: controller.signal,
       });
 
-      if (externalSignal.aborted) { return; }
+      if (externalSignal.aborted) { return null; }
 
       const rawText = await response.text();
-      // Dùng warn để log xuất hiện ngay cả trong bản release (giúp debug).
       logger.warn('[VbeeTtsService] Response status:', response.status);
       logger.warn('[VbeeTtsService] Response body (300 ký tự đầu):', rawText.substring(0, 300));
 
@@ -189,10 +219,7 @@ export class VbeeTtsService implements ITtsService {
         data.data?.audio_link;
       const audioBase64 = data.audio || data.result?.audio;
 
-      // Đường dẫn file cache theo cacheKey (tên file an toàn, không có ký tự đặc biệt)
-      const targetPath = `${RNFS.CachesDirectoryPath}/vbee_${cacheKey}.mp3`;
-
-      if (externalSignal.aborted) { return; }
+      if (externalSignal.aborted) { return null; }
 
       if (audioUrl) {
         await this.downloadToPath(audioUrl, targetPath);
@@ -202,16 +229,54 @@ export class VbeeTtsService implements ITtsService {
         throw new Error(`No audio data in Vbee response: ${rawText.substring(0, 200)}`);
       }
 
-      if (externalSignal.aborted) { return; }
+      if (externalSignal.aborted) { return null; }
 
-      // Lưu vào cache để lần sau phát ngay không cần gọi API
       this.audioCache.set(cacheKey, targetPath);
-      await this.playAudioFromPath(targetPath);
+      return targetPath;
     } finally {
       clearTimeout(timeoutId);
       externalSignal.removeEventListener('abort', onAbort);
     }
   }
+
+  private async speakWithVbee(text: string, externalSignal: AbortSignal): Promise<void> {
+    const path = await this.ensureCached(text, this.currentVoiceCode, externalSignal);
+    if (!path || externalSignal.aborted) { return; }
+    logger.info('[VbeeTtsService] Playing:', path);
+    await this.playAudioFromPath(path);
+  }
+
+  /**
+   * Tải trước (cache ngầm) audio cho danh sách text — KHÔNG phát ra loa.
+   * Giới hạn số request chạy song song để tránh quá tải API/mạng thiết bị.
+   */
+  async preload(texts: string[], voiceId?: string): Promise<void> {
+    if (!this.isVbeeAvailable) { return; }
+
+    const voiceCode = this.resolveVoiceCode(voiceId);
+    const uniqueTexts = Array.from(
+      new Set(texts.map(t => t.trim()).filter(Boolean)),
+    );
+    if (uniqueTexts.length === 0) { return; }
+
+    const concurrency = Math.min(2, uniqueTexts.length);
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < uniqueTexts.length) {
+        const text = uniqueTexts[cursor++];
+        try {
+          await this.ensureCached(text, voiceCode);
+        } catch (e) {
+          logger.debug('[VbeeTtsService] preload thất bại cho 1 câu (bỏ qua):', text, e);
+        }
+      }
+    };
+
+    await Promise.all(Array.from({length: concurrency}, () => worker()));
+    logger.info(`[VbeeTtsService] Preload hoàn tất (${uniqueTexts.length} câu, voice=${voiceCode}).`);
+  }
+
+
 
   /** Download file audio từ URL về đường dẫn chỉ định. */
   private async downloadToPath(url: string, filePath: string): Promise<void> {
