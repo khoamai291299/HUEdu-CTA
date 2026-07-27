@@ -9,8 +9,9 @@ import {Image, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, HelperText, Text, TextInput, useTheme} from 'react-native-paper';
 import {Controller, useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
+import {AudioRecorderField} from '@presentation/components/AudioRecorderField';
 
 import {SettingsScreenProps} from '@presentation/navigation/types';
 import {ArasaacImage} from '@presentation/components/ArasaacImage';
@@ -19,8 +20,8 @@ import {ArasaacPickerModal} from '@presentation/components/ArasaacPickerModal';
 interface FormValues {
   nameVi: string;
   speechTextVi: string;
-
   imagePath: string | null;
+  audioPath: string | null;
 }
 
 export const ActivityEditScreen: React.FC<
@@ -40,16 +41,25 @@ export const ActivityEditScreen: React.FC<
     defaultValues: {
       nameVi: existing?.nameVi ?? '',
       speechTextVi: existing?.speechTextVi ?? '',
-
       imagePath: existing?.imagePath ?? null,
+      audioPath: existing?.audioPath ?? null,
     },
   });
 
   const imagePath = watch('imagePath');
+  const audioPath = watch('audioPath');
 
 
   const pickImage = async () => {
     const result = await launchImageLibrary({mediaType: 'photo', quality: 0.8});
+    const uri = result.assets?.[0]?.uri;
+    if (uri) {
+      setValue('imagePath', uri);
+    }
+  };
+
+  const takePhoto = async () => {
+    const result = await launchCamera({mediaType: 'photo', quality: 0.8});
     const uri = result.assets?.[0]?.uri;
     if (uri) {
       setValue('imagePath', uri);
@@ -74,6 +84,7 @@ export const ActivityEditScreen: React.FC<
       nameVi: trimmedNameVi,
       speechTextVi: values.speechTextVi.trim() || null,
       imagePath: values.imagePath,
+      audioPath: values.audioPath,
     };
     if (editingId) {
       await activityStore.updateActivity(editingId, payload);
@@ -141,7 +152,18 @@ export const ActivityEditScreen: React.FC<
         <Button mode="outlined" icon="image" onPress={pickImage} style={{flex: 1}}>
           {t('vocabulary.pickImage') || 'Thư viện'}
         </Button>
+        <Button mode="outlined" icon="camera" onPress={takePhoto} style={{flex: 1}}>
+          Chụp
+        </Button>
       </View>
+
+      <Text variant="labelLarge" style={[styles.label, { marginTop: 24 }]}>
+        Âm thanh tùy chỉnh
+      </Text>
+      <AudioRecorderField
+        audioPath={audioPath}
+        onChange={(path) => setValue('audioPath', path)}
+      />
 
       <Button
         mode="contained"

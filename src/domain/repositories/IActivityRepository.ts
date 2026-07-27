@@ -14,6 +14,8 @@ export interface ActivityInput {
   speechTextEn?: string | null;
   sortOrder?: number;
   isDefault?: boolean;
+  isCustom?: boolean;
+  audioPath?: string | null;
 }
 
 export interface IActivityRepository extends IBaseRepository<Activity> {

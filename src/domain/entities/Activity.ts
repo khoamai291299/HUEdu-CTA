@@ -12,6 +12,8 @@ export class Activity extends BaseEntity {
   public readonly speechTextVi: string | null;
   public readonly isDefault: boolean;
   public readonly sortOrder: number;
+  public readonly isCustom: boolean;
+  public readonly audioPath: string | null;
 
   constructor(params: {
     id: number;
@@ -20,6 +22,8 @@ export class Activity extends BaseEntity {
     speechTextVi?: string | null;
     isDefault: boolean;
     sortOrder: number;
+    isCustom?: boolean;
+    audioPath?: string | null;
     createdAt: number;
     updatedAt: number;
   }) {
@@ -29,6 +33,8 @@ export class Activity extends BaseEntity {
     this.speechTextVi = params.speechTextVi ?? null;
     this.isDefault = params.isDefault;
     this.sortOrder = params.sortOrder;
+    this.isCustom = params.isCustom ?? false;
+    this.audioPath = params.audioPath ?? null;
   }
 
   /** Văn bản dùng cho TTS; mặc định lấy theo tên. */

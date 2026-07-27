@@ -23,6 +23,7 @@ export const SettingKey = {
   ACTIVE_CHILD_ID: 'active_child_id',
   SCHEMA_SEEDED: 'schema_seeded',
   IS_ONBOARDED: 'is_onboarded',
+  CLONED_VOICES: 'cloned_voices',
 } as const;
 
 /** Khoá AsyncStorage (cache nhanh, không phải nguồn chân lý). */

@@ -14,6 +14,8 @@ export interface VocabularyInput {
   speechTextEn?: string | null;
   sortOrder?: number;
   isDefault?: boolean;
+  isCustom?: boolean;
+  audioPath?: string | null;
 }
 
 export interface IVocabularyRepository extends IBaseRepository<Vocabulary> {

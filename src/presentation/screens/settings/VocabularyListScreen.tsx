@@ -19,6 +19,7 @@ import {useTranslation} from 'react-i18next';
 import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
 
 import {EmptyState} from '@presentation/components/EmptyState';
+import {PinGateModal} from '@presentation/components/PinGateModal';
 import {SettingsScreenProps} from '@presentation/navigation/types';
 
 export const VocabularyListScreen: React.FC<
@@ -30,6 +31,7 @@ export const VocabularyListScreen: React.FC<
 
   const [query, setQuery] = useState('');
   const [toDelete, setToDelete] = useState<number | null>(null);
+  const [showPinGate, setShowPinGate] = useState(false);
 
   const q = query.trim().toLowerCase();
   const data = vocabStore.vocabulary.filter(
@@ -76,11 +78,28 @@ export const VocabularyListScreen: React.FC<
         ListEmptyComponent={<EmptyState message={t('common.empty')} />}
       />
 
-      <FAB
+      <FAB.Group
+        open={false}
+        visible
         icon="plus"
-        label="Thêm từ vựng"
-        style={styles.fab}
-        onPress={() => navigation.navigate('VocabularyEdit', {})}
+        actions={[
+          {
+            icon: 'text-box-plus-outline',
+            label: 'Thêm thẻ tùy chỉnh',
+            onPress: () => setShowPinGate(true),
+          },
+          {
+            icon: 'card-text-outline',
+            label: 'Thêm từ vựng mới',
+            onPress: () => navigation.navigate('VocabularyEdit', {}),
+          },
+        ]}
+        onStateChange={() => {}}
+        onPress={() => {
+          if (!showPinGate) {
+             // Handle by FAB.Group automatically
+          }
+        }}
       />
 
       <Portal>
@@ -105,6 +124,15 @@ export const VocabularyListScreen: React.FC<
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
+      <PinGateModal
+        visible={showPinGate}
+        onDismiss={() => setShowPinGate(false)}
+        onSuccess={() => {
+          setShowPinGate(false);
+          navigation.navigate('CreateCard' as any);
+        }}
+      />
     </View>
   );
 };

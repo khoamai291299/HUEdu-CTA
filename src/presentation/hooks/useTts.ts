@@ -43,10 +43,21 @@ export const useTts = () => {
     },
     [settings.activeChildId],
   );
+  const preloadWords = useCallback(
+    async (words: Vocabulary[]) => {
+      try {
+        const texts = words.map(w => w.speechText());
+        await getTts().preload(texts, settings.speech.voiceId || undefined);
+      } catch (e) {
+        logger.warn('[useTts] preloadWords failed', e);
+      }
+    },
+    [settings.speech.voiceId],
+  );
 
   const stop = useCallback(async () => {
     await getTts().stop();
   }, []);
 
-  return {speakWord, speakSentence, stop};
+  return {speakWord, speakSentence, preloadWords, stop};
 };

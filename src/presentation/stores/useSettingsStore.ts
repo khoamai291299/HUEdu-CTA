@@ -19,11 +19,12 @@ interface SettingsState {
   settings: AppSettings;
   loaded: boolean;
   load: () => Promise<void>;
-  setTheme: (theme: AppThemeName) => Promise<void>;
+  setTheme: (theme: AppThemeName, customColor?: string) => Promise<void>;
   setLanguage: (language: AppLanguage) => Promise<void>;
   setSpeechRate: (rate: number) => Promise<void>;
   setSpeechPitch: (pitch: number) => Promise<void>;
   setVoice: (voiceId: string | null) => Promise<void>;
+
   setActiveChildId: (id: number | null) => void;
   setIsOnboarded: (isOnboarded: boolean) => Promise<void>;
 }
@@ -50,15 +51,17 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const tts = getTts();
     await tts.setRate(settings.speech.rate);
     await tts.setPitch(settings.speech.pitch);
+
     if (settings.speech.voiceId) {
       await tts.setVoice(settings.speech.voiceId).catch(() => undefined);
     }
     set({settings, loaded: true});
   },
 
-  setTheme: async theme => {
-    await new UpdateSettingsUseCase(getSettingsRepo()).execute({theme});
-    set({settings: {...get().settings, theme}});
+  setTheme: async (theme, customColor) => {
+    const customThemeColor = customColor ?? get().settings.customThemeColor;
+    await new UpdateSettingsUseCase(getSettingsRepo()).execute({theme, customThemeColor});
+    set({settings: {...get().settings, theme, customThemeColor}});
   },
 
   setLanguage: async language => {
@@ -97,6 +100,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       },
     });
   },
+
+
 
   setActiveChildId: id =>
     set({settings: {...get().settings, activeChildId: id}}),

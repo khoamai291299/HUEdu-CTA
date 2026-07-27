@@ -54,8 +54,8 @@ export class VocabularyRepositoryImpl
     const res = await this.db.executeSql(
       `INSERT INTO vocabulary
         (name_vi, name_en, image_path, speech_text_vi, speech_text_en,
-         is_default, sort_order, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+         is_default, is_custom, audio_path, sort_order, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         input.nameVi,
         input.nameEn ?? null,
@@ -63,6 +63,8 @@ export class VocabularyRepositoryImpl
         input.speechTextVi ?? null,
         input.speechTextEn ?? null,
         input.isDefault ? 1 : 0,
+        input.isCustom ? 1 : 0,
+        input.audioPath ?? null,
         input.sortOrder ?? 0,
         ts,
         ts,
@@ -84,6 +86,8 @@ export class VocabularyRepositoryImpl
       image_path: input.imagePath,
       speech_text_vi: input.speechTextVi,
       speech_text_en: input.speechTextEn,
+      is_custom: input.isCustom,
+      audio_path: input.audioPath,
       sort_order: input.sortOrder,
     };
     for (const [col, val] of Object.entries(map)) {

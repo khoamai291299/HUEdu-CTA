@@ -7,7 +7,7 @@
 import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {Text, useTheme} from 'react-native-paper';
-import {Star, Volume2} from 'lucide-react-native';
+import {Star, Volume2, MoreVertical} from 'lucide-react-native';
 import {Vocabulary} from '@domain/entities/Vocabulary';
 import {TouchTarget} from '@core/constants';
 import {ArasaacImage} from './ArasaacImage';
@@ -20,6 +20,7 @@ interface Props {
   isDirectPlay?: boolean;
   onPress: (v: Vocabulary) => void;
   onToggleFavorite?: (v: Vocabulary) => void;
+  onSettingsPress?: (v: Vocabulary) => void;
 }
 
 const IconTileComponent: React.FC<Props> = ({
@@ -30,6 +31,7 @@ const IconTileComponent: React.FC<Props> = ({
   isDirectPlay,
   onPress,
   onToggleFavorite,
+  onSettingsPress,
 }) => {
   const theme = useTheme();
   const bg = accentColor ?? theme.colors.secondaryContainer;
@@ -75,6 +77,19 @@ const IconTileComponent: React.FC<Props> = ({
         </View>
       ) : null}
 
+      {onSettingsPress ? (
+        <Pressable
+          hitSlop={12}
+          style={styles.settingsBtn}
+          accessibilityLabel="settings"
+          onPress={() => onSettingsPress(vocabulary)}>
+          <MoreVertical
+            size={22}
+            color={theme.colors.outline}
+          />
+        </Pressable>
+      ) : null}
+
       <View
         style={[
           styles.imageWrap,
@@ -114,6 +129,7 @@ const styles = StyleSheet.create({
   letter: {fontWeight: '700', color: '#3A3A3A'},
   label: {textAlign: 'center', marginTop: 2, lineHeight: 16},
   favBtn: {position: 'absolute', top: 0, right: 0, zIndex: 2, padding: 8},
+  settingsBtn: {position: 'absolute', top: 0, left: 0, zIndex: 2, padding: 8},
   directPlayIcon: {position: 'absolute', top: 6, left: 6, zIndex: 2, opacity: 0.6},
 });
 

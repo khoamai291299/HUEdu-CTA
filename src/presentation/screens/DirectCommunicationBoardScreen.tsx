@@ -2,7 +2,7 @@
  * src/presentation/screens/DirectCommunicationBoardScreen.tsx
  * Mục đích: Màn chính - bảng giao tiếp trực tiếp: chọn thẻ sẽ phát âm ngay lập tức.
  */
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useRef} from 'react';
 import {FlatList, StyleSheet, View, useWindowDimensions} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
@@ -13,8 +13,11 @@ import {useTts} from '@presentation/hooks/useTts';
 import {useResponsiveGrid} from '@presentation/hooks/useResponsiveGrid';
 import {useChildStore} from '@presentation/stores/useChildStore';
 import {IconTile} from '@presentation/components/IconTile';
+import {DraggableTile} from '@presentation/components/DraggableTile';
+import {DropZone, DropZoneRef} from '@presentation/components/DropZone';
 import {EmptyState} from '@presentation/components/EmptyState';
 import {StickFigure} from '@presentation/components/StickFigure';
+import {RecordAudioModal} from '@presentation/components/RecordAudioModal';
 import {Vocabulary} from '@domain/entities/Vocabulary';
 import {MainTabScreenProps} from '@presentation/navigation/types';
 
@@ -30,9 +33,15 @@ export const DirectCommunicationBoardScreen: React.FC<
   const activities = useActivityStore(s => s.activities);
   const activeChildId = useSettingsStore(s => s.settings.activeChildId);
   const child = useChildStore(s => s.children.find(c => c.id === activeChildId));
-  const {speakWord} = useTts();
+  const {speakWord, preloadWords} = useTts();
 
   const [showSearch, setShowSearch] = useState(false);
+  const [dropZoneLayout, setDropZoneLayout] = useState<any>(null);
+  const [droppedVocab, setDroppedVocab] = useState<Vocabulary | null>(null);
+  const [settingsVocab, setSettingsVocab] = useState<Vocabulary | null>(null);
+  const dropZoneRef = useRef<DropZoneRef>(null);
+  
+  const updateActivity = useActivityStore(s => s.updateActivity);
 
   const data = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -41,15 +50,21 @@ export const DirectCommunicationBoardScreen: React.FC<
     });
   }, [activities, search]);
 
+  React.useEffect(() => {
+    preloadWords(data);
+  }, [data, preloadWords]);
+
   const {width} = useWindowDimensions();
+
+  const dynamicItemsPerPage = droppedVocab ? 9 : itemsPerPage;
 
   const pages = useMemo(() => {
     const chunks = [];
-    for (let i = 0; i < data.length; i += itemsPerPage) {
-      chunks.push(data.slice(i, i + itemsPerPage));
+    for (let i = 0; i < data.length; i += dynamicItemsPerPage) {
+      chunks.push(data.slice(i, i + dynamicItemsPerPage));
     }
     return chunks;
-  }, [data, itemsPerPage]);
+  }, [data, dynamicItemsPerPage]);
 
   const TONE_COLORS: Record<string, string> = {
     tone0: '#FFFFFF',
@@ -72,7 +87,28 @@ export const DirectCommunicationBoardScreen: React.FC<
   const skinColor = TONE_COLORS[skinToneId] || TONE_COLORS.tone2;
 
   const onTilePress = (v: Vocabulary) => {
-    speakWord(v);
+    // Không làm gì, theo yêu cầu mới
+  };
+
+  const onTileDrop = (v: Vocabulary) => {
+    dropZoneRef.current?.triggerHighlight();
+    setDroppedVocab(v); // Không phát âm, chỉ đưa vào DropZone
+  };
+
+  const handlePlayAudio = () => {
+    if (droppedVocab) speakWord(droppedVocab);
+  };
+
+  const handleClearDropZone = () => {
+    setDroppedVocab(null);
+  };
+
+  const onSettingsPress = (v: Vocabulary) => {
+    setSettingsVocab(v);
+  };
+
+  const handleSaveAudio = async (vocabId: number, newAudioPath: string | null) => {
+    await updateActivity(vocabId, { audioPath: newAudioPath });
   };
 
   return (
@@ -100,6 +136,13 @@ export const DirectCommunicationBoardScreen: React.FC<
         />
       ) : null}
 
+      <DropZone
+        ref={dropZoneRef}
+        vocabulary={droppedVocab}
+        onPlay={handlePlayAudio}
+        onClear={handleClearDropZone}
+        onLayoutChange={setDropZoneLayout}
+      />
 
       <FlatList
         style={{marginTop: isLandscape ? -12 : 0}}
@@ -112,12 +155,14 @@ export const DirectCommunicationBoardScreen: React.FC<
           <View style={{width, paddingHorizontal, paddingTop: 0, paddingBottom: 24}}>
             <View style={{flexDirection: 'row', flexWrap: 'wrap', gap}}>
               {page.map((vocab) => (
-                <IconTile
+                <DraggableTile
                   key={vocab.id}
                   vocabulary={vocab}
                   size={tileSize}
-                  isDirectPlay={true}
+                  dropZoneLayout={dropZoneLayout}
+                  onDrop={onTileDrop}
                   onPress={onTilePress}
+                  onSettingsPress={onSettingsPress}
                 />
               ))}
             </View>
@@ -134,6 +179,13 @@ export const DirectCommunicationBoardScreen: React.FC<
       <View style={[styles.avatarContainer, {backgroundColor: 'transparent', borderColor: 'transparent', elevation: 0}]}>
         <StickFigure faceColor={skinColor} pose="point" size={80} />
       </View>
+
+      <RecordAudioModal
+        visible={!!settingsVocab}
+        vocabulary={settingsVocab}
+        onDismiss={() => setSettingsVocab(null)}
+        onSave={handleSaveAudio}
+      />
     </View>
   );
 };

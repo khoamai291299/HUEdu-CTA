@@ -18,4 +18,5 @@ export interface AppSettings {
   speech: SpeechSettings;
   activeChildId: number | null;
   isOnboarded: boolean;
+  customThemeColor?: string;
 }

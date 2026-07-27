@@ -142,7 +142,8 @@ export class VbeeTtsService implements ITtsService {
   private resolveVoiceCode(voiceId?: string): string {
     if (!voiceId) { return this.currentVoiceCode; }
     const voice = VBEE_VOICES.find(v => v.id === voiceId);
-    return voice ? voice.voiceCode : this.currentVoiceCode;
+    if (voice) { return voice.voiceCode; }
+    return this.currentVoiceCode;
   }
 
   /**
@@ -321,17 +322,17 @@ export class VbeeTtsService implements ITtsService {
   }
 
   async getVoices(): Promise<TtsVoice[]> {
+    if (!this.isVbeeAvailable) {
+      return this.localTts.getVoices();
+    }
+
     const vbeeVoices: TtsVoice[] = VBEE_VOICES.map(v => ({
       id: v.id,
       name: v.label,
       language: 'vi-VN',
     }));
 
-    if (!this.isVbeeAvailable) {
-      return this.localTts.getVoices();
-    }
-
-    return vbeeVoices;
+    return [...vbeeVoices];
   }
 
   async setVoice(voiceId: string): Promise<void> {
@@ -339,10 +340,12 @@ export class VbeeTtsService implements ITtsService {
     if (vbeeVoice) {
       this.currentVoiceCode = vbeeVoice.voiceCode;
       logger.info('[VbeeTtsService] Set Vbee voice:', vbeeVoice.label);
-    } else {
-      await this.localTts.setVoice(voiceId);
+      return;
     }
+
+    await this.localTts.setVoice(voiceId);
   }
+
 
   async hasVoiceForLanguage(languagePrefix: string): Promise<boolean> {
     if (languagePrefix.toLowerCase().startsWith('vi')) {

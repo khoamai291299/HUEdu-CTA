@@ -6,7 +6,7 @@
  */
 import {MD3DarkTheme, MD3LightTheme, MD3Theme} from 'react-native-paper';
 
-export type AppThemeName = 'light' | 'dark' | 'forest' | 'ocean' | 'pale' | 'pink' | 'green' | 'lavender' | 'peach' | 'mint' | 'sky' | 'lemon' | 'rose' | 'sand' | 'coral' | 'lilac' | 'aqua' | 'cream' | 'silver';
+export type AppThemeName = 'light' | 'dark' | 'forest' | 'ocean' | 'pale' | 'pink' | 'green' | 'lavender' | 'peach' | 'mint' | 'sky' | 'lemon' | 'rose' | 'sand' | 'coral' | 'lilac' | 'aqua' | 'cream' | 'silver' | 'custom';
 
 const softColors = {
   primary: '#5B8DEF',
@@ -376,9 +376,25 @@ export const getTheme = (name: AppThemeName): MD3Theme => {
       return creamTheme;
     case 'silver':
       return silverTheme;
+    case 'custom':
+      return lightTheme; // Managed separately, fallback here if no customThemeColor provided
     case 'light':
     default:
       return lightTheme;
   }
+};
+
+export const buildCustomTheme = (hexColor: string): MD3Theme => {
+  return {
+    ...MD3LightTheme,
+    roundness: 4,
+    colors: {
+      ...MD3LightTheme.colors,
+      primary: hexColor,
+      secondary: hexColor, // Simplification
+      primaryContainer: hexColor,
+      secondaryContainer: hexColor,
+    },
+  };
 };
 

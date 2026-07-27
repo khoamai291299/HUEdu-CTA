@@ -8,6 +8,9 @@ import {BaseUseCase} from '@core/base/BaseUseCase';
 import {ITtsService} from '@domain/services/ITtsService';
 import {IUsageHistoryRepository} from '@domain/repositories/IUsageHistoryRepository';
 import {Vocabulary} from '@domain/entities/Vocabulary';
+import {NativeModules} from 'react-native';
+
+const {SimpleAudioPlayer} = NativeModules;
 
 export interface SpeakWordParams {
   vocabulary: Vocabulary;
@@ -25,7 +28,17 @@ export class SpeakWordUseCase extends BaseUseCase<SpeakWordParams, void> {
 
   async execute(params: SpeakWordParams): Promise<void> {
     const {vocabulary, childId, recordUsage = true} = params;
-    await this.tts.speak(vocabulary.speechText(), 'vi-VN');
+    
+    if (vocabulary.audioPath && SimpleAudioPlayer) {
+      try {
+        await SimpleAudioPlayer.stop();
+        await SimpleAudioPlayer.play(vocabulary.audioPath.startsWith('file://') ? vocabulary.audioPath : 'file://' + vocabulary.audioPath);
+      } catch (e) {
+        console.warn('Failed to play custom audio', e);
+      }
+    } else {
+      await this.tts.speak(vocabulary.speechText(), 'vi-VN');
+    }
     if (childId != null && recordUsage) {
       await this.usageRepo.record(childId, vocabulary.id, 'board_tap');
     }

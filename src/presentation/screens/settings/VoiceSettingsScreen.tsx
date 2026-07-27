@@ -4,99 +4,129 @@
  * Dependency: services DI (TTS), useSettingsStore, react-native-paper, i18n.
  */
 import React, {useEffect, useState} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import {Banner, List, RadioButton} from 'react-native-paper';
+import {StyleSheet, View, ScrollView, TouchableOpacity, useWindowDimensions, ActivityIndicator} from 'react-native';
+import {Text, useTheme} from 'react-native-paper';
+import {Volume2, Mic} from 'lucide-react-native';
 import {useTranslation} from 'react-i18next';
 import {getTts} from '@presentation/di/services';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
-import {TtsVoice} from '@domain/services/ITtsService';
 import {VBEE_VOICES} from '@core/config/vbeeConfig';
+import {SettingsScreenProps} from '@presentation/navigation/types';
 
-export const VoiceSettingsScreen: React.FC = () => {
+export const VoiceSettingsScreen: React.FC<SettingsScreenProps<'VoiceSettings'>> = ({
+  navigation,
+}) => {
   const {t} = useTranslation();
+  const theme = useTheme();
+  const {width} = useWindowDimensions();
+  
   const voiceId = useSettingsStore(s => s.settings.speech.voiceId);
   const setVoice = useSettingsStore(s => s.setVoice);
-  /** voices: khởi tạo sẵn từ VBEE_VOICES để list hiện ngay, không chờ async. */
-  const [voices, setVoices] = useState<TtsVoice[]>(
-    VBEE_VOICES.map(v => ({id: v.id, name: v.label, language: 'vi-VN'})),
-  );
-  const [hasVi, setHasVi] = useState(true);
-  /** selectedId: cập nhật tức thì khi bấm (optimistic), không chờ DB write xong. */
-  const [selectedId, setSelectedId] = useState<string | null>(voiceId);
+  
+  const [playingId, setPlayingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
+  const handleTestVoice = async (id: string, isCloned: boolean = false) => {
+    if (playingId) return;
+    setPlayingId(id);
+    try {
       const tts = getTts();
-      const list = await tts.getVoices();
-      setVoices(list);
-      setHasVi(await tts.hasVoiceForLanguage('vi'));
-    };
-    load();
-  }, []);
-
-  // Đồng bộ selectedId nếu voiceId trong store thay đổi từ bên ngoài.
-  useEffect(() => {
-    setSelectedId(voiceId);
-  }, [voiceId]);
-
-  /** Chọn giọng: cập nhật UI tức thì, lưu DB trong nền. */
-  const handleSelectVoice = (id: string) => {
-    setSelectedId(id);
-    setVoice(id);
-  };
-
-
-  const getVoiceDescription = (item: TtsVoice) => {
-    const nameLow = item.name.toLowerCase();
-    
-    if (nameLow.includes('vi-vn-x-vic')) return 'Giọng Nữ cao (Miền Bắc) - Rõ ràng, truyền cảm';
-    if (nameLow.includes('vi-vn-x-vid')) return 'Giọng Nữ trung (Miền Nam) - Nhẹ nhàng, dễ thương';
-    if (nameLow.includes('vi-vn-x-vie')) return 'Giọng Nam trung (Miền Nam) - Trầm ấm, chậm rãi';
-    if (nameLow.includes('vi-vn-x-vif')) return 'Giọng Nam cao (Miền Bắc) - Dứt khoát, mạnh mẽ';
-    if (nameLow.includes('vi-vn-x-via')) return 'Giọng Nữ trung (Tiêu chuẩn)';
-    if (nameLow.includes('samsung') && nameLow.includes('female')) return 'Giọng Nữ (Samsung) - Trong trẻo, tự nhiên';
-    if (nameLow.includes('samsung') && nameLow.includes('male')) return 'Giọng Nam (Samsung) - Vang, rõ chữ';
-
-    // Fallback heuristic for others
-    let desc = item.language;
-    let gender = '';
-    if (nameLow.includes('female') || nameLow.includes('f0') || nameLow.includes('-a') || nameLow.includes('-c')) {
-      gender = 'Nữ';
-    } else if (nameLow.includes('male') || nameLow.includes('m0') || nameLow.includes('-b') || nameLow.includes('-d') || nameLow.includes('-e') || nameLow.includes('-f')) {
-      gender = 'Nam';
+      await tts.setVoice(id);
+      await tts.speak('... Xin chào, tôi là trợ lý giọng nói của bạn.', 'vi-VN');
+    } catch (e) {
+      console.warn('TTS Error:', e);
+    } finally {
+      setPlayingId(null);
     }
-
-    if (gender) desc += ` · ${gender}`;
-    return desc;
   };
+
+  const columns = 3;
+  const paddingHorizontal = 16;
+  const gap = 16;
+  const maxContentWidth = 400;
+  const availableWidth = Math.min(width, maxContentWidth) - (paddingHorizontal * 2) - (gap * (columns - 1));
+  const cardWidth = Math.floor(availableWidth / columns);
+  const circleSize = Math.min(cardWidth * 0.75, 80);
+
+  const allVoices = [...VBEE_VOICES];
 
   return (
-    <View style={styles.container}>
-      {!hasVi ? (
-        <Banner visible icon="alert">
-          {t('errors.noVoice')}
-        </Banner>
-      ) : null}
-      <FlatList
-        data={voices}
-        keyExtractor={v => v.id}
-        renderItem={({item}) => (
-          <List.Item
-            title={item.name}
-            description={getVoiceDescription(item)}
-            onPress={() => handleSelectVoice(item.id)}
-            right={() => (
-              <RadioButton
-                value={item.id}
-                status={selectedId === item.id ? 'checked' : 'unchecked'}
-                onPress={() => handleSelectVoice(item.id)}
-              />
-            )}
-          />
-        )}
-      />
+    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      <View style={styles.centerContainer}>
+        <ScrollView style={styles.list} contentContainerStyle={{paddingHorizontal, paddingBottom: 40, paddingTop: 20}}>
+          <View style={[styles.grid, {gap}]}>
+            
+            {/* Cloned Voices & Vbee Voices */}
+            {allVoices.map(v => {
+              const isSelected = voiceId === v.id;
+              const isPlaying = playingId === v.id;
+              
+              return (
+                <View key={v.id} style={{width: cardWidth, alignItems: 'center'}}>
+                  <TouchableOpacity
+                    style={[
+                      styles.circle,
+                      {
+                        backgroundColor: isSelected ? theme.colors.primaryContainer : theme.colors.surfaceVariant,
+                        width: circleSize,
+                        height: circleSize,
+                        borderRadius: circleSize / 2,
+                      },
+                      isSelected && {borderWidth: 3, borderColor: theme.colors.primary}
+                    ]}
+                    onPress={() => setVoice(v.id)}
+                    activeOpacity={0.7}
+                  >
+                    <TouchableOpacity
+                      style={styles.speakerBtn}
+                      onPress={() => handleTestVoice(v.id)}
+                      disabled={!!playingId}
+                      hitSlop={8}
+                    >
+                      {isPlaying ? (
+                        <ActivityIndicator size="small" color={theme.colors.primary} />
+                      ) : (
+                        <Volume2
+                          size={circleSize * 0.4}
+                          color={isSelected ? theme.colors.primary : theme.colors.onSurfaceVariant}
+                        />
+                      )}
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                  
+                  <Text variant="titleSmall" style={[styles.label, {fontSize: Math.min(14, cardWidth * 0.14)}]}>
+                    {v.label}
+                  </Text>
+                  <Text variant="bodySmall" style={[styles.desc, {fontSize: Math.min(11, cardWidth * 0.11)}]}>
+                    {v.desc}
+                  </Text>
+                </View>
+              );
+            })}
+
+
+
+          </View>
+        </ScrollView>
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({container: {flex: 1}});
+const styles = StyleSheet.create({
+  container: {flex: 1},
+  centerContainer: {flex: 1, width: '100%', maxWidth: 450, alignSelf: 'center'},
+  list: {flex: 1},
+  grid: {flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'},
+  circle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  speakerBtn: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {textAlign: 'center', fontWeight: 'bold', marginTop: 2},
+  desc: {textAlign: 'center', opacity: 0.7},
+});

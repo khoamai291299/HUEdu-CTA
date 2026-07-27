@@ -43,6 +43,7 @@ export type SettingsStackParamList = {
   SpeechSettings: undefined;
   ThemeLanguage: undefined;
   BackupRestore: undefined;
+  CreateCard: undefined;
 };
 
 export type RootScreenProps<T extends keyof RootStackParamList> =

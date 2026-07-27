@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, ActivityIndicator} from 'react-native';
 import {Text, Button, useTheme} from 'react-native-paper';
-import {Volume2} from 'lucide-react-native';
+import {Volume2, Mic} from 'lucide-react-native';
 import {OnboardingScreenProps} from '@presentation/navigation/types';
 import {useOnboardingStore} from '@presentation/stores/useOnboardingStore';
+import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {getTts} from '@presentation/di/services';
 import {VBEE_VOICES} from '@core/config/vbeeConfig';
@@ -12,14 +13,14 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
   const theme = useTheme();
   const {width} = useWindowDimensions();
   const {voiceId, setVoiceId} = useOnboardingStore();
+
   const [playingId, setPlayingId] = useState<string | null>(null);
 
-  const handleTestVoice = async (id: string) => {
+  const handleTestVoice = async (id: string, isCloned: boolean = false) => {
     if (playingId) return;
     setPlayingId(id);
     try {
       const tts = getTts();
-      // Set Vbee voice before speaking
       await tts.setVoice(id);
       await tts.speak('... Xin chào, tôi là trợ lý hỗ trợ của bạn.', 'vi-VN');
     } catch (e) {
@@ -49,7 +50,7 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
         
         <ScrollView style={styles.list} contentContainerStyle={{paddingHorizontal, paddingBottom: 40}}>
           <View style={[styles.grid, {gap}]}>
-            {VBEE_VOICES.map(v => {
+            {[...VBEE_VOICES].map(v => {
               const isSelected = voiceId === v.id;
               const isPlaying = playingId === v.id;
               
@@ -98,6 +99,9 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
                 </View>
               );
             })}
+
+
+
           </View>
         </ScrollView>
 

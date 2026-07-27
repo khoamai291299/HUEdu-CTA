@@ -21,7 +21,7 @@ import {VoiceSettingsScreen} from '@presentation/screens/settings/VoiceSettingsS
 import {SpeechSettingsScreen} from '@presentation/screens/settings/SpeechSettingsScreen';
 import {ThemeLanguageScreen} from '@presentation/screens/settings/ThemeLanguageScreen';
 import {BackupRestoreScreen} from '@presentation/screens/settings/BackupRestoreScreen';
-
+import {CreateCardScreen} from '@presentation/screens/settings/CreateCardScreen';
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
 export const SettingsNavigator: React.FC<RootScreenProps<'Settings'>> = () => {
@@ -104,6 +104,11 @@ export const SettingsNavigator: React.FC<RootScreenProps<'Settings'>> = () => {
         name="BackupRestore"
         component={BackupRestoreScreen}
         options={{title: t('settings.backup')}}
+      />
+      <Stack.Screen
+        name="CreateCard"
+        component={CreateCardScreen}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

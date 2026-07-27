@@ -13,6 +13,7 @@ import {migration003FixUsageHistory} from './migration_003_fix_usage_history';
 import {migration004AddChildFields} from './migration_004_add_child_fields';
 import {migration005RemoveCategories} from './migration_005_remove_categories';
 import {migration006DropCategoryColumns} from './migration_006_drop_category_columns';
+import {migration007CustomCards} from './migration_007_custom_cards';
 
 const ALL_MIGRATIONS: Migration[] = [
   migration001Init,
@@ -21,6 +22,7 @@ const ALL_MIGRATIONS: Migration[] = [
   migration004AddChildFields,
   migration005RemoveCategories,
   migration006DropCategoryColumns,
+  migration007CustomCards,
 ].sort(
   (a, b) => a.version - b.version,
 );

@@ -45,6 +45,8 @@ export const toVocabulary = (r: VocabularyRow): Vocabulary =>
     speechTextVi: r.speech_text_vi,
     isDefault: r.is_default === 1,
     sortOrder: r.sort_order,
+    isCustom: r.is_custom === 1,
+    audioPath: r.audio_path,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   });
@@ -57,6 +59,8 @@ export const toActivity = (r: ActivityRow): Activity =>
     speechTextVi: r.speech_text_vi,
     isDefault: r.is_default === 1,
     sortOrder: r.sort_order,
+    isCustom: r.is_custom === 1,
+    audioPath: r.audio_path,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   });

@@ -11,6 +11,7 @@ import {Defaults, SettingKey} from '@core/constants';
 import {AppThemeName} from '@core/theme';
 import {AppLanguage} from '@core/i18n';
 import {clamp} from '@core/utils/validators';
+import {ClonedVoice} from '@core/config/vbeeConfig';
 
 export class GetSettingsUseCase extends BaseUseCase<NoParams, AppSettings> {
   constructor(private readonly repo: ISettingsRepository) {
@@ -32,11 +33,20 @@ export class GetSettingsUseCase extends BaseUseCase<NoParams, AppSettings> {
     const activeChildId = activeRaw ? Number(activeRaw) : null;
     const isOnboardedRaw = all[SettingKey.IS_ONBOARDED];
     const isOnboarded = isOnboardedRaw === 'true';
+    const clonedVoicesRaw = all[SettingKey.CLONED_VOICES];
+    let clonedVoices: ClonedVoice[] = [];
+    if (clonedVoicesRaw) {
+      try {
+        clonedVoices = JSON.parse(clonedVoicesRaw);
+      } catch (e) {
+        console.error('Failed to parse cloned voices', e);
+      }
+    }
 
     return {
       theme,
       language,
-      speech: {rate, pitch, voiceId},
+      speech: {rate, pitch, voiceId, clonedVoices},
       activeChildId,
       isOnboarded,
     };
@@ -51,6 +61,7 @@ export class UpdateSettingsUseCase extends BaseUseCase<
     pitch: number;
     voiceId: string | null;
     isOnboarded: boolean;
+    clonedVoices: ClonedVoice[];
   }>,
   void
 > {
@@ -65,6 +76,7 @@ export class UpdateSettingsUseCase extends BaseUseCase<
       pitch: number;
       voiceId: string | null;
       isOnboarded: boolean;
+      clonedVoices: ClonedVoice[];
     }>,
   ): Promise<void> {
     if (input.theme) {
@@ -94,6 +106,9 @@ export class UpdateSettingsUseCase extends BaseUseCase<
     }
     if (input.isOnboarded !== undefined) {
       await this.repo.set(SettingKey.IS_ONBOARDED, String(input.isOnboarded));
+    }
+    if (input.clonedVoices !== undefined) {
+      await this.repo.set(SettingKey.CLONED_VOICES, JSON.stringify(input.clonedVoices));
     }
   }
 }

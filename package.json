@@ -23,6 +23,7 @@
     "@react-navigation/native-stack": "^7.2.0",
     "i18next": "^24.2.2",
     "lucide-react-native": "^0.475.0",
+    "react-native-audio-recorder-player": "^3.6.0",
     "react": "19.2.3",
     "react-hook-form": "^7.54.2",
     "react-i18next": "^15.4.0",

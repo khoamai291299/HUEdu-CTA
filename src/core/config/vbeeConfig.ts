@@ -11,10 +11,12 @@ export const VBEE_CONFIG = {
   endpoint: 'https://vbee.vn/api/v1/tts',
 
   /** App ID — lấy từ dashboard Vbee (NẾU CÓ) */
-  appId: VBEE_APP_ID,
+  /** App ID — lấy từ dashboard Vbee (NẾU CÓ) */
+  appId: VBEE_APP_ID || '',
 
   /** Access token — thay bằng token thật để kích hoạt Vbee TTS */
-  accessToken: VBEE_ACCESS_TOKEN,
+  // Forced cache invalidation for .env: 1
+  accessToken: VBEE_ACCESS_TOKEN || '',
 
   /** Tốc độ đọc mặc định (1 = bình thường) */
   defaultSpeed: 1.0,
@@ -34,6 +36,7 @@ export interface VbeeVoice {
   gender: 'male' | 'female';
   ageGroup: string;
 }
+
 
 /** Danh sách 6 giọng Vbee phổ biến */
 export const VBEE_VOICES: VbeeVoice[] = [

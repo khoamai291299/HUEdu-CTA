@@ -2,7 +2,7 @@
  * src/presentation/screens/DirectCommonScreen.tsx
  * Mục đích: Tab hiển thị 20 từ vựng thông dụng nhất theo cơ chế phát trực tiếp (không ghép câu).
  */
-import React, {useCallback} from 'react';
+import React, {useCallback, useState, useRef} from 'react';
 import {FlatList, StyleSheet, View, useWindowDimensions} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {Appbar, useTheme} from 'react-native-paper';
@@ -13,6 +13,8 @@ import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useTts} from '@presentation/hooks/useTts';
 import {useResponsiveGrid} from '@presentation/hooks/useResponsiveGrid';
 import {IconTile} from '@presentation/components/IconTile';
+import {DraggableTile} from '@presentation/components/DraggableTile';
+import {DropZone, DropZoneRef} from '@presentation/components/DropZone';
 import {EmptyState} from '@presentation/components/EmptyState';
 import {Vocabulary} from '@domain/entities/Vocabulary';
 import {MainTabScreenProps} from '@presentation/navigation/types';
@@ -43,7 +45,10 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
     return chunks;
   }, [commonActivities, itemsPerPage]);
 
-  const {speakWord} = useTts();
+  const {speakWord, preloadWords} = useTts();
+  
+  const [dropZoneLayout, setDropZoneLayout] = useState<any>(null);
+  const dropZoneRef = useRef<DropZoneRef>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -53,7 +58,16 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
     }, [activeChildId, loadCommon]),
   );
 
+  React.useEffect(() => {
+    preloadWords(commonActivities);
+  }, [commonActivities, preloadWords]);
+
   const onTilePress = (v: Vocabulary) => {
+    speakWord(v);
+  };
+
+  const onTileDrop = (v: Vocabulary) => {
+    dropZoneRef.current?.triggerHighlight();
     speakWord(v);
   };
 
@@ -69,6 +83,11 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
         />
       </Appbar.Header>
 
+      <DropZone
+        ref={dropZoneRef}
+        onLayoutChange={setDropZoneLayout}
+      />
+
       <FlatList
         style={{marginTop: isLandscape ? -12 : 0}}
         data={pages}
@@ -80,11 +99,12 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
           <View style={{width, paddingHorizontal, paddingTop: 0, paddingBottom: 24}}>
             <View style={{flexDirection: 'row', flexWrap: 'wrap', gap}}>
               {page.map((vocab) => (
-                <IconTile
+                <DraggableTile
                   key={vocab.id}
                   vocabulary={vocab}
                   size={tileSize}
-                  isDirectPlay={true}
+                  dropZoneLayout={dropZoneLayout}
+                  onDrop={onTileDrop}
                   onPress={onTilePress}
                 />
               ))}

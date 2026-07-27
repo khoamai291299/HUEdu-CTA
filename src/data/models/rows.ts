@@ -32,6 +32,8 @@ export interface VocabularyRow {
   speech_text_en: string | null;
   is_default: number;
   sort_order: number;
+  is_custom: number;
+  audio_path: string | null;
   created_at: number;
   updated_at: number;
 }
@@ -46,6 +48,8 @@ export interface ActivityRow {
   speech_text_en: string | null;
   is_default: number;
   sort_order: number;
+  is_custom: number;
+  audio_path: string | null;
   created_at: number;
   updated_at: number;
 }
