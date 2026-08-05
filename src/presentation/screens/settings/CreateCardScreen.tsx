@@ -23,14 +23,24 @@ export const CreateCardScreen: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handleTake = async () => {
-    const result = await launchCamera({ mediaType: 'photo', quality: 0.8 });
+    const result = await launchCamera({
+      mediaType: 'photo',
+      quality: 0.6,
+      maxWidth: 500,
+      maxHeight: 500,
+    });
     if (result.assets && result.assets.length > 0) {
       setPhoto(result.assets[0]);
     }
   };
 
   const handlePick = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.8 });
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.6,
+      maxWidth: 500,
+      maxHeight: 500,
+    });
     if (result.assets && result.assets.length > 0) {
       setPhoto(result.assets[0]);
     }

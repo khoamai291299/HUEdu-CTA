@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Modal, View, StyleSheet, FlatList, Image, TouchableOpacity} from 'react-native';
 import {Searchbar, Text, ActivityIndicator, Appbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
+import {translateText} from '@core/utils/translate';
 
 interface Props {
   visible: boolean;
@@ -20,14 +21,13 @@ export const ArasaacPickerModal: React.FC<Props> = ({visible, onDismiss, onSelec
     if (!keyword.trim()) return;
     setLoading(true);
     try {
-      let res = await fetch(`https://api.arasaac.org/v1/pictograms/vi/search/${encodeURIComponent(keyword)}`);
+      // Dịch từ khóa sang tiếng Anh trước
+      const englishKeyword = await translateText(keyword.trim(), 'vi', 'en');
+      const searchWord = englishKeyword || keyword.trim();
+
+      let res = await fetch(`https://api.arasaac.org/api/pictograms/en/search/${encodeURIComponent(searchWord.toLowerCase())}`);
       let data = await res.json();
       
-      if (!Array.isArray(data) || data.length === 0) {
-        res = await fetch(`https://api.arasaac.org/v1/pictograms/en/search/${encodeURIComponent(keyword)}`);
-        data = await res.json();
-      }
-
       if (Array.isArray(data)) {
         setResults(data);
       } else {
@@ -63,7 +63,7 @@ export const ArasaacPickerModal: React.FC<Props> = ({visible, onDismiss, onSelec
             numColumns={3}
             contentContainerStyle={styles.list}
             renderItem={({item}) => {
-              const url = `https://api.arasaac.org/v1/pictograms/${item._id}?download=false`;
+              const url = `https://static.arasaac.org/pictograms/${item._id}/${item._id}_300.png`;
               return (
                 <TouchableOpacity
                   style={[styles.item, {backgroundColor: theme.colors.surfaceVariant}]}

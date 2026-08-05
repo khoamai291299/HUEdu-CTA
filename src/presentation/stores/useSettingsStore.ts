@@ -24,6 +24,7 @@ interface SettingsState {
   setSpeechRate: (rate: number) => Promise<void>;
   setSpeechPitch: (pitch: number) => Promise<void>;
   setVoice: (voiceId: string | null) => Promise<void>;
+  setParentPin: (pin: string) => Promise<void>;
 
   setActiveChildId: (id: number | null) => void;
   setIsOnboarded: (isOnboarded: boolean) => Promise<void>;
@@ -101,7 +102,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     });
   },
 
-
+  setParentPin: async pin => {
+    await new UpdateSettingsUseCase(getSettingsRepo()).execute({parentPin: pin});
+    set({settings: {...get().settings, parentPin: pin}});
+  },
 
   setActiveChildId: id =>
     set({settings: {...get().settings, activeChildId: id}}),

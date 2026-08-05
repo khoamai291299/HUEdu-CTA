@@ -3,7 +3,9 @@ import {Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logger} from '@core/utils/logger';
 
-const TTS_COPIED_KEY = 'has_copied_tts_assets';
+// Tăng version này mỗi khi có audio assets mới để buộc copy lại
+const TTS_ASSETS_VERSION = 'v6';
+const TTS_COPIED_KEY = `has_copied_tts_assets_${TTS_ASSETS_VERSION}`;
 
 export const copyTtsAssetsToCache = async (): Promise<void> => {
   try {

@@ -106,23 +106,23 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
   addVocabulary: async input => {
     await new AddVocabularyUseCase(getVocabularyRepo()).execute(input);
     await get().load();
-    // Preload TTS cho tất cả các giọng Vbee ngầm ở background
-    const text = input.speechTextVi || input.nameVi;
-    if (text) {
-      VBEE_VOICES.forEach(voice => {
-        getTts().preload([text], voice.id).catch(() => {});
-      });
+    // Preload TTS cho tất cả các giọng Vbee ngầm ở background (chỉ khi không có ghi âm)
+    if (!input.audioPath) {
+      const text = input.speechTextVi || input.nameVi;
+      if (text) {
+        getTts().preload([text]).catch(() => {});
+      }
     }
   },
   updateVocabulary: async (id, input) => {
     await new UpdateVocabularyUseCase(getVocabularyRepo()).execute({id, input});
     await get().load();
-    // Preload TTS nếu có thay đổi text
-    const text = input.speechTextVi || input.nameVi;
-    if (text) {
-      VBEE_VOICES.forEach(voice => {
-        getTts().preload([text], voice.id).catch(() => {});
-      });
+    // Preload TTS nếu có thay đổi text và không có âm thanh ghi âm
+    if (!input.audioPath) {
+      const text = input.speechTextVi || input.nameVi;
+      if (text) {
+        getTts().preload([text]).catch(() => {});
+      }
     }
   },
   deleteVocabulary: async id => {

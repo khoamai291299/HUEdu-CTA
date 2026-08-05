@@ -19,11 +19,13 @@ import {
   Activity,
 } from 'lucide-react-native';
 import { SettingsScreenProps } from '@presentation/navigation/types';
+import { useTheme } from 'react-native-paper';
 
 export const SettingsHomeScreen: React.FC<
   SettingsScreenProps<'SettingsHome'>
 > = ({ navigation }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const item = (
     icon: React.ReactNode,
     title: string,
@@ -40,7 +42,7 @@ export const SettingsHomeScreen: React.FC<
   return (
     <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}>
       <List.Section>
-        {item(<Activity size={24} />, t('settings.activity'), () =>
+        {item(<Activity size={24} color={theme.colors.onSurface} />, t('settings.activity'), () =>
           navigation.navigate('ActivityList'),
         )}
       </List.Section>
@@ -54,35 +56,35 @@ export const SettingsHomeScreen: React.FC<
       */}
       <Divider />
       <List.Section>
-        {item(<Users size={24} />, t('settings.profiles'), () =>
+        {item(<Users size={24} color={theme.colors.onSurface} />, t('settings.profiles'), () =>
           navigation.navigate('ChildProfiles'),
         )}
-        {item(<ChartColumn size={24} />, t('settings.stats'), () =>
+        {item(<ChartColumn size={24} color={theme.colors.onSurface} />, t('settings.stats'), () =>
           navigation.navigate('StatisticsDashboard'),
         )}
-        {item(<Clock size={24} />, t('settings.history'), () =>
+        {item(<Clock size={24} color={theme.colors.onSurface} />, t('settings.history'), () =>
           navigation.navigate('UsageHistory'),
         )}
       </List.Section>
       <Divider />
       <List.Section>
-        {item(<Volume2 size={24} />, t('settings.voice'), () =>
+        {item(<Volume2 size={24} color={theme.colors.onSurface} />, t('settings.voice'), () =>
           navigation.navigate('VoiceSettings'),
         )}
-        {item(<Sliders size={24} />, t('settings.speech'), () =>
+        {item(<Sliders size={24} color={theme.colors.onSurface} />, t('settings.speech'), () =>
           navigation.navigate('SpeechSettings'),
         )}
-        {item(<Palette size={24} />, t('settings.themeLang'), () =>
+        {item(<Palette size={24} color={theme.colors.onSurface} />, t('settings.themeLang'), () =>
           navigation.navigate('ThemeLanguage'),
         )}
-        {item(<Database size={24} />, t('settings.backup'), () =>
+        {item(<Database size={24} color={theme.colors.onSurface} />, t('settings.backup'), () =>
           navigation.navigate('BackupRestore'),
         )}
       </List.Section>
       <Divider />
       <List.Item
         title="HUEdu-CTA v1.0.0"
-        left={() => <List.Icon icon={() => <Settings2 size={24} />} />}
+        left={() => <List.Icon icon={() => <Settings2 size={24} color={theme.colors.onSurface} />} />}
       />
     </ScrollView>
   );

@@ -45,76 +45,7 @@ export const SEED_CATEGORIES: SeedCategory[] = [
 ];
 
 export const SEED_VOCABULARY: SeedVocabulary[] = [
-  // Drinks (Vocabulary)
-  { nameVi: 'Nước', nameEn: 'Water', categoryKey: 'drink', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Droplet' },
-  { nameVi: 'Sữa', nameEn: 'Milk', categoryKey: 'drink', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:CupSoda' },
-  { nameVi: 'Nước ép', nameEn: 'Juice', categoryKey: 'drink', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:CupSoda' },
 
-  // Food (Vocabulary)
-  { nameVi: 'Cơm', nameEn: 'Rice', categoryKey: 'food', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Utensils' },
-  { nameVi: 'Bánh mì', nameEn: 'Bread', categoryKey: 'food', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:Carrot' },
-  { nameVi: 'Trái cây', nameEn: 'Fruit', categoryKey: 'food', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:Apple' },
-  { nameVi: 'Bánh', nameEn: 'Cake', categoryKey: 'food', type: 'vocabulary', sortOrder: 4, imagePath: 'lucide:Utensils' },
-  { nameVi: 'Kẹo', nameEn: 'Candy', categoryKey: 'food', type: 'vocabulary', sortOrder: 5, imagePath: 'lucide:Heart' },
-  { nameVi: 'Bún', nameEn: 'Noodles', categoryKey: 'food', type: 'vocabulary', sortOrder: 6, imagePath: 'lucide:Utensils' },
-  { nameVi: 'Bữa sáng', nameEn: 'Breakfast', categoryKey: 'food', type: 'vocabulary', sortOrder: 7, imagePath: 'lucide:Sun' },
-  { nameVi: 'Bữa trưa', nameEn: 'Lunch', categoryKey: 'food', type: 'vocabulary', sortOrder: 8, imagePath: 'lucide:Utensils' },
-  { nameVi: 'Bữa tối', nameEn: 'Dinner', categoryKey: 'food', type: 'vocabulary', sortOrder: 9, imagePath: 'lucide:Moon' },
-  { nameVi: 'Pizza', nameEn: 'Pizza', categoryKey: 'food', type: 'vocabulary', sortOrder: 10, imagePath: 'lucide:Pizza' },
-  { nameVi: 'Salad', nameEn: 'Salad', categoryKey: 'food', type: 'vocabulary', sortOrder: 11, imagePath: 'lucide:Leaf' },
-
-  // Pronouns (Vocabulary)
-  { nameVi: 'Tôi (Con)', nameEn: 'I / Me', categoryKey: 'pronoun', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:User' },
-  { nameVi: 'Bạn', nameEn: 'You', categoryKey: 'pronoun', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:Users' },
-
-  // Verbs (Vocabulary)
-  { nameVi: 'Muốn', nameEn: 'Want', categoryKey: 'verb', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Heart' },
-  { nameVi: 'Đi', nameEn: 'Go', categoryKey: 'verb', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:ArrowRight' },
-  { nameVi: 'Ăn', nameEn: 'Eat', categoryKey: 'verb', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:Utensils' },
-  { nameVi: 'Uống', nameEn: 'Drink', categoryKey: 'verb', type: 'vocabulary', sortOrder: 4, imagePath: 'lucide:CupSoda' },
-  { nameVi: 'Làm', nameEn: 'Do', categoryKey: 'verb', type: 'vocabulary', sortOrder: 5, imagePath: 'lucide:Play' },
-  { nameVi: 'Dừng', nameEn: 'Stop', categoryKey: 'verb', type: 'vocabulary', sortOrder: 6, imagePath: 'lucide:Square' },
-  { nameVi: 'Không', nameEn: 'Not', categoryKey: 'verb', type: 'vocabulary', sortOrder: 7, imagePath: 'lucide:X' },
-  { nameVi: 'Có', nameEn: 'Yes', categoryKey: 'verb', type: 'vocabulary', sortOrder: 8, imagePath: 'lucide:Check' },
-
-  // Questions (Vocabulary)
-  { nameVi: 'Cái gì?', nameEn: 'What?', categoryKey: 'question', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:HelpCircle' },
-  { nameVi: 'Ở đâu?', nameEn: 'Where?', categoryKey: 'question', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:MapPin' },
-  { nameVi: 'Như thế nào?', nameEn: 'How?', categoryKey: 'question', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:HelpCircle' },
-  { nameVi: 'Tại sao?', nameEn: 'Why?', categoryKey: 'question', type: 'vocabulary', sortOrder: 4, imagePath: 'lucide:HelpCircle' },
-
-  // Family (Vocabulary)
-  { nameVi: 'Mẹ', nameEn: 'Mom', categoryKey: 'family', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Users' },
-  { nameVi: 'Cha', nameEn: 'Dad', categoryKey: 'family', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:Users' },
-  { nameVi: 'Anh', nameEn: 'Brother', categoryKey: 'family', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:Users' },
-  { nameVi: 'Chị', nameEn: 'Sister', categoryKey: 'family', type: 'vocabulary', sortOrder: 4, imagePath: 'lucide:Users' },
-  { nameVi: 'Ông', nameEn: 'Grandpa', categoryKey: 'family', type: 'vocabulary', sortOrder: 5, imagePath: 'lucide:Users' },
-  { nameVi: 'Bà', nameEn: 'Grandma', categoryKey: 'family', type: 'vocabulary', sortOrder: 6, imagePath: 'lucide:Users' },
-
-  // Emotions (Vocabulary)
-  { nameVi: 'Vui vẻ', nameEn: 'Happy', categoryKey: 'emotion', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Laugh' },
-  { nameVi: 'Buồn', nameEn: 'Sad', categoryKey: 'emotion', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:Frown' },
-  { nameVi: 'Tức giận', nameEn: 'Angry', categoryKey: 'emotion', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:Angry' },
-  { nameVi: 'Thích', nameEn: 'Like', categoryKey: 'emotion', type: 'vocabulary', sortOrder: 4, imagePath: 'lucide:ThumbsUp' },
-  { nameVi: 'Không thích', nameEn: 'Dislike', categoryKey: 'emotion', type: 'vocabulary', sortOrder: 5, imagePath: 'lucide:ThumbsDown' },
-
-  // Animals (Vocabulary)
-  { nameVi: 'Chó', nameEn: 'Dog', categoryKey: 'animal', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Dog' },
-  { nameVi: 'Mèo', nameEn: 'Cat', categoryKey: 'animal', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:Cat' },
-  { nameVi: 'Chim', nameEn: 'Bird', categoryKey: 'animal', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:Bird' },
-  { nameVi: 'Cá', nameEn: 'Fish', categoryKey: 'animal', type: 'vocabulary', sortOrder: 4, imagePath: 'lucide:Fish' },
-
-  // Body Parts (Vocabulary)
-  { nameVi: 'Mắt', nameEn: 'Eye', categoryKey: 'body', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Eye' },
-  { nameVi: 'Tai', nameEn: 'Ear', categoryKey: 'body', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:Ear' },
-  { nameVi: 'Mũi', nameEn: 'Nose', categoryKey: 'body', type: 'vocabulary', sortOrder: 3, imagePath: 'lucide:Smile' },
-  { nameVi: 'Miệng', nameEn: 'Mouth', categoryKey: 'body', type: 'vocabulary', sortOrder: 4, imagePath: 'lucide:Smile' },
-  { nameVi: 'Tay', nameEn: 'Hand', categoryKey: 'body', type: 'vocabulary', sortOrder: 5, imagePath: 'lucide:Hand' },
-  { nameVi: 'Chân', nameEn: 'Foot', categoryKey: 'body', type: 'vocabulary', sortOrder: 6, imagePath: 'lucide:Footprints' },
-
-  // Clothing (Vocabulary)
-  { nameVi: 'Áo', nameEn: 'Shirt', categoryKey: 'clothing', type: 'vocabulary', sortOrder: 1, imagePath: 'lucide:Shirt' },
-  { nameVi: 'Quần', nameEn: 'Pants', categoryKey: 'clothing', type: 'vocabulary', sortOrder: 2, imagePath: 'lucide:Shirt' },
 
   // --- ACTIVITIES ---
   { nameVi: 'Đi vệ sinh', nameEn: 'Go to toilet', speechTextVi: 'Con muốn đi vệ sinh', speechTextEn: 'I want to go to toilet', categoryKey: 'activity', type: 'activity', sortOrder: 1, imagePath: 'lucide:Bath' },

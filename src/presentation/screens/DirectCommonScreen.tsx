@@ -7,7 +7,8 @@ import {FlatList, StyleSheet, View, useWindowDimensions} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {Appbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
-import {Settings as SettingsIcon} from 'lucide-react-native';
+import {Settings as SettingsIcon, Search as SearchIcon} from 'lucide-react-native';
+import {Searchbar} from 'react-native-paper';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useTts} from '@presentation/hooks/useTts';
@@ -35,15 +36,42 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
   }, [activities, commonIds]);
   const loadCommon = useActivityStore(s => s.loadCommon);
 
+  const [droppedVocabId, setDroppedVocabId] = useState<number | null>(null);
+
+  const droppedVocab = React.useMemo(() => {
+    if (droppedVocabId === null) return null;
+    return commonActivities.find(v => v.id === droppedVocabId) || null;
+  }, [droppedVocabId, commonActivities]);
+
+  const [showSearch, setShowSearch] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const data = React.useMemo(() => {
+    const q = search.toLowerCase(); // Bỏ trim()
+    return commonActivities.filter(v => {
+      return q.length === 0 || v.nameVi.toLowerCase().includes(q);
+    });
+  }, [commonActivities, search]);
+
+  const renderHeaderSearchIcon = React.useCallback(
+    () => <SearchIcon size={28} color={theme.colors.onSurface} />,
+    [theme.colors.onSurface]
+  );
+
+  const renderInputSearchIcon = React.useCallback(
+    () => <SearchIcon size={24} color={theme.colors.onSurfaceVariant} />,
+    [theme.colors.onSurfaceVariant]
+  );
+
   const {width} = useWindowDimensions();
 
   const pages = React.useMemo(() => {
     const chunks = [];
-    for (let i = 0; i < commonActivities.length; i += itemsPerPage) {
-      chunks.push(commonActivities.slice(i, i + itemsPerPage));
+    for (let i = 0; i < data.length; i += itemsPerPage) {
+      chunks.push(data.slice(i, i + itemsPerPage));
     }
     return chunks;
-  }, [commonActivities, itemsPerPage]);
+  }, [data, itemsPerPage]);
 
   const {speakWord, preloadWords} = useTts();
   
@@ -67,25 +95,53 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
   };
 
   const onTileDrop = (v: Vocabulary) => {
+    setDroppedVocabId(v.id);
     dropZoneRef.current?.triggerHighlight();
-    speakWord(v);
+    // Không phát âm khi kéo thả — người dùng phải bấm nút loa mới đọc
+    // speakWord(v);
   };
 
+  const onPlayDropZone = () => {
+    if (droppedVocab) {
+      speakWord(droppedVocab);
+    }
+  };
 
+  const onClearDropZone = () => {
+    setDroppedVocabId(null);
+  };
 
   return (
     <View style={[styles.container, {backgroundColor: 'transparent'}]}>
       <Appbar.Header style={{backgroundColor: 'transparent'}}>
         <Appbar.Content title={t('tabs.common')} />
         <Appbar.Action
-          icon={() => <SettingsIcon size={24} color={theme.colors.onSurface} />}
+          icon={renderHeaderSearchIcon}
+          onPress={() => setShowSearch(s => !s)}
+        />
+        <Appbar.Action
+          icon="cog"
+          size={32}
           onPress={() => navigation.navigate('Settings' as any)}
         />
       </Appbar.Header>
 
+      {showSearch ? (
+        <Searchbar
+          placeholder={t('activity.searchPlaceholder')}
+          value={search}
+          onChangeText={setSearch}
+          icon={renderInputSearchIcon}
+          style={[styles.searchbar, {backgroundColor: theme.colors.secondaryContainer}]}
+        />
+      ) : null}
+
       <DropZone
         ref={dropZoneRef}
         onLayoutChange={setDropZoneLayout}
+        onClear={onClearDropZone}
+        onPlay={onPlayDropZone}
+        vocabulary={droppedVocab}
       />
 
       <FlatList
@@ -123,5 +179,6 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
 
 const styles = StyleSheet.create({
   container: {flex: 1},
+  searchbar: {marginHorizontal: 12, marginTop: 8},
   grid: {padding: 16},
 });

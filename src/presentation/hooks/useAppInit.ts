@@ -50,6 +50,11 @@ export const useAppInit = (): InitState => {
         const ttsAvailable = true;
         try {
           await getTts().init();
+          // Warm up audio hardware ngầm — tránh mất chữ đầu khi phát lần đầu (AudioTrack cold-start)
+          const { NativeModules } = require('react-native');
+          if (NativeModules.SimpleAudioPlayer?.warmup) {
+            NativeModules.SimpleAudioPlayer.warmup().catch(() => {});
+          }
         } catch (e) {
           logger.debug('[useAppInit] TTS init failed (non-critical)', e);
         }

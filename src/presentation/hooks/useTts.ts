@@ -46,8 +46,10 @@ export const useTts = () => {
   const preloadWords = useCallback(
     async (words: Vocabulary[]) => {
       try {
-        const texts = words.map(w => w.speechText());
-        await getTts().preload(texts, settings.speech.voiceId || undefined);
+        const texts = words.filter(w => !w.audioPath).map(w => w.speechText());
+        if (texts.length > 0) {
+          await getTts().preload(texts);
+        }
       } catch (e) {
         logger.warn('[useTts] preloadWords failed', e);
       }

@@ -21,12 +21,16 @@ import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
 import {EmptyState} from '@presentation/components/EmptyState';
 import {PinGateModal} from '@presentation/components/PinGateModal';
 import {SettingsScreenProps} from '@presentation/navigation/types';
+import {ArasaacImage} from '@presentation/components/ArasaacImage';
+import {Image} from 'react-native';
+import {useTheme} from 'react-native-paper';
 
 export const VocabularyListScreen: React.FC<
   SettingsScreenProps<'VocabularyList'>
 > = ({navigation}) => {
   const {t} = useTranslation();
   const vocabStore = useVocabularyStore();
+  const theme = useTheme();
 
 
   const [query, setQuery] = useState('');
@@ -58,7 +62,15 @@ export const VocabularyListScreen: React.FC<
           <List.Item
             title={item.nameVi}
             description={item.speechTextVi ?? ''}
-            left={() => <List.Icon icon="card-text-outline" />}
+            left={() => (
+              <View style={{width: 40, height: 40, borderRadius: 8, overflow: 'hidden', backgroundColor: theme.colors.surfaceVariant, alignItems: 'center', justifyContent: 'center', marginLeft: 8, alignSelf: 'center'}}>
+                {(item.imagePath && !item.imagePath.startsWith('lucide:')) ? (
+                  <Image source={{uri: item.imagePath}} style={{width: 40, height: 40, resizeMode: 'contain'}} />
+                ) : (
+                  <ArasaacImage keyword={item.nameVi} size={40} />
+                )}
+              </View>
+            )}
             right={() => (
               <View style={styles.actions}>
                 <Appbar.Action

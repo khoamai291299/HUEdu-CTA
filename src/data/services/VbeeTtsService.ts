@@ -71,10 +71,11 @@ export class VbeeTtsService implements ITtsService {
 
   async speak(text: string, _language: SpeakLanguage): Promise<void> {
     if (!text.trim()) return;
+    const cleanedText = this.cleanText(text);
 
     if (this.isVbeeAvailable) {
       // Kiểm tra cache in-memory trước — nếu có file sẵn thì phát ngay, không cần dừng trước
-      const cacheKey = this.getCacheKey(text.trim());
+      const cacheKey = this.getCacheKey(cleanedText);
       const cachedPath = this.audioCache.get(cacheKey);
       if (cachedPath) {
         try {
@@ -96,29 +97,13 @@ export class VbeeTtsService implements ITtsService {
         }
       }
 
-      // Không có cache — dừng audio cũ rồi tải về và phát
-      if (this.speakController) {
-        this.speakController.abort();
-        this.speakController = null;
-      }
-      try { if (SimpleAudioPlayer) { await SimpleAudioPlayer.stop(); } } catch (_) {}
-      this.localTts.stop().catch(() => {});
-
-      const ctrl = new AbortController();
-      this.speakController = ctrl;
-      try {
-        await this.speakWithVbee(text, ctrl.signal);
-        return;
-      } catch (e) {
-        if (ctrl.signal.aborted) { return; }
-        logger.warn('[VbeeTtsService] Vbee API thất bại (im lặng, không dùng Google TTS):', e);
-        return;
-      } finally {
-        if (this.speakController === ctrl) { this.speakController = null; }
-      }
+      // Không có cache — theo yêu cầu, BẤM VÀO LÀ ĐỌC LIỀN, KHÔNG TẢI TRÊN VBEE
+      // Chỉ dùng giọng LocalTTS để không bị trễ. (File sẽ được tải ngầm khi thêm từ mới qua hàm preload)
+      logger.info('[VbeeTtsService] Không có sẵn file audio, dùng Local TTS để đọc liền.');
     }
 
-    // Chỉ dùng LocalTTS khi chưa cấu hình Vbee (không có token — chế độ offline).
+    // Dùng LocalTTS
+    try { if (SimpleAudioPlayer) { await SimpleAudioPlayer.stop(); } } catch (_) {}
     await this.localTts.speak(text, 'vi-VN');
   }
 
@@ -133,9 +118,14 @@ export class VbeeTtsService implements ITtsService {
     return Math.abs(hash);
   }
 
+  /** Loại bỏ các dấu chấm và khoảng trắng ở đầu chuỗi để tương thích dữ liệu cũ chứa '...' */
+  private cleanText(str: string): string {
+    return str.replace(/^[\s.]+/, '').trim();
+  }
+
   /** Khoá cache duy nhất theo cặp (voiceCode + text). voiceCode mặc định là giọng hiện tại. */
   private getCacheKey(text: string, voiceCode: string = this.currentVoiceCode): string {
-    return String(this.simpleHash(voiceCode + text.trim()));
+    return String(this.simpleHash(voiceCode + this.cleanText(text)));
   }
 
   /** Tìm voiceCode Vbee theo voiceId; nếu không chỉ định/không tìm thấy thì dùng giọng hiện tại. */
@@ -181,7 +171,7 @@ export class VbeeTtsService implements ITtsService {
       const requestBody = {
         app_id: VBEE_CONFIG.appId,
         response_type: 'direct',
-        input_text: text,
+        input_text: this.cleanText(text), // Dùng text đã làm sạch để giọng đọc được tự nhiên
         voice_code: voiceCode,
         audio_type: VBEE_CONFIG.format,
         speed_rate: String(this.speed),
@@ -240,41 +230,44 @@ export class VbeeTtsService implements ITtsService {
     }
   }
 
-  private async speakWithVbee(text: string, externalSignal: AbortSignal): Promise<void> {
-    const path = await this.ensureCached(text, this.currentVoiceCode, externalSignal);
-    if (!path || externalSignal.aborted) { return; }
-    logger.info('[VbeeTtsService] Playing:', path);
-    await this.playAudioFromPath(path);
-  }
+
 
   /**
    * Tải trước (cache ngầm) audio cho danh sách text — KHÔNG phát ra loa.
    * Giới hạn số request chạy song song để tránh quá tải API/mạng thiết bị.
    */
-  async preload(texts: string[], voiceId?: string): Promise<void> {
+  async preload(texts: string[], _voiceId?: string): Promise<void> {
     if (!this.isVbeeAvailable) { return; }
 
-    const voiceCode = this.resolveVoiceCode(voiceId);
     const uniqueTexts = Array.from(
       new Set(texts.map(t => t.trim()).filter(Boolean)),
     );
     if (uniqueTexts.length === 0) { return; }
 
-    const concurrency = Math.min(2, uniqueTexts.length);
+    // Preload cho tất cả 6 giọng để lưu sẵn offline
+    const allVoiceCodes = VBEE_VOICES.map(v => v.voiceCode);
+    const tasks: {text: string, voiceCode: string}[] = [];
+    for (const text of uniqueTexts) {
+      for (const vc of allVoiceCodes) {
+        tasks.push({text, voiceCode: vc});
+      }
+    }
+
+    const concurrency = Math.min(3, tasks.length);
     let cursor = 0;
     const worker = async () => {
-      while (cursor < uniqueTexts.length) {
-        const text = uniqueTexts[cursor++];
+      while (cursor < tasks.length) {
+        const task = tasks[cursor++];
         try {
-          await this.ensureCached(text, voiceCode);
+          await this.ensureCached(task.text, task.voiceCode);
         } catch (e) {
-          logger.debug('[VbeeTtsService] preload thất bại cho 1 câu (bỏ qua):', text, e);
+          logger.debug('[VbeeTtsService] preload thất bại cho 1 câu (bỏ qua):', task.text, e);
         }
       }
     };
 
     await Promise.all(Array.from({length: concurrency}, () => worker()));
-    logger.info(`[VbeeTtsService] Preload hoàn tất (${uniqueTexts.length} câu, voice=${voiceCode}).`);
+    logger.info(`[VbeeTtsService] Preload hoàn tất (${uniqueTexts.length} câu x 6 giọng).`);
   }
 
 

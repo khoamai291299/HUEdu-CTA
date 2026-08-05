@@ -13,6 +13,9 @@ import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
 
 import {SettingsScreenProps} from '@presentation/navigation/types';
 import {ICON_NAMES, LucideIcon} from '@presentation/components/LucideIcon';
+import {ArasaacImage} from '@presentation/components/ArasaacImage';
+import {ArasaacPickerModal} from '@presentation/components/ArasaacPickerModal';
+import {saveMediaFile} from '@core/utils/saveMediaFile';
 
 interface FormValues {
   nameVi: string;
@@ -45,7 +48,12 @@ export const VocabularyEditScreen: React.FC<
 
 
   const pickImage = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo', quality: 0.8});
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.6,
+      maxWidth: 500,
+      maxHeight: 500,
+    });
     const uri = result.assets?.[0]?.uri;
     if (uri) {
       setValue('imagePath', uri);
@@ -66,10 +74,15 @@ export const VocabularyEditScreen: React.FC<
       return;
     }
 
+    // Copy file về DocumentDirectory để đảm bảo không bị mất
+    const persistedImage = values.imagePath
+      ? await saveMediaFile(values.imagePath, 'img', 'jpg').catch(() => values.imagePath)
+      : null;
+
     const payload = {
       nameVi: trimmedNameVi,
       speechTextVi: null,
-      imagePath: values.imagePath,
+      imagePath: persistedImage,
     };
     if (editingId) {
       await vocabStore.updateVocabulary(editingId, payload);
@@ -79,8 +92,10 @@ export const VocabularyEditScreen: React.FC<
     navigation.goBack();
   };
 
+  const [showArasaac, setShowArasaac] = useState(false);
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Controller
         control={control}
         name="nameVi"
@@ -112,10 +127,21 @@ export const VocabularyEditScreen: React.FC<
         </View>
       ) : imagePath ? (
         <Image source={{uri: imagePath}} style={styles.preview} />
+      ) : watch('nameVi').trim().length > 0 ? (
+        <View style={[styles.preview, {alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceVariant, overflow: 'hidden'}]}>
+          <ArasaacImage keyword={watch('nameVi').trim()} size={80} />
+          <Text variant="bodySmall" style={{marginTop: 4, opacity: 0.7}}>ARASAAC Auto</Text>
+        </View>
       ) : null}
-      <Button mode="outlined" icon="image" onPress={pickImage} style={styles.field}>
-        {t('vocabulary.pickImage')}
-      </Button>
+
+      <View style={{flexDirection: 'row', gap: 12, marginTop: 8}}>
+        <Button mode="outlined" icon="image-search" onPress={() => setShowArasaac(true)} style={{flex: 1}}>
+          ARASAAC
+        </Button>
+        <Button mode="outlined" icon="image" onPress={pickImage} style={{flex: 1}}>
+          {t('vocabulary.pickImage') || 'Thư viện'}
+        </Button>
+      </View>
 
       <Text variant="labelLarge" style={styles.label}>
         Icon (chọn thay cho ảnh)
@@ -149,6 +175,15 @@ export const VocabularyEditScreen: React.FC<
         style={styles.save}>
         {t('common.save')}
       </Button>
+
+      <ArasaacPickerModal
+        visible={showArasaac}
+        onDismiss={() => setShowArasaac(false)}
+        onSelect={(url) => {
+          setValue('imagePath', url);
+          setShowArasaac(false);
+        }}
+      />
     </ScrollView>
   );
 };

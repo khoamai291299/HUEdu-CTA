@@ -4,6 +4,8 @@ import {Text, useTheme} from 'react-native-paper';
 import {HelpCircle} from 'lucide-react-native';
 import {translateText} from '@core/utils/translate';
 
+const urlCache: Record<string, string | null> = {};
+
 interface ArasaacImageProps {
   keyword: string;
   bgColor?: string;
@@ -26,6 +28,14 @@ export const ArasaacImage: React.FC<ArasaacImageProps> = ({
         setLoading(false);
         return;
       }
+      
+      const searchWordKey = keyword.toLowerCase();
+      if (urlCache[searchWordKey] !== undefined) {
+        setImageUrl(urlCache[searchWordKey]);
+        setLoading(false);
+        return;
+      }
+      
       try {
         let searchWord = keyword.toLowerCase();
         
@@ -41,17 +51,24 @@ export const ArasaacImage: React.FC<ArasaacImageProps> = ({
         const data = await res.json();
         if (data && data.length > 0 && isMounted) {
           const id = data[0]._id;
-          setImageUrl(`https://static.arasaac.org/pictograms/${id}/${id}_300.png`);
+          const url = `https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
+          urlCache[searchWordKey] = url;
+          setImageUrl(url);
+        } else {
+          urlCache[searchWordKey] = null;
         }
       } catch (e) {
         // Ignore errors, just show fallback
+        urlCache[searchWordKey] = null;
       } finally {
         if (isMounted) setLoading(false);
       }
     };
 
-    setLoading(true);
-    setImageUrl(null);
+    if (urlCache[keyword.toLowerCase()] === undefined) {
+      setLoading(true);
+      setImageUrl(null);
+    }
     fetchImage();
 
     return () => {

@@ -24,6 +24,8 @@ export const SettingKey = {
   SCHEMA_SEEDED: 'schema_seeded',
   IS_ONBOARDED: 'is_onboarded',
   CLONED_VOICES: 'cloned_voices',
+  PARENT_PIN: 'parent_pin',
+  CUSTOM_THEME_COLOR: 'custom_theme_color',
 } as const;
 
 /** Khoá AsyncStorage (cache nhanh, không phải nguồn chân lý). */

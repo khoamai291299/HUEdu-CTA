@@ -13,9 +13,12 @@ import {
 } from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
+import {useFocusEffect} from '@react-navigation/native';
 
 import {EmptyState} from '@presentation/components/EmptyState';
 import {SettingsScreenProps} from '@presentation/navigation/types';
+import {ArasaacImage} from '@presentation/components/ArasaacImage';
+import {Image} from 'react-native';
 
 export const ActivityListScreen: React.FC<
   SettingsScreenProps<'ActivityList'>
@@ -23,6 +26,12 @@ export const ActivityListScreen: React.FC<
   const {t} = useTranslation();
   const theme = useTheme();
   const activityStore = useActivityStore();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      activityStore.load();
+    }, [])
+  );
 
 
   const [query, setQuery] = useState('');
@@ -53,7 +62,15 @@ export const ActivityListScreen: React.FC<
           <List.Item
             title={item.nameVi}
             description={item.speechTextVi ?? ''}
-            left={() => <List.Icon icon="card-text-outline" />}
+            left={() => (
+              <View style={{width: 40, height: 40, borderRadius: 8, overflow: 'hidden', backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center', marginLeft: 8, alignSelf: 'center'}}>
+                {item.imagePath && !item.imagePath.startsWith('lucide:') ? (
+                  <Image source={{uri: item.imagePath}} style={{width: 40, height: 40, resizeMode: 'cover'}} />
+                ) : (
+                  <ArasaacImage keyword={item.nameVi} size={40} />
+                )}
+              </View>
+            )}
             right={() => (
               <View style={styles.actions}>
                 <Appbar.Action
@@ -91,11 +108,12 @@ export const ActivityListScreen: React.FC<
               {t('common.cancel')}
             </Button>
             <Button
-              onPress={async () => {
-                if (toDelete != null) {
-                  await activityStore.deleteActivity(toDelete);
-                }
+              onPress={() => {
+                const id = toDelete;
                 setToDelete(null);
+                if (id != null) {
+                  activityStore.deleteActivity(id).catch(console.error);
+                }
               }}>
               {t('common.delete')}
             </Button>

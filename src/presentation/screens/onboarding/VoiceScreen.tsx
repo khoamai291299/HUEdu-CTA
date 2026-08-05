@@ -14,19 +14,15 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
   const {width} = useWindowDimensions();
   const {voiceId, setVoiceId} = useOnboardingStore();
 
-  const [playingId, setPlayingId] = useState<string | null>(null);
-
-  const handleTestVoice = async (id: string, isCloned: boolean = false) => {
-    if (playingId) return;
-    setPlayingId(id);
+  const handleTestVoice = async (id: string) => {
+    setVoiceId(id); // Chọn giọng luôn
     try {
       const tts = getTts();
+      await tts.stop(); // Dừng giọng cũ nếu đang đọc
       await tts.setVoice(id);
       await tts.speak('... Xin chào, tôi là trợ lý hỗ trợ của bạn.', 'vi-VN');
     } catch (e) {
       console.warn('TTS Error:', e);
-    } finally {
-      setPlayingId(null);
     }
   };
 
@@ -44,7 +40,7 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
         <View style={styles.header}>
           <Text variant="headlineMedium" style={styles.title}>Bé thích giọng đọc nào?</Text>
           <Text variant="bodyMedium" style={styles.subtitle}>
-            Chọn một giọng đọc. Bấm vào loa để nghe thử.
+            Chọn một giọng đọc.
           </Text>
         </View>
         
@@ -52,7 +48,6 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
           <View style={[styles.grid, {gap}]}>
             {[...VBEE_VOICES].map(v => {
               const isSelected = voiceId === v.id;
-              const isPlaying = playingId === v.id;
               
               return (
                 <View key={v.id} style={{width: cardWidth, alignItems: 'center'}}>
@@ -67,27 +62,14 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
                       },
                       isSelected && {borderWidth: 3, borderColor: theme.colors.primary}
                     ]}
-                    onPress={() => {
-                      setVoiceId(v.id);
-                    }}
+                    onPress={() => handleTestVoice(v.id)}
                     activeOpacity={0.7}
                   >
-                    {/* Speaker icon overlay */}
-                    <TouchableOpacity
-                      style={styles.speakerBtn}
-                      onPress={() => handleTestVoice(v.id)}
-                      disabled={!!playingId}
-                      hitSlop={8}
-                    >
-                      {isPlaying ? (
-                        <ActivityIndicator size="small" color={theme.colors.primary} />
-                      ) : (
-                        <Volume2
-                          size={circleSize * 0.4}
-                          color={isSelected ? theme.colors.primary : theme.colors.onSurfaceVariant}
-                        />
-                      )}
-                    </TouchableOpacity>
+                    <Volume2
+                      key={isSelected ? 'selected' : 'unselected'}
+                      size={circleSize * 0.4}
+                      color={isSelected ? theme.colors.primary : theme.colors.onSurfaceVariant}
+                    />
                   </TouchableOpacity>
                   
                   <Text variant="titleSmall" style={[styles.label, {fontSize: Math.min(14, cardWidth * 0.14)}]}>
@@ -107,7 +89,10 @@ export const VoiceScreen: React.FC<OnboardingScreenProps<'Voice'>> = ({navigatio
 
         <View style={styles.footer}>
           <Button onPress={() => navigation.goBack()}>Quay lại</Button>
-          <Button mode="contained" onPress={() => navigation.navigate('Username')}>Tiếp tục</Button>
+          <Button mode="contained" onPress={async () => {
+            try { await getTts().stop(); } catch (e) {}
+            navigation.navigate('Username');
+          }}>Tiếp tục</Button>
         </View>
       </View>
     </SafeAreaView>

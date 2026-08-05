@@ -29,16 +29,21 @@ export const SettingsNavigator: React.FC<RootScreenProps<'Settings'>> = () => {
   const theme = useTheme();
   return (
     <Stack.Navigator
-      screenOptions={({navigation}) => ({
-        headerLeft: props =>
-          props.canGoBack ? (
-            <Appbar.BackAction
-              onPress={navigation.goBack}
-              iconColor={theme.colors.onSurface}
-              style={{marginLeft: 16}}
-            />
-          ) : null,
-      })}>
+      screenOptions={{
+        header: ({navigation, route, options, back}) => {
+          const title = options.title !== undefined ? options.title : route.name;
+          return (
+            <Appbar.Header style={{backgroundColor: 'transparent'}}>
+              {back ? (
+                <Appbar.BackAction onPress={navigation.goBack} />
+              ) : (
+                <Appbar.BackAction onPress={() => navigation.getParent()?.goBack() || navigation.goBack()} />
+              )}
+              <Appbar.Content title={title as string} />
+            </Appbar.Header>
+          );
+        },
+      }}>
       <Stack.Screen
         name="SettingsHome"
         component={SettingsHomeScreen}

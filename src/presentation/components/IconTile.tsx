@@ -5,7 +5,7 @@
  * Dependency: react-native, react-native-paper, lucide-react-native, Vocabulary.
  */
 import React from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, View, Image} from 'react-native';
 import {Text, useTheme} from 'react-native-paper';
 import {Star, Volume2, MoreVertical} from 'lucide-react-native';
 import {Vocabulary} from '@domain/entities/Vocabulary';
@@ -37,8 +37,8 @@ const IconTileComponent: React.FC<Props> = ({
   const bg = accentColor ?? theme.colors.secondaryContainer;
   const label = vocabulary.label();
   
-  // Increase image size to fill more space (max 70%)
-  const imageSize = Math.max(size * 0.7, 48);
+  // Tỷ lệ ảnh 60% để chữ có đủ không gian hiển thị phần đuôi nét
+  const imageSize = Math.max(size * 0.6, 40);
 
   return (
     <Pressable
@@ -55,6 +55,7 @@ const IconTileComponent: React.FC<Props> = ({
           backgroundColor: theme.colors.primaryContainer,
           borderColor: theme.colors.primary,
           borderWidth: 1.5,
+          overflow: 'hidden', // Đảm bảo ảnh/text không lòi ra ngoài viền
         },
       ]}>
       {onToggleFavorite ? (
@@ -93,17 +94,21 @@ const IconTileComponent: React.FC<Props> = ({
       <View
         style={[
           styles.imageWrap,
-          {width: imageSize, height: imageSize, backgroundColor: '#FFF'},
+          {width: imageSize, height: imageSize},
         ]}>
-        <ArasaacImage keyword={label} bgColor={bg} size={imageSize} />
+        {(vocabulary.imagePath && !vocabulary.imagePath.startsWith('lucide:')) ? (
+          <Image source={{uri: vocabulary.imagePath}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 12}} />
+        ) : (
+          <ArasaacImage keyword={label} bgColor={bg} size={imageSize} />
+        )}
       </View>
 
       <Text
         variant="titleMedium"
         numberOfLines={2}
         adjustsFontSizeToFit={true}
-        minimumFontScale={0.8}
-        style={styles.label}
+        minimumFontScale={0.4}
+        style={[styles.label, { width: '100%', lineHeight: 18, color: theme.colors.onPrimaryContainer }]}
         ellipsizeMode="tail">
         {label}
       </Text>
@@ -115,19 +120,20 @@ const styles = StyleSheet.create({
   tile: {
     borderRadius: 16,
     borderWidth: 1,
-    padding: 6,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center', // Căn giữa khối ảnh và chữ
+    flexDirection: 'column',
   },
   imageWrap: {
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
-    marginTop: 0,
+    marginBottom: 6,
   },
   letter: {fontWeight: '700', color: '#3A3A3A'},
-  label: {textAlign: 'center', marginTop: 2, lineHeight: 16},
+  label: {textAlign: 'center', paddingHorizontal: 2},
   favBtn: {position: 'absolute', top: 0, right: 0, zIndex: 2, padding: 8},
   settingsBtn: {position: 'absolute', top: 0, left: 0, zIndex: 2, padding: 8},
   directPlayIcon: {position: 'absolute', top: 6, left: 6, zIndex: 2, opacity: 0.6},

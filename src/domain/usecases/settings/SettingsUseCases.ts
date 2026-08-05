@@ -11,7 +11,6 @@ import {Defaults, SettingKey} from '@core/constants';
 import {AppThemeName} from '@core/theme';
 import {AppLanguage} from '@core/i18n';
 import {clamp} from '@core/utils/validators';
-import {ClonedVoice} from '@core/config/vbeeConfig';
 
 export class GetSettingsUseCase extends BaseUseCase<NoParams, AppSettings> {
   constructor(private readonly repo: ISettingsRepository) {
@@ -33,22 +32,17 @@ export class GetSettingsUseCase extends BaseUseCase<NoParams, AppSettings> {
     const activeChildId = activeRaw ? Number(activeRaw) : null;
     const isOnboardedRaw = all[SettingKey.IS_ONBOARDED];
     const isOnboarded = isOnboardedRaw === 'true';
-    const clonedVoicesRaw = all[SettingKey.CLONED_VOICES];
-    let clonedVoices: ClonedVoice[] = [];
-    if (clonedVoicesRaw) {
-      try {
-        clonedVoices = JSON.parse(clonedVoicesRaw);
-      } catch (e) {
-        console.error('Failed to parse cloned voices', e);
-      }
-    }
+    const parentPin = all[SettingKey.PARENT_PIN] || undefined;
+    const customThemeColor = all[SettingKey.CUSTOM_THEME_COLOR] || undefined;
 
     return {
       theme,
       language,
-      speech: {rate, pitch, voiceId, clonedVoices},
+      speech: {rate, pitch, voiceId},
       activeChildId,
       isOnboarded,
+      parentPin,
+      customThemeColor,
     };
   }
 }
@@ -61,7 +55,6 @@ export class UpdateSettingsUseCase extends BaseUseCase<
     pitch: number;
     voiceId: string | null;
     isOnboarded: boolean;
-    clonedVoices: ClonedVoice[];
   }>,
   void
 > {
@@ -76,11 +69,15 @@ export class UpdateSettingsUseCase extends BaseUseCase<
       pitch: number;
       voiceId: string | null;
       isOnboarded: boolean;
-      clonedVoices: ClonedVoice[];
+      parentPin: string;
+      customThemeColor: string;
     }>,
   ): Promise<void> {
     if (input.theme) {
       await this.repo.set(SettingKey.THEME, input.theme);
+    }
+    if (input.customThemeColor !== undefined) {
+      await this.repo.set(SettingKey.CUSTOM_THEME_COLOR, input.customThemeColor);
     }
     if (input.language) {
       await this.repo.set(SettingKey.LANGUAGE, input.language);
@@ -107,8 +104,8 @@ export class UpdateSettingsUseCase extends BaseUseCase<
     if (input.isOnboarded !== undefined) {
       await this.repo.set(SettingKey.IS_ONBOARDED, String(input.isOnboarded));
     }
-    if (input.clonedVoices !== undefined) {
-      await this.repo.set(SettingKey.CLONED_VOICES, JSON.stringify(input.clonedVoices));
+    if (input.parentPin !== undefined) {
+      await this.repo.set(SettingKey.PARENT_PIN, input.parentPin);
     }
   }
 }

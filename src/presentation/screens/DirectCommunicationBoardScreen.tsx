@@ -10,6 +10,7 @@ import {Settings as SettingsIcon, Search as SearchIcon} from 'lucide-react-nativ
 import {useActivityStore} from '@presentation/stores/useActivityStore';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useTts} from '@presentation/hooks/useTts';
+import {useFocusEffect} from '@react-navigation/native';
 import {useResponsiveGrid} from '@presentation/hooks/useResponsiveGrid';
 import {useChildStore} from '@presentation/stores/useChildStore';
 import {IconTile} from '@presentation/components/IconTile';
@@ -18,6 +19,7 @@ import {DropZone, DropZoneRef} from '@presentation/components/DropZone';
 import {EmptyState} from '@presentation/components/EmptyState';
 import {StickFigure} from '@presentation/components/StickFigure';
 import {RecordAudioModal} from '@presentation/components/RecordAudioModal';
+import {PinGateModal} from '@presentation/components/PinGateModal';
 import {Vocabulary} from '@domain/entities/Vocabulary';
 import {MainTabScreenProps} from '@presentation/navigation/types';
 
@@ -39,14 +41,27 @@ export const DirectCommunicationBoardScreen: React.FC<
   const [dropZoneLayout, setDropZoneLayout] = useState<any>(null);
   const [droppedVocab, setDroppedVocab] = useState<Vocabulary | null>(null);
   const [settingsVocab, setSettingsVocab] = useState<Vocabulary | null>(null);
+  const [showPinGate, setShowPinGate] = useState(false);
   const dropZoneRef = useRef<DropZoneRef>(null);
   
   const updateActivity = useActivityStore(s => s.updateActivity);
+  const loadActivities = useActivityStore(s => s.load);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadActivities();
+    }, [])
+  );
 
   const data = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const removeAccents = (str: string) => {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    };
+    
+    const q = removeAccents(search.toLowerCase()); // Bỏ trim() để cho phép tìm từ chính xác khi có dấu cách
     return activities.filter(v => {
-      return q.length === 0 || v.nameVi.toLowerCase().includes(q);
+      const name = removeAccents(v.nameVi.toLowerCase());
+      return q.length === 0 || name.includes(q);
     });
   }, [activities, search]);
 
@@ -54,17 +69,30 @@ export const DirectCommunicationBoardScreen: React.FC<
     preloadWords(data);
   }, [data, preloadWords]);
 
-  const {width} = useWindowDimensions();
+  const renderHeaderSearchIcon = React.useCallback(
+    () => <SearchIcon size={28} color={theme.colors.onBackground} />,
+    [theme.colors.onBackground]
+  );
 
-  const dynamicItemsPerPage = droppedVocab ? 9 : itemsPerPage;
+  const renderInputSearchIcon = React.useCallback(
+    () => <SearchIcon size={24} color={theme.colors.onSurfaceVariant} />,
+    [theme.colors.onSurfaceVariant]
+  );
+
+  const currentDroppedVocab = useMemo(() => {
+    if (!droppedVocab) return null;
+    return activities.find(v => v.id === droppedVocab.id) || droppedVocab;
+  }, [droppedVocab, activities]);
+
+  const {width} = useWindowDimensions();
 
   const pages = useMemo(() => {
     const chunks = [];
-    for (let i = 0; i < data.length; i += dynamicItemsPerPage) {
-      chunks.push(data.slice(i, i + dynamicItemsPerPage));
+    for (let i = 0; i < data.length; i += itemsPerPage) {
+      chunks.push(data.slice(i, i + itemsPerPage));
     }
     return chunks;
-  }, [data, dynamicItemsPerPage]);
+  }, [data, itemsPerPage]);
 
   const TONE_COLORS: Record<string, string> = {
     tone0: '#FFFFFF',
@@ -96,7 +124,7 @@ export const DirectCommunicationBoardScreen: React.FC<
   };
 
   const handlePlayAudio = () => {
-    if (droppedVocab) speakWord(droppedVocab);
+    if (currentDroppedVocab) speakWord(currentDroppedVocab);
   };
 
   const handleClearDropZone = () => {
@@ -114,16 +142,17 @@ export const DirectCommunicationBoardScreen: React.FC<
   return (
     <View style={[styles.container, {backgroundColor: 'transparent'}]}>
       <Appbar.Header style={{backgroundColor: 'transparent'}}>
-        <Appbar.Content title={t('tabs.directBoard')} />
+        <Appbar.Content title={t('tabs.directBoard')} titleStyle={{color: theme.colors.onBackground}} />
         <Appbar.Action
-          icon={() => <SearchIcon size={24} color={theme.colors.onSurface} />}
+          icon={renderHeaderSearchIcon}
+          color={theme.colors.onBackground}
           onPress={() => setShowSearch(s => !s)}
         />
         <Appbar.Action
-          icon={() => (
-            <SettingsIcon size={24} color={theme.colors.onSurface} />
-          )}
-          onPress={() => navigation.navigate('Settings' as any)}
+          icon="cog"
+          size={32}
+          color={theme.colors.onBackground}
+          onPress={() => setShowPinGate(true)}
         />
       </Appbar.Header>
 
@@ -132,13 +161,14 @@ export const DirectCommunicationBoardScreen: React.FC<
           placeholder={t('activity.searchPlaceholder')}
           value={search}
           onChangeText={setSearch}
+          icon={renderInputSearchIcon}
           style={[styles.searchbar, {backgroundColor: theme.colors.secondaryContainer}]}
         />
       ) : null}
 
       <DropZone
         ref={dropZoneRef}
-        vocabulary={droppedVocab}
+        vocabulary={currentDroppedVocab}
         onPlay={handlePlayAudio}
         onClear={handleClearDropZone}
         onLayoutChange={setDropZoneLayout}
@@ -162,7 +192,6 @@ export const DirectCommunicationBoardScreen: React.FC<
                   dropZoneLayout={dropZoneLayout}
                   onDrop={onTileDrop}
                   onPress={onTilePress}
-                  onSettingsPress={onSettingsPress}
                 />
               ))}
             </View>
@@ -185,6 +214,17 @@ export const DirectCommunicationBoardScreen: React.FC<
         vocabulary={settingsVocab}
         onDismiss={() => setSettingsVocab(null)}
         onSave={handleSaveAudio}
+      />
+
+      {/* AC1: Xác minh phụ huynh trước khi vào Settings */}
+      <PinGateModal
+        visible={showPinGate}
+        onDismiss={() => setShowPinGate(false)}
+        onSuccess={() => {
+          setShowPinGate(false);
+          navigation.navigate('Settings' as any);
+        }}
+        onMaxFailures={() => setShowPinGate(false)}
       />
     </View>
   );

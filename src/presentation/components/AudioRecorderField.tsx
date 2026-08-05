@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Button, useTheme, IconButton } from 'react-native-paper';
 import { Mic, Square, Play, Trash2, RotateCcw } from 'lucide-react-native';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import AudioRecorderPlayer, {
+  AudioEncoderAndroidType,
+  AudioSourceAndroidType,
+  OutputFormatAndroidType,
+} from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
 import { PermissionsAndroid, Platform } from 'react-native';
 
@@ -61,8 +65,13 @@ export const AudioRecorderField: React.FC<Props> = ({ audioPath, onChange }) => 
     }
     
     try {
-      const path = `${RNFS.DocumentDirectoryPath}/custom_audio_${Date.now()}.m4a`;
-      const result = await audioRecorderPlayer.startRecorder(path);
+      const path = `${RNFS.DocumentDirectoryPath}/custom_audio_${Date.now()}.aac`;
+      const audioSet = {
+        AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+        AudioSourceAndroid: AudioSourceAndroidType.MIC,
+        OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+      };
+      const result = await audioRecorderPlayer.startRecorder(path, audioSet);
       audioRecorderPlayer.addRecordBackListener((e) => {
         setRecordTime(formatTime(e.currentPosition));
       });
@@ -85,11 +94,21 @@ export const AudioRecorderField: React.FC<Props> = ({ audioPath, onChange }) => 
 
   const playRecording = async () => {
     if (!audioPath) return;
+    if (isPlaying) {
+      try {
+        await audioRecorderPlayer.stopPlayer();
+        audioRecorderPlayer.removePlayBackListener();
+      } catch (e) {
+        console.warn('Stop player failed', e);
+      }
+      setIsPlaying(false);
+      return;
+    }
     try {
       setIsPlaying(true);
       await audioRecorderPlayer.startPlayer(audioPath);
       audioRecorderPlayer.addPlayBackListener((e) => {
-        if (e.currentPosition === e.duration) {
+        if (e.currentPosition >= e.duration) {
           audioRecorderPlayer.stopPlayer();
           audioRecorderPlayer.removePlayBackListener();
           setIsPlaying(false);
@@ -114,19 +133,19 @@ export const AudioRecorderField: React.FC<Props> = ({ audioPath, onChange }) => 
             mode="contained"
             icon={() => <Play size={20} color={theme.colors.onPrimary} />}
             onPress={playRecording}
-            disabled={isPlaying || isRecording}
+            disabled={isRecording}
           >
-            Nghe lại
+            {isPlaying ? 'Dừng nghe' : 'Nghe lại'}
           </Button>
           <IconButton
             icon={() => <RotateCcw size={24} color={theme.colors.onSurfaceVariant} />}
             onPress={deleteRecording}
-            disabled={isPlaying || isRecording}
+            disabled={isRecording}
           />
           <IconButton
             icon={() => <Trash2 size={24} color={theme.colors.error} />}
             onPress={deleteRecording}
-            disabled={isPlaying || isRecording}
+            disabled={isRecording}
           />
         </View>
       ) : (

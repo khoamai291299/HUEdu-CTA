@@ -44,8 +44,10 @@ export const darkTheme: MD3Theme = {
     background: '#121417',
     surface: '#1B1F24',
     surfaceVariant: '#262B31',
-    primaryContainer: '#8FE3D4',
-    secondaryContainer: '#8FE3D4',
+    primaryContainer: '#1F3A4B',
+    onPrimaryContainer: '#D1F0EA',
+    secondaryContainer: '#1F3A4B',
+    onSecondaryContainer: '#D1F0EA',
   },
 };
 
@@ -385,16 +387,64 @@ export const getTheme = (name: AppThemeName): MD3Theme => {
 };
 
 export const buildCustomTheme = (hexColor: string): MD3Theme => {
+  // Parse hex → RGB
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Text tối/sáng tùy độ sáng background chính
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  const isDark = brightness < 140;
+  const onBgColor = isDark ? '#FFFFFF' : '#1A2A1A';
+
+  const toHex = (v: number) => Math.round(v).toString(16).padStart(2, '0');
+
+  // Primary: Nổi bật trên nền
+  let pr, pg, pb;
+  if (isDark) {
+    // Nền tối -> primary sáng hơn (trộn trắng 60%)
+    pr = r + (255 - r) * 0.6;
+    pg = g + (255 - g) * 0.6;
+    pb = b + (255 - b) * 0.6;
+  } else {
+    // Nền sáng -> primary tối hơn (giảm 40%)
+    pr = r * 0.6;
+    pg = g * 0.6;
+    pb = b * 0.6;
+  }
+  const primaryColor = `#${toHex(pr)}${toHex(pg)}${toHex(pb)}`;
+  const onPrimary = isDark ? '#1A2A1A' : '#FFFFFF';
+
+  // surfaceVariant = trộn với trắng hoặc đen tùy nền
+  const s = isDark ? 0.2 : 0.7; // Nền tối trộn ít trắng, nền sáng trộn nhiều trắng
+  const svR = r + (255 - r) * s;
+  const svG = g + (255 - g) * s;
+  const svB = b + (255 - b) * s;
+  const svColor = `#${toHex(svR)}${toHex(svG)}${toHex(svB)}`;
+
+  // Text tối/sáng tùy độ sáng của surfaceVariant (thẻ)
+  const svBrightness = (svR * 299 + svG * 587 + svB * 114) / 1000;
+  const onSvColor = svBrightness > 140 ? '#1A2A1A' : '#FFFFFF';
+
   return {
     ...MD3LightTheme,
-    roundness: 4,
+    roundness: 8,
     colors: {
       ...MD3LightTheme.colors,
-      primary: hexColor,
-      secondary: hexColor, // Simplification
-      primaryContainer: hexColor,
-      secondaryContainer: hexColor,
+      primary: primaryColor,
+      secondary: primaryColor,
+      background: hexColor,        // Toàn bộ background đổi sang màu chọn
+      surface: hexColor,           // surface đồng bộ với nền để chữ onSurface hiển thị đúng
+      surfaceVariant: svColor,
+      primaryContainer: svColor,
+      secondaryContainer: svColor,
+      onPrimary: onPrimary,
+      onSurface: onBgColor,        // onSurface giờ có thể dùng màu chữ của nền
+      onBackground: onBgColor,
+      onPrimaryContainer: onSvColor,
+      onSecondaryContainer: onSvColor,
+      outline: onBgColor,          // outline đồng bộ với màu chữ để các viền input rõ ràng
     },
   };
 };
-

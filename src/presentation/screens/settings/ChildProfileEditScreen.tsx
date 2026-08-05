@@ -11,6 +11,7 @@ import {useTranslation} from 'react-i18next';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useChildStore} from '@presentation/stores/useChildStore';
 import {SettingsScreenProps} from '@presentation/navigation/types';
+import {saveMediaFile} from '@core/utils/saveMediaFile';
 
 interface FormValues {
   name: string;
@@ -36,7 +37,12 @@ export const ChildProfileEditScreen: React.FC<
   const avatarPath = watch('avatarPath');
 
   const pickAvatar = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo', quality: 0.8});
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.6,
+      maxWidth: 400,
+      maxHeight: 400,
+    });
     const uri = result.assets?.[0]?.uri;
     if (uri) {
       setValue('avatarPath', uri);
@@ -44,7 +50,12 @@ export const ChildProfileEditScreen: React.FC<
   };
 
   const onSubmit = async (values: FormValues) => {
-    const payload = {name: values.name.trim(), avatarPath: values.avatarPath};
+    // Nén và lưu ảnh vĩnh viễn
+    const persistedAvatar = values.avatarPath
+      ? await saveMediaFile(values.avatarPath, 'img', 'jpg').catch(() => values.avatarPath)
+      : null;
+
+    const payload = {name: values.name.trim(), avatarPath: persistedAvatar};
     if (editingId) {
       await update(editingId, payload);
     } else {

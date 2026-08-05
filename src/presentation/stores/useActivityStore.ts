@@ -18,6 +18,7 @@ import {
   getTts,
 } from '@presentation/di/services';
 import { VBEE_VOICES } from '@core/config/vbeeConfig';
+import { translateText } from '@core/utils/translate';
 
 interface ActivityState {
   activities: Activity[];
@@ -36,6 +37,7 @@ interface ActivityState {
     input: Partial<ActivityInput>,
   ) => Promise<void>;
   deleteActivity: (id: number) => Promise<void>;
+  syncMissingImages: () => Promise<void>;
 }
 
 export const useActivityStore = create<ActivityState>((set, get) => ({
@@ -49,6 +51,8 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
     try {
       const activities = await new GetAllActivityUseCase(getActivityRepo()).execute();
       set({activities});
+      // Fire and forget sync
+      get().syncMissingImages().catch(() => {});
     } finally {
       set({loading: false});
     }
@@ -73,21 +77,21 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
   addActivity: async input => {
     await new AddActivityUseCase(getActivityRepo()).execute(input);
     await get().load();
-    const text = input.speechTextVi || input.nameVi;
-    if (text) {
-      VBEE_VOICES.forEach(voice => {
-        getTts().preload([text], voice.id).catch(() => {});
-      });
+    if (!input.audioPath) {
+      const text = input.speechTextVi || input.nameVi;
+      if (text) {
+        getTts().preload([text]).catch(() => {});
+      }
     }
   },
   updateActivity: async (id, input) => {
     await new UpdateActivityUseCase(getActivityRepo()).execute({id, input});
     await get().load();
-    const text = input.speechTextVi || input.nameVi;
-    if (text) {
-      VBEE_VOICES.forEach(voice => {
-        getTts().preload([text], voice.id).catch(() => {});
-      });
+    if (!input.audioPath) {
+      const text = input.speechTextVi || input.nameVi;
+      if (text) {
+        getTts().preload([text]).catch(() => {});
+      }
     }
   },
   deleteActivity: async id => {
@@ -95,5 +99,61 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
     await get().load();
   },
 
+  syncMissingImages: async () => {
+    const {activities} = get();
+    let updated = false;
+
+    // Danh sách 18 từ vựng đã được nhúng cứng (không bao giờ cần tải từ mạng)
+    const PRELOADED = [
+      'đi vệ sinh', 'đi ngủ', 'đi dạo', 'đi tắm', 'rửa tay', 'đánh răng', 'về nhà', 'đi học',
+      'ăn cơm', 'uống nước', 'ăn bánh', 'uống sữa',
+      'chơi đồ chơi', 'đọc sách', 'nghe nhạc', 'xem tivi', 'vẽ tranh', 'ôm mẹ'
+    ];
+
+    for (const act of activities) {
+      if (PRELOADED.includes(act.nameVi.trim().toLowerCase())) {
+        continue;
+      }
+
+      if (!act.imagePath || (act.imagePath.startsWith('lucide:') && act.imagePath !== 'lucide:Image-Failed')) {
+        try {
+          // Delay to prevent Google Translate and ARASAAC rate limiting
+          await new Promise(resolve => setTimeout(resolve, 800));
+
+          let searchWord = act.nameVi.toLowerCase();
+          const englishWord = await translateText(searchWord, 'vi', 'en');
+          if (englishWord) searchWord = englishWord.toLowerCase();
+          
+          const encoded = encodeURIComponent(searchWord);
+          const res = await fetch(`https://api.arasaac.org/api/pictograms/en/search/${encoded}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.length > 0) {
+              const id = data[0]._id;
+              const url = `https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
+              await new UpdateActivityUseCase(getActivityRepo()).execute({id: act.id, input: { imagePath: url }});
+              updated = true;
+            } else {
+              // Not found
+              await new UpdateActivityUseCase(getActivityRepo()).execute({id: act.id, input: { imagePath: 'lucide:Image-Failed' }});
+              updated = true;
+            }
+          } else if (res.status === 404) {
+            // Not found
+            await new UpdateActivityUseCase(getActivityRepo()).execute({id: act.id, input: { imagePath: 'lucide:Image-Failed' }});
+            updated = true;
+          }
+        } catch (e) {
+          console.warn('Sync ARASAAC failed for', act.nameVi, e);
+          // Don't infinite loop on network error
+          await new UpdateActivityUseCase(getActivityRepo()).execute({id: act.id, input: { imagePath: 'lucide:Image-Failed' }});
+          updated = true;
+        }
+      }
+    }
+    if (updated) {
+      await get().load();
+    }
+  },
 
 }));

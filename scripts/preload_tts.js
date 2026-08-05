@@ -14,8 +14,9 @@ const VOICES = [
   'hn_male_minhquan_yt-stable'
 ];
 
+const PREVIEW_TEXT = 'Xin chào, tôi là trợ lý hỗ trợ của bạn.';
 const PHRASES = [
-  "... Xin chào, tôi là trợ lý hỗ trợ của bạn.",
+  PREVIEW_TEXT,
   "Con muốn đi vệ sinh",
   "Con muốn đi ngủ",
   "Con muốn đi dạo",
@@ -62,7 +63,7 @@ async function downloadFile(url, dest) {
 }
 
 async function main() {
-  const destDir = path.join(__dirname, 'android', 'app', 'src', 'main', 'assets', 'tts');
+  const destDir = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'assets', 'tts');
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
@@ -75,7 +76,7 @@ async function main() {
       count++;
       const cacheKey = getCacheKey(text, voice);
       const targetPath = path.join(destDir, `vbee_${cacheKey}.mp3`);
-      
+
       if (fs.existsSync(targetPath)) {
         console.log(`[${count}/${total}] EXISTS: ${targetPath}`);
         continue;
@@ -86,7 +87,7 @@ async function main() {
         const body = {
           app_id: VBEE_APP_ID,
           response_type: 'direct',
-          input_text: text,
+          input_text: text, // Trả lại text gốc để không làm biến dạng giọng
           voice_code: voice,
           audio_type: 'mp3',
           speed_rate: "1",
@@ -118,7 +119,7 @@ async function main() {
         } else {
           console.error(`No audio data: ${rawText.substring(0, 100)}`);
         }
-        
+
         await delay(300); // Ngăn chống spam API
       } catch (err) {
         console.error(`ERROR fetching ${text}:`, err.message);

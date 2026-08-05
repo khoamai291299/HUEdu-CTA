@@ -100,7 +100,7 @@ export const DraggableTile: React.FC<Props> = ({
     handlePress();
   });
 
-  const composed = Gesture.Simultaneous(panGesture, tapGesture);
+  const composed = Gesture.Exclusive(panGesture, tapGesture);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

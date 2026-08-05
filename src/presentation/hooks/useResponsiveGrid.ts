@@ -5,19 +5,28 @@ export const useResponsiveGrid = (gap = 12, horizontalPadding = 16) => {
 
   const isLandscape = width > height;
 
-  // Portrait: 3 cols × 4 rows = 12 tiles/page
-  // Landscape: 5 cols × 2 rows = 10 tiles/page
-  const columns = isLandscape ? 5 : 3;
-  const rows = isLandscape ? 2 : 4;
+  // Kích thước mong muốn tối thiểu cho mỗi thẻ (để đảm bảo chữ không bị chèn ép)
+  const minTileWidth = isLandscape ? 150 : 130;
+  const minTileHeight = isLandscape ? 140 : 120;
+
+  // Tính số cột (trên điện thoại luôn là 2, trên tablet tối đa 6)
+  let columns = isLandscape ? Math.floor((width - horizontalPadding * 2 + gap) / (minTileWidth + gap)) : 2;
+  if (columns < 2) columns = 2;
+  if (columns > 6) columns = 6;
+
+  // Dành một khoảng không gian cho Header, DropZone, TabBar
+  const verticalReserve = isLandscape ? 240 : 340;
+  const availableHeight = height - verticalReserve;
+
+  // Tính số dòng (trên điện thoại ép cứng 3 dòng, trên tablet ép cứng 3 dòng để thẻ luôn to và không bao giờ lẹm)
+  let rows = 3;
+
   const itemsPerPage = columns * rows;
 
   // Calculate tile size to fit within the available space
   const availableWidth = width - horizontalPadding * 2 - gap * (columns - 1);
   const tileSizeFromWidth = Math.floor(availableWidth / columns);
 
-  // Reserve vertical space for: status bar + AppBar header + tab bar + extra padding
-  const verticalReserve = isLandscape ? 180 : 180;
-  const availableHeight = height - verticalReserve;
   const tileSizeFromHeight = Math.floor((availableHeight - gap * (rows - 1)) / rows);
 
   // Use the smaller of width/height-based sizes so nothing overflows

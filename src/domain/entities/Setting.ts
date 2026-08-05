@@ -19,4 +19,5 @@ export interface AppSettings {
   activeChildId: number | null;
   isOnboarded: boolean;
   customThemeColor?: string;
+  parentPin?: string;
 }

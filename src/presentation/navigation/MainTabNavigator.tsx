@@ -26,8 +26,8 @@ export const MainTabNavigator: React.FC<RootScreenProps<'Main'>> = () => {
       initialRouteName="DirectBoard"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
+        tabBarActiveTintColor: theme.colors.onBackground,
+        tabBarInactiveTintColor: theme.colors.onBackground + '80', // 50% opacity
         tabBarStyle: {
           backgroundColor: theme.colors.background,
           borderTopColor: theme.colors.outlineVariant,

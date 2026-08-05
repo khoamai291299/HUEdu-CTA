@@ -16,6 +16,7 @@ import {AudioRecorderField} from '@presentation/components/AudioRecorderField';
 import {SettingsScreenProps} from '@presentation/navigation/types';
 import {ArasaacImage} from '@presentation/components/ArasaacImage';
 import {ArasaacPickerModal} from '@presentation/components/ArasaacPickerModal';
+import {saveMediaFile} from '@core/utils/saveMediaFile';
 
 interface FormValues {
   nameVi: string;
@@ -37,7 +38,7 @@ export const ActivityEditScreen: React.FC<
 
   const existing = activityStore.activities.find(v => v.id === editingId);
 
-  const {control, handleSubmit, setValue, watch} = useForm<FormValues>({
+  const {control, handleSubmit, setValue, watch, formState: {isSubmitting}} = useForm<FormValues>({
     defaultValues: {
       nameVi: existing?.nameVi ?? '',
       speechTextVi: existing?.speechTextVi ?? '',
@@ -51,7 +52,12 @@ export const ActivityEditScreen: React.FC<
 
 
   const pickImage = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo', quality: 0.8});
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.6,
+      maxWidth: 500,
+      maxHeight: 500,
+    });
     const uri = result.assets?.[0]?.uri;
     if (uri) {
       setValue('imagePath', uri);
@@ -59,7 +65,12 @@ export const ActivityEditScreen: React.FC<
   };
 
   const takePhoto = async () => {
-    const result = await launchCamera({mediaType: 'photo', quality: 0.8});
+    const result = await launchCamera({
+      mediaType: 'photo',
+      quality: 0.6,
+      maxWidth: 500,
+      maxHeight: 500,
+    });
     const uri = result.assets?.[0]?.uri;
     if (uri) {
       setValue('imagePath', uri);
@@ -80,12 +91,21 @@ export const ActivityEditScreen: React.FC<
       return;
     }
 
+    // Copy file về DocumentDirectory để đảm bảo không bị mất
+    const persistedImage = values.imagePath
+      ? await saveMediaFile(values.imagePath, 'img', 'jpg').catch(() => values.imagePath)
+      : null;
+    const persistedAudio = values.audioPath
+      ? await saveMediaFile(values.audioPath, 'audio', 'm4a').catch(() => values.audioPath)
+      : null;
+
     const payload = {
       nameVi: trimmedNameVi,
       speechTextVi: values.speechTextVi.trim() || null,
-      imagePath: values.imagePath,
-      audioPath: values.audioPath,
+      imagePath: persistedImage,
+      audioPath: persistedAudio,
     };
+    
     if (editingId) {
       await activityStore.updateActivity(editingId, payload);
     } else {
@@ -96,7 +116,7 @@ export const ActivityEditScreen: React.FC<
 
   const [showArasaac, setShowArasaac] = useState(false);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Controller
         control={control}
         name="nameVi"
@@ -110,6 +130,10 @@ export const ActivityEditScreen: React.FC<
               value={value}
               onChangeText={onChange}
               error={!!fieldState.error || !!errorMsg}
+              outlineColor={theme.colors.primary}
+              activeOutlineColor={theme.colors.primary}
+              style={{ backgroundColor: theme.colors.surface }}
+              outlineStyle={{ borderWidth: 2 }}
             />
             <HelperText type="error" visible={!!fieldState.error || !!errorMsg}>
               {errorMsg ? t('activity.duplicate') : t('errors.VALIDATION')}
@@ -128,7 +152,10 @@ export const ActivityEditScreen: React.FC<
             placeholder={t('activity.speechPlaceholder')}
             value={value}
             onChangeText={onChange}
-            style={styles.field}
+            outlineColor={theme.colors.primary}
+            activeOutlineColor={theme.colors.primary}
+            style={[styles.field, { backgroundColor: theme.colors.surface }]}
+            outlineStyle={{ borderWidth: 2 }}
           />
         )}
       />
@@ -136,7 +163,7 @@ export const ActivityEditScreen: React.FC<
       <Text variant="labelLarge" style={styles.label}>
         {t('activity.imageLabel')}
       </Text>
-      {imagePath ? (
+      {imagePath && !imagePath.startsWith('lucide:') ? (
         <Image source={{uri: imagePath}} style={styles.preview} />
       ) : watch('nameVi').trim().length > 0 ? (
         <View style={[styles.preview, {alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceVariant, overflow: 'hidden'}]}>
