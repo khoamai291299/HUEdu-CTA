@@ -17,6 +17,7 @@ import {
   Volume2,
   ChartColumn,
   Activity,
+  Lightbulb,
 } from 'lucide-react-native';
 import { SettingsScreenProps } from '@presentation/navigation/types';
 import { useTheme } from 'react-native-paper';
@@ -44,6 +45,9 @@ export const SettingsHomeScreen: React.FC<
       <List.Section>
         {item(<Activity size={24} color={theme.colors.onSurface} />, t('settings.activity'), () =>
           navigation.navigate('ActivityList'),
+        )}
+        {item(<Lightbulb size={24} color={theme.colors.primary} />, 'Mẹo giúp bé tập trung', () =>
+          navigation.navigate('FocusTips', { isFromOnboarding: false }),
         )}
       </List.Section>
       {/* Tạm ẩn Quản lý từ vựng

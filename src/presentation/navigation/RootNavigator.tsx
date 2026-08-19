@@ -10,6 +10,7 @@ import {MainTabNavigator} from './MainTabNavigator';
 import {SettingsNavigator} from './SettingsNavigator';
 import {SplashScreen} from '@presentation/screens/SplashScreen';
 import {OnboardingNavigator} from './OnboardingNavigator';
+import {FocusTipsScreen} from '@presentation/screens/FocusTipsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -19,5 +20,6 @@ export const RootNavigator: React.FC = () => (
     <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
     <Stack.Screen name="Main" component={MainTabNavigator} />
     <Stack.Screen name="Settings" component={SettingsNavigator} />
+    <Stack.Screen name="FocusTips" component={FocusTipsScreen} />
   </Stack.Navigator>
 );

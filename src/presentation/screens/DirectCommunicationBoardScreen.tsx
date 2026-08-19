@@ -3,7 +3,7 @@
  * Mục đích: Màn chính - bảng giao tiếp trực tiếp: chọn thẻ sẽ phát âm ngay lập tức.
  */
 import React, {useState, useMemo, useRef} from 'react';
-import {FlatList, StyleSheet, View, useWindowDimensions} from 'react-native';
+import {FlatList, StyleSheet, View, useWindowDimensions, TouchableOpacity, Text} from 'react-native';
 import {Appbar, Searchbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import {Settings as SettingsIcon, Search as SearchIcon} from 'lucide-react-native';
@@ -28,7 +28,7 @@ export const DirectCommunicationBoardScreen: React.FC<
 > = ({navigation}) => {
   const {t} = useTranslation();
   const theme = useTheme();
-  const {columns, tileSize, gap, paddingHorizontal, itemsPerPage, isLandscape} = useResponsiveGrid(16, 24);
+  const {tileSize, gap, paddingHorizontal, itemsPerPage, isLandscape} = useResponsiveGrid(16, 24);
 
   const setSearch = useActivityStore(s => s.setSearch);
   const search = useActivityStore(s => s.search);
@@ -42,7 +42,9 @@ export const DirectCommunicationBoardScreen: React.FC<
   const [droppedVocab, setDroppedVocab] = useState<Vocabulary | null>(null);
   const [settingsVocab, setSettingsVocab] = useState<Vocabulary | null>(null);
   const [showPinGate, setShowPinGate] = useState(false);
+  const [activeTab, setActiveTab] = useState<'food' | 'personal' | 'objects'>('food');
   const dropZoneRef = useRef<DropZoneRef>(null);
+  const flatListRef = useRef<FlatList<Vocabulary[]>>(null);
   
   const updateActivity = useActivityStore(s => s.updateActivity);
   const loadActivities = useActivityStore(s => s.load);
@@ -50,6 +52,7 @@ export const DirectCommunicationBoardScreen: React.FC<
   useFocusEffect(
     React.useCallback(() => {
       loadActivities();
+      setActiveTab('food');
     }, [])
   );
 
@@ -58,12 +61,14 @@ export const DirectCommunicationBoardScreen: React.FC<
       return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
     };
     
-    const q = removeAccents(search.toLowerCase()); // Bỏ trim() để cho phép tìm từ chính xác khi có dấu cách
+    const q = removeAccents(search.toLowerCase());
     return activities.filter(v => {
+      if (v.categoryKey !== activeTab) return false;
+      
       const name = removeAccents(v.nameVi.toLowerCase());
       return q.length === 0 || name.includes(q);
     });
-  }, [activities, search]);
+  }, [activities, search, activeTab]);
 
   React.useEffect(() => {
     preloadWords(data);
@@ -87,7 +92,7 @@ export const DirectCommunicationBoardScreen: React.FC<
   const {width} = useWindowDimensions();
 
   const pages = useMemo(() => {
-    const chunks = [];
+    const chunks: Vocabulary[][] = [];
     for (let i = 0; i < data.length; i += itemsPerPage) {
       chunks.push(data.slice(i, i + itemsPerPage));
     }
@@ -166,6 +171,41 @@ export const DirectCommunicationBoardScreen: React.FC<
         />
       ) : null}
 
+      {/* Custom Category Tabs at the Top */}
+      <View style={[styles.tabBarContainer, { backgroundColor: 'transparent' }]}>
+        {(
+          [
+            { key: 'food', label: 'Ăn uống', icon: '🍔' },
+            { key: 'personal', label: 'Sinh hoạt', icon: '🪥' },
+            { key: 'objects', label: 'Đồ vật', icon: '🧸' },
+          ] as const
+        ).map(tab => {
+          const isActive = activeTab === tab.key;
+          return (
+            <TouchableOpacity
+              key={tab.key}
+              style={[
+                styles.tabItem,
+                isActive && { backgroundColor: theme.colors.primaryContainer, borderColor: theme.colors.primary }
+              ]}
+              onPress={() => {
+                setActiveTab(tab.key);
+                flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.tabIcon}>{tab.icon}</Text>
+              <Text style={[
+                styles.tabLabel,
+                isActive ? { color: theme.colors.onPrimaryContainer, fontWeight: 'bold' } : { color: theme.colors.onBackground }
+              ]}>
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
       <DropZone
         ref={dropZoneRef}
         vocabulary={currentDroppedVocab}
@@ -175,6 +215,7 @@ export const DirectCommunicationBoardScreen: React.FC<
       />
 
       <FlatList
+        ref={flatListRef}
         style={{marginTop: isLandscape ? -12 : 0}}
         data={pages}
         keyExtractor={(_, index) => String(index)}
@@ -203,6 +244,7 @@ export const DirectCommunicationBoardScreen: React.FC<
           </View>
         }
       />
+
 
       {/* Nhân vật góc dưới */}
       <View style={[styles.avatarContainer, {backgroundColor: 'transparent', borderColor: 'transparent', elevation: 0}]}>
@@ -234,6 +276,32 @@ const styles = StyleSheet.create({
   container: {flex: 1},
   searchbar: {marginHorizontal: 12, marginTop: 8},
   grid: {padding: 16},
+  tabBarContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  tabIcon: {
+    fontSize: 24,
+    marginBottom: 2,
+  },
+  tabLabel: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
   avatarContainer: {
     position: 'absolute',
     bottom: 20,

@@ -12,6 +12,7 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Main: undefined;
   Settings: undefined;
+  FocusTips: { isFromOnboarding?: boolean };
 };
 
 export type OnboardingStackParamList = {
@@ -56,7 +57,10 @@ export type MainTabScreenProps<T extends keyof MainTabParamList> =
   >;
 
 export type SettingsScreenProps<T extends keyof SettingsStackParamList> =
-  NativeStackScreenProps<SettingsStackParamList, T>;
+  CompositeScreenProps<
+    NativeStackScreenProps<SettingsStackParamList, T>,
+    NativeStackScreenProps<RootStackParamList>
+  >;
 
 export type OnboardingScreenProps<T extends keyof OnboardingStackParamList> =
   CompositeScreenProps<

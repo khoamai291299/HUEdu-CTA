@@ -33,10 +33,10 @@ export class Seeder {
         const table = v.type === 'activity' ? 'activities' : 'vocabulary';
         await exec(
           `INSERT INTO ${table}
-            (name_vi, name_en, image_path, speech_text_vi, speech_text_en,
+            (name_vi, name_en, image_path, speech_text_vi, speech_text_en, category_key,
              is_default, sort_order, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?);`,
-          [v.nameVi, null, v.imagePath || null, v.speechTextVi || null, null, v.sortOrder, ts, ts],
+           VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?);`,
+          [v.nameVi, null, v.imagePath || null, v.speechTextVi || null, null, v.categoryKey || null, v.sortOrder, ts, ts],
         );
       }
 

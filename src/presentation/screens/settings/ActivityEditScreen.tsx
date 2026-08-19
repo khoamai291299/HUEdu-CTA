@@ -12,6 +12,7 @@ import {useTranslation} from 'react-i18next';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
 import {AudioRecorderField} from '@presentation/components/AudioRecorderField';
+import {TouchableOpacity} from 'react-native';
 
 import {SettingsScreenProps} from '@presentation/navigation/types';
 import {ArasaacImage} from '@presentation/components/ArasaacImage';
@@ -23,6 +24,7 @@ interface FormValues {
   speechTextVi: string;
   imagePath: string | null;
   audioPath: string | null;
+  categoryKey: string;
 }
 
 export const ActivityEditScreen: React.FC<
@@ -44,6 +46,7 @@ export const ActivityEditScreen: React.FC<
       speechTextVi: existing?.speechTextVi ?? '',
       imagePath: existing?.imagePath ?? null,
       audioPath: existing?.audioPath ?? null,
+      categoryKey: existing?.categoryKey ?? 'food',
     },
   });
 
@@ -104,6 +107,7 @@ export const ActivityEditScreen: React.FC<
       speechTextVi: values.speechTextVi.trim() || null,
       imagePath: persistedImage,
       audioPath: persistedAudio,
+      categoryKey: values.categoryKey,
     };
     
     if (editingId) {
@@ -157,6 +161,45 @@ export const ActivityEditScreen: React.FC<
             style={[styles.field, { backgroundColor: theme.colors.surface }]}
             outlineStyle={{ borderWidth: 2 }}
           />
+        )}
+      />
+
+      <Text variant="labelLarge" style={styles.label}>
+        Phân loại
+      </Text>
+      <Controller
+        control={control}
+        name="categoryKey"
+        render={({field: {value, onChange}}) => (
+          <View style={{flexDirection: 'row', gap: 8}}>
+            {[
+              { key: 'food', label: 'Ăn uống', color: '#F2B5A0' },
+              { key: 'personal', label: 'Sinh hoạt', color: '#5B8DEF' },
+              { key: 'objects', label: 'Đồ vật', color: '#F4D03F' },
+            ].map(cat => {
+              const isActive = value === cat.key;
+              return (
+                <TouchableOpacity
+                  key={cat.key}
+                  onPress={() => onChange(cat.key)}
+                  activeOpacity={0.8}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 12,
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: isActive ? '#333' : 'transparent',
+                    backgroundColor: cat.color,
+                    alignItems: 'center',
+                    opacity: isActive ? 1 : 0.6,
+                  }}>
+                  <Text style={{fontWeight: isActive ? 'bold' : 'normal', color: '#111'}}>
+                    {cat.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         )}
       />
 

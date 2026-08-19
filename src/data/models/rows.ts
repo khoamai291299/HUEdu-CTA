@@ -30,6 +30,7 @@ export interface VocabularyRow {
 
   speech_text_vi: string | null;
   speech_text_en: string | null;
+  category_key: string | null;
   is_default: number;
   sort_order: number;
   is_custom: number;
@@ -46,6 +47,7 @@ export interface ActivityRow {
 
   speech_text_vi: string | null;
   speech_text_en: string | null;
+  category_key: string | null;
   is_default: number;
   sort_order: number;
   is_custom: number;

@@ -48,6 +48,24 @@ export class VbeeTtsService implements ITtsService {
 
     // Khôi phục cache từ đĩa để tránh download lại các file đã tồn tại từ lần dùng trước.
     try {
+      // 1. Copy bundled audio assets to cache if they don't exist yet
+      try {
+        const bundledFiles = await RNFS.readDirAssets('audio');
+        for (const asset of bundledFiles) {
+          if (asset.name.startsWith('vbee_') && asset.name.endsWith('.mp3')) {
+            const destPath = RNFS.CachesDirectoryPath + '/' + asset.name;
+            const exists = await RNFS.exists(destPath);
+            if (!exists) {
+              await RNFS.copyFileAssets('audio/' + asset.name, destPath);
+              logger.info(`[VbeeTtsService] Copied bundled asset ${asset.name} to cache.`);
+            }
+          }
+        }
+      } catch (e) {
+        logger.debug('[VbeeTtsService] No bundled audio assets found or failed to copy.', e);
+      }
+
+      // 2. Load cache into memory
       const files = await RNFS.readDir(RNFS.CachesDirectoryPath);
       for (const file of files) {
         if (file.name.startsWith('vbee_') && file.name.endsWith('.mp3')) {

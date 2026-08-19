@@ -12,6 +12,7 @@ export interface ActivityInput {
   imagePath?: string | null;
   speechTextVi?: string | null;
   speechTextEn?: string | null;
+  categoryKey?: string | null;
   sortOrder?: number;
   isDefault?: boolean;
   isCustom?: boolean;

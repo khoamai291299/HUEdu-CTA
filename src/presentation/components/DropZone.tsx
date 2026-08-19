@@ -59,7 +59,7 @@ export const DropZone = forwardRef<DropZoneRef, DropZoneProps>(
         style={[
           styles.container,
           { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline },
-          { height: vocabulary ? 130 : 50 },
+          { height: 160 }, // Giữ nguyên chiều cao cố định để không đẩy các thẻ bên dưới
           style
         ]}
         {...props}
@@ -75,7 +75,7 @@ export const DropZone = forwardRef<DropZoneRef, DropZoneProps>(
         {vocabulary ? (
           <View style={styles.droppedContainer}>
             <View pointerEvents="none" style={{ marginRight: 16 }}>
-              <IconTile vocabulary={vocabulary} size={110} onPress={() => {}} />
+              <IconTile vocabulary={vocabulary} size={130} onPress={() => {}} />
             </View>
             
             <View style={styles.controls}>
@@ -111,8 +111,9 @@ export const DropZone = forwardRef<DropZoneRef, DropZoneProps>(
 
 const styles = StyleSheet.create({
   container: {
-    height: 130,
-    margin: 16,
+    height: 160,
+    marginHorizontal: 16,
+    marginVertical: 12,
     borderRadius: 20,
     borderWidth: 2,
     borderStyle: 'dashed',

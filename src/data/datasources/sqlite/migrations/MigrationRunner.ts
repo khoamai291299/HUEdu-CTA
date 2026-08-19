@@ -14,6 +14,11 @@ import {migration004AddChildFields} from './migration_004_add_child_fields';
 import {migration005RemoveCategories} from './migration_005_remove_categories';
 import {migration006DropCategoryColumns} from './migration_006_drop_category_columns';
 import {migration007CustomCards} from './migration_007_custom_cards';
+import {migration008UpdateSeedData} from './migration_008_update_seed_data';
+import {migration009RestoreCategoryKey} from './migration_009_restore_category_key';
+import {migration010FixCategoryKeys} from './migration_010_fix_category_keys';
+import {migration011FixPencilImage} from './migration_011_fix_pencil_image';
+import {migration012FixObjectsCategory} from './migration_012_fix_objects_category';
 
 const ALL_MIGRATIONS: Migration[] = [
   migration001Init,
@@ -23,6 +28,11 @@ const ALL_MIGRATIONS: Migration[] = [
   migration005RemoveCategories,
   migration006DropCategoryColumns,
   migration007CustomCards,
+  migration008UpdateSeedData,
+  migration009RestoreCategoryKey,
+  migration010FixCategoryKeys,
+  migration011FixPencilImage,
+  migration012FixObjectsCategory,
 ].sort(
   (a, b) => a.version - b.version,
 );

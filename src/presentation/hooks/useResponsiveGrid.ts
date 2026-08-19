@@ -14,9 +14,9 @@ export const useResponsiveGrid = (gap = 12, horizontalPadding = 16) => {
   if (columns < 2) columns = 2;
   if (columns > 6) columns = 6;
 
-  // Dành một khoảng không gian cho Header, DropZone, TabBar
-  const verticalReserve = isLandscape ? 240 : 340;
-  const availableHeight = height - verticalReserve;
+  // Dành một khoảng không gian cho Header, DropZone, TabBar, và Bottom Tab Bar chuẩn
+  const verticalReserve = isLandscape ? 400 : 450;
+  const availableHeight = Math.max(height - verticalReserve, 0);
 
   // Tính số dòng (trên điện thoại ép cứng 3 dòng, trên tablet ép cứng 3 dòng để thẻ luôn to và không bao giờ lẹm)
   let rows = 3;

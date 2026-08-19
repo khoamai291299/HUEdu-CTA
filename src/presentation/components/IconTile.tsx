@@ -37,8 +37,8 @@ const IconTileComponent: React.FC<Props> = ({
   const bg = accentColor ?? theme.colors.secondaryContainer;
   const label = vocabulary.label();
   
-  // Tỷ lệ ảnh 60% để chữ có đủ không gian hiển thị phần đuôi nét
-  const imageSize = Math.max(size * 0.6, 40);
+  // Tỷ lệ ảnh 45% để chữ có đủ không gian và không bị sát viền
+  const imageSize = Math.max(size * 0.45, 30);
 
   return (
     <Pressable
@@ -97,7 +97,7 @@ const IconTileComponent: React.FC<Props> = ({
           {width: imageSize, height: imageSize},
         ]}>
         {(vocabulary.imagePath && !vocabulary.imagePath.startsWith('lucide:')) ? (
-          <Image source={{uri: vocabulary.imagePath}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 12}} />
+          <Image source={{uri: vocabulary.imagePath}} style={{width: '100%', height: '100%', resizeMode: 'contain', borderRadius: 12}} />
         ) : (
           <ArasaacImage keyword={label} bgColor={bg} size={imageSize} />
         )}
@@ -108,7 +108,7 @@ const IconTileComponent: React.FC<Props> = ({
         numberOfLines={2}
         adjustsFontSizeToFit={true}
         minimumFontScale={0.4}
-        style={[styles.label, { width: '100%', lineHeight: 18, color: theme.colors.onPrimaryContainer }]}
+        style={[styles.label, { width: '100%', color: theme.colors.onPrimaryContainer }]}
         ellipsizeMode="tail">
         {label}
       </Text>
@@ -120,8 +120,7 @@ const styles = StyleSheet.create({
   tile: {
     borderRadius: 16,
     borderWidth: 1,
-    paddingHorizontal: 4,
-    paddingVertical: 8,
+    padding: 6, // Giảm padding để chữ có thêm không gian ngang
     alignItems: 'center',
     justifyContent: 'center', // Căn giữa khối ảnh và chữ
     flexDirection: 'column',
@@ -130,7 +129,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   letter: {fontWeight: '700', color: '#3A3A3A'},
   label: {textAlign: 'center', paddingHorizontal: 2},

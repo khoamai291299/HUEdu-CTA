@@ -43,8 +43,8 @@ export const UsernameScreen: React.FC<OnboardingScreenProps<'Username'>> = ({nav
       setUsername(name.trim());
       await setIsOnboarded(true);
 
-      // Navigate to Main
-      navigation.replace('Main');
+      // Navigate to FocusTips first (Epic 3)
+      navigation.replace('FocusTips', { isFromOnboarding: true });
     } catch (e: any) {
       console.error('Lỗi khi hoàn tất Onboarding:', e);
       Alert.alert('Có lỗi xảy ra', typeof e === 'object' ? e?.message || String(e) : String(e));

@@ -53,15 +53,16 @@ export class ActivityRepositoryImpl
     const ts = Date.now();
     const res = await this.db.executeSql(
       `INSERT INTO activities
-        (name_vi, name_en, image_path, speech_text_vi, speech_text_en,
+        (name_vi, name_en, image_path, speech_text_vi, speech_text_en, category_key,
          is_default, is_custom, audio_path, sort_order, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         input.nameVi,
         input.nameEn ?? null,
         input.imagePath ?? null,
         input.speechTextVi ?? null,
         input.speechTextEn ?? null,
+        input.categoryKey ?? null,
         input.isDefault ? 1 : 0,
         input.isCustom ? 1 : 0,
         input.audioPath ?? null,
@@ -86,6 +87,7 @@ export class ActivityRepositoryImpl
       image_path: input.imagePath,
       speech_text_vi: input.speechTextVi,
       speech_text_en: input.speechTextEn,
+      category_key: input.categoryKey,
       is_custom: input.isCustom,
       audio_path: input.audioPath,
       sort_order: input.sortOrder,
