@@ -63,3 +63,15 @@ export interface UsageRow {
   used_at: number;
   context: string;
 }
+
+export interface PecsInteractionRow {
+  id: number;
+  child_id: number;
+  card_id: number;
+  occurred_at: number;
+  response_ms: number;
+  is_success: number;
+  is_independent: number;
+  cancel_count: number;
+  input_kind: string;
+}

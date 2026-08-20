@@ -12,22 +12,32 @@ import {useAppInit} from '@presentation/hooks/useAppInit';
 import {ErrorView, LoadingView} from '@presentation/components/StatusView';
 import {RootScreenProps} from '@presentation/navigation/types';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
+import {usePecsStore} from '@presentation/stores/usePecsStore';
 
 export const SplashScreen: React.FC<RootScreenProps<'Splash'>> = ({
   navigation,
 }) => {
   const {ready, error} = useAppInit();
   const isOnboarded = useSettingsStore(s => s.settings.isOnboarded);
+  const pecsChildModeActive = usePecsStore(s => s.config.childModeActive);
 
   useEffect(() => {
-    if (ready) {
-      if (isOnboarded) {
-        navigation.replace('Main');
-      } else {
-        navigation.replace('Onboarding');
-      }
+    if (!ready) {
+      return;
     }
-  }, [ready, isOnboarded, navigation]);
+    if (!isOnboarded) {
+      // Luồng thiết lập 9 bước của PECS chính là onboarding lần đầu.
+      navigation.replace('Pecs');
+      return;
+    }
+    // Máy đang được khoá ở chế độ trẻ (Bước 1 PECS): mở lại app là vào thẳng
+    // màn của bé, không đi qua màn chọn chế độ.
+    if (pecsChildModeActive) {
+      navigation.replace('PecsChild');
+      return;
+    }
+    navigation.replace('ModeSelect');
+  }, [ready, isOnboarded, pecsChildModeActive, navigation]);
 
   if (error) {
     return <ErrorView message={error} />;

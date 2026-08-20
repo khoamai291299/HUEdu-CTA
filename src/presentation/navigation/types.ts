@@ -9,10 +9,28 @@ import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 
 export type RootStackParamList = {
   Splash: undefined;
-  Onboarding: undefined;
+  /** Màn hình 1 của luồng PECS: chọn chế độ Phụ huynh / Trẻ. */
+  ModeSelect: undefined;
   Main: undefined;
   Settings: undefined;
   FocusTips: { isFromOnboarding?: boolean };
+  /** Luồng thiết lập + Dashboard Admin của Bước 1 PECS. */
+  Pecs: undefined;
+  /** Chế độ trẻ của Bước 1 PECS (toàn màn hình, không thanh điều hướng). */
+  PecsChild: undefined;
+};
+
+export type PecsStackParamList = {
+  PecsChildName: undefined;
+  PecsThemeColor: undefined;
+  PecsVoice: undefined;
+  PecsCommAssess: undefined;
+  PecsMotorAssess: undefined;
+  PecsRewardPick: undefined;
+  PecsFirstCard: undefined;
+  PecsPinSetup: undefined;
+  PecsHandoff: undefined;
+  PecsDashboard: undefined;
 };
 
 export type OnboardingStackParamList = {
@@ -59,6 +77,12 @@ export type MainTabScreenProps<T extends keyof MainTabParamList> =
 export type SettingsScreenProps<T extends keyof SettingsStackParamList> =
   CompositeScreenProps<
     NativeStackScreenProps<SettingsStackParamList, T>,
+    NativeStackScreenProps<RootStackParamList>
+  >;
+
+export type PecsScreenProps<T extends keyof PecsStackParamList> =
+  CompositeScreenProps<
+    NativeStackScreenProps<PecsStackParamList, T>,
     NativeStackScreenProps<RootStackParamList>
   >;
 

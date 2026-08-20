@@ -49,8 +49,15 @@ cd HUEdu-CTA
 
 Cài đặt các gói phụ thuộc (Dependencies):
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
+*(Bắt buộc dùng `--legacy-peer-deps`: `lucide-react-native` khai báo peer `react ^18` trong khi dự án dùng React 19, `npm install` thường sẽ dừng với lỗi ERESOLVE.)*
+
+> **Về thư mục `patches/`:** `react-native-audio-recorder-player@3.6.14` gọi `currentActivity` trần —
+> API này không còn khả dụng cho lớp con trong React Native 0.85, khiến `assembleRelease` fail ở
+> `:react-native-audio-recorder-player:compileReleaseKotlin`. Bản vá trong `patches/` sửa lại thành
+> `reactContext.currentActivity` và được `patch-package` tự áp dụng qua script `postinstall`.
+> **Không xoá thư mục `patches/`** — thiếu nó thì dự án không build được APK.
 
 ### 3. Xuất file APK (Bản Release)
 Mở một Terminal / PowerShell tại thư mục gốc và chạy các lệnh sau:
@@ -62,9 +69,18 @@ cd ..
 *(Nếu bạn dùng Mac/Linux, hãy dùng `./gradlew assembleRelease`)*
 
 File APK sau khi build hoàn tất sẽ nằm tại đường dẫn: 
-`android\app\build\outputs\apk\release\app-release.apk`
+`android/app/build/outputs/apk/release/HUEdu-CTA-v<versionName>.apk`
 
-*Ghi chú: Bản APK được đóng gói sẵn trong thư mục dự án mang tên `HUEdu-CTA-v1.0.0.apk`.*
+**Yêu cầu môi trường đã kiểm chứng (macOS):** JDK 21, Android SDK Platform 36, Build-Tools 36.0.0,
+NDK 27.1.12297006 (Gradle tự tải bù platform/NDK còn thiếu nếu đã chấp nhận license SDK).
+
+**Về việc ký (signing):** nếu chưa có `android/app/my-release-key.keystore`, build sẽ tự ký bằng
+debug key để vẫn xuất được APK cài trực tiếp lên máy Android phục vụ test nội bộ. Khi cần phát hành
+thật, tạo keystore rồi đặt đúng tên khai báo trong `android/gradle.properties`:
+
+```bash
+keytool -genkeypair -v -storetype PKCS12 -keystore android/app/my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+```
 
 ## Tài Liệu & Hướng Dẫn Chi Tiết
 - Vui lòng tham khảo file `Guide.md` để hiểu sâu về kỹ thuật, kiến trúc và luồng dữ liệu.

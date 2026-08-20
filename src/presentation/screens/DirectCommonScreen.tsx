@@ -3,7 +3,7 @@
  * Mục đích: Tab hiển thị 20 từ vựng thông dụng nhất theo cơ chế phát trực tiếp (không ghép câu).
  */
 import React, {useCallback, useState, useRef} from 'react';
-import {FlatList, StyleSheet, View, useWindowDimensions} from 'react-native';
+import {StyleSheet, View, useWindowDimensions} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {Appbar, useTheme} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
@@ -12,11 +12,11 @@ import {Searchbar} from 'react-native-paper';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
 import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useTts} from '@presentation/hooks/useTts';
-import {useResponsiveGrid} from '@presentation/hooks/useResponsiveGrid';
 import {IconTile} from '@presentation/components/IconTile';
 import {DraggableTile} from '@presentation/components/DraggableTile';
 import {DropZone, DropZoneRef} from '@presentation/components/DropZone';
 import {EmptyState} from '@presentation/components/EmptyState';
+import {PagedGrid} from '@presentation/components/PagedGrid';
 import {Vocabulary} from '@domain/entities/Vocabulary';
 import {MainTabScreenProps} from '@presentation/navigation/types';
 
@@ -25,7 +25,16 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
 }) => {
   const {t} = useTranslation();
   const theme = useTheme();
-  const {columns, tileSize, gap, paddingHorizontal, itemsPerPage, isLandscape} = useResponsiveGrid(16, 24);
+  // Lưới 2 cột × 4 hàng = 8 thẻ mỗi trang, suy ra từ vùng đo được (giống tab Giao tiếp).
+  const [gridArea, setGridArea] = useState({width: 0, height: 0});
+  // Bố cục 3 cột × 3 hàng nhưng chỉ 8 thẻ -> hàng cuối còn 2 thẻ (3-3-2) và ô
+  // dưới cùng bên phải để trống cho nhân vật que.
+  const GRID_COLUMNS = 3;
+  const GRID_ROWS = 3;
+  const GRID_ITEMS_PER_PAGE = 8;
+  const GRID_GAP = 10;
+  const GRID_H_PADDING = 12;
+  const GRID_BOTTOM_RESERVE = 34;
 
   const activeChildId = useSettingsStore(s => s.settings.activeChildId);
   const activities = useActivityStore(s => s.activities);
@@ -65,13 +74,20 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
 
   const {width} = useWindowDimensions();
 
-  const pages = React.useMemo(() => {
-    const chunks = [];
-    for (let i = 0; i < data.length; i += itemsPerPage) {
-      chunks.push(data.slice(i, i + itemsPerPage));
+  const tileSize = React.useMemo(() => {
+    if (gridArea.width === 0 || gridArea.height === 0) {
+      return 0;
     }
-    return chunks;
-  }, [data, itemsPerPage]);
+    const fromWidth = Math.floor(
+      (gridArea.width - GRID_H_PADDING * 2 - GRID_GAP * (GRID_COLUMNS - 1)) /
+        GRID_COLUMNS,
+    );
+    const fromHeight = Math.floor(
+      (gridArea.height - GRID_BOTTOM_RESERVE - GRID_GAP * (GRID_ROWS - 1)) /
+        GRID_ROWS,
+    );
+    return Math.max(Math.min(fromWidth, fromHeight), 84);
+  }, [gridArea]);
 
   const {speakWord, preloadWords} = useTts();
   
@@ -144,41 +160,42 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
         vocabulary={droppedVocab}
       />
 
-      <FlatList
-        style={{marginTop: isLandscape ? -12 : 0}}
-        data={pages}
-        keyExtractor={(_, index) => String(index)}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        renderItem={({item: page}) => (
-          <View style={{width, paddingHorizontal, paddingTop: 0, paddingBottom: 24}}>
-            <View style={{flexDirection: 'row', flexWrap: 'wrap', gap}}>
-              {page.map((vocab) => (
-                <DraggableTile
-                  key={vocab.id}
-                  vocabulary={vocab}
-                  size={tileSize}
-                  dropZoneLayout={dropZoneLayout}
-                  onDrop={onTileDrop}
-                  onPress={onTilePress}
-                />
-              ))}
-            </View>
-          </View>
-        )}
-        ListEmptyComponent={
-          <View style={{width, alignItems: 'center', justifyContent: 'center', paddingTop: 40}}>
-            <EmptyState message={t('common.empty')} />
-          </View>
-        }
-      />
+      <View
+        style={styles.gridArea}
+        onLayout={e => {
+          const {width: w, height: h} = e.nativeEvent.layout;
+          setGridArea({width: w, height: h});
+        }}>
+        {tileSize > 0 ? (
+          <PagedGrid
+            items={data}
+            columns={GRID_COLUMNS}
+            rows={GRID_ROWS}
+            itemsPerPage={GRID_ITEMS_PER_PAGE}
+            tileSize={tileSize}
+            gap={GRID_GAP}
+            pageWidth={width}
+            keyExtractor={vocab => String(vocab.id)}
+            emptyComponent={<EmptyState message={t('common.empty')} />}
+            renderItem={vocab => (
+              <DraggableTile
+                vocabulary={vocab}
+                size={tileSize}
+                dropZoneLayout={dropZoneLayout}
+                onDrop={onTileDrop}
+                onPress={onTilePress}
+              />
+            )}
+          />
+        ) : null}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {flex: 1},
+  gridArea: {flex: 1},
   searchbar: {marginHorizontal: 12, marginTop: 8},
   grid: {padding: 16},
 });

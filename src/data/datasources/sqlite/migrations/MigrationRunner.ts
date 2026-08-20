@@ -19,6 +19,7 @@ import {migration009RestoreCategoryKey} from './migration_009_restore_category_k
 import {migration010FixCategoryKeys} from './migration_010_fix_category_keys';
 import {migration011FixPencilImage} from './migration_011_fix_pencil_image';
 import {migration012FixObjectsCategory} from './migration_012_fix_objects_category';
+import {migration013Pecs} from './migration_013_pecs';
 
 const ALL_MIGRATIONS: Migration[] = [
   migration001Init,
@@ -33,6 +34,7 @@ const ALL_MIGRATIONS: Migration[] = [
   migration010FixCategoryKeys,
   migration011FixPencilImage,
   migration012FixObjectsCategory,
+  migration013Pecs,
 ].sort(
   (a, b) => a.version - b.version,
 );

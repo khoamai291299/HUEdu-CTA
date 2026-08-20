@@ -17,6 +17,7 @@ import {IChildRepository} from '@domain/repositories/IChildRepository';
 import {IFavoriteRepository} from '@domain/repositories/IFavoriteRepository';
 import {IUsageHistoryRepository} from '@domain/repositories/IUsageHistoryRepository';
 import {ISettingsRepository} from '@domain/repositories/ISettingsRepository';
+import {IPecsRepository} from '@domain/repositories/IPecsRepository';
 
 const c = () => Container.instance;
 
@@ -41,3 +42,5 @@ export const getUsageRepo = (): IUsageHistoryRepository =>
   c().resolve(TOKENS.UsageHistoryRepository);
 export const getSettingsRepo = (): ISettingsRepository =>
   c().resolve(TOKENS.SettingsRepository);
+export const getPecsRepo = (): IPecsRepository =>
+  c().resolve(TOKENS.PecsRepository);

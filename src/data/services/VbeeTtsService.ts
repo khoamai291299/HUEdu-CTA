@@ -91,37 +91,65 @@ export class VbeeTtsService implements ITtsService {
     if (!text.trim()) return;
     const cleanedText = this.cleanText(text);
 
-    if (this.isVbeeAvailable) {
-      // Kiểm tra cache in-memory trước — nếu có file sẵn thì phát ngay, không cần dừng trước
-      const cacheKey = this.getCacheKey(cleanedText);
-      const cachedPath = this.audioCache.get(cacheKey);
-      if (cachedPath) {
-        try {
-          const exists = await RNFS.exists(cachedPath);
-          if (exists) {
-            // Hủy request đang chạy (nếu có) rồi phát ngay — không stop audio trước để tránh nuốt chữ
-            if (this.speakController) {
-              this.speakController.abort();
-              this.speakController = null;
-            }
-            logger.info('[VbeeTtsService] Cache hit — playing instantly:', cachedPath);
-            await this.playAudioFromPath(cachedPath);
-            return;
-          } else {
-            this.audioCache.delete(cacheKey);
+    // ── 1) Ưu tiên file audio đã có sẵn trên máy ─────────────────────────────
+    // KHÔNG đặt nhánh này sau `if (isVbeeAvailable)`: app đóng gói sẵn audio cho
+    // CẢ 6 giọng Vbee, nên kể cả khi chưa cấu hình token thì vẫn phải phát đúng
+    // giọng phụ huynh đã chọn. (Trước đây bị chặn nên mọi giọng đều rơi xuống
+    // Local TTS và nghe giống hệt nhau.)
+    const cacheKey = this.getCacheKey(cleanedText);
+    const cachedPath = this.audioCache.get(cacheKey);
+    if (cachedPath) {
+      try {
+        const exists = await RNFS.exists(cachedPath);
+        if (exists) {
+          // Hủy request đang chạy (nếu có) rồi phát ngay — không stop audio
+          // trước để tránh nuốt chữ đầu.
+          if (this.speakController) {
+            this.speakController.abort();
+            this.speakController = null;
           }
-        } catch (_e) {
-          this.audioCache.delete(cacheKey);
+          logger.info('[VbeeTtsService] Cache hit — playing instantly:', cachedPath);
+          await this.playAudioFromPath(cachedPath);
+          return;
         }
+        this.audioCache.delete(cacheKey);
+      } catch (_e) {
+        this.audioCache.delete(cacheKey);
       }
-
-      // Không có cache — theo yêu cầu, BẤM VÀO LÀ ĐỌC LIỀN, KHÔNG TẢI TRÊN VBEE
-      // Chỉ dùng giọng LocalTTS để không bị trễ. (File sẽ được tải ngầm khi thêm từ mới qua hàm preload)
-      logger.info('[VbeeTtsService] Không có sẵn file audio, dùng Local TTS để đọc liền.');
     }
 
-    // Dùng LocalTTS
-    try { if (SimpleAudioPlayer) { await SimpleAudioPlayer.stop(); } } catch (_) {}
+    // ── 2) Chưa có sẵn: nếu đã cấu hình token thì tải đúng giọng rồi phát ────
+    if (this.isVbeeAvailable) {
+      const controller = new AbortController();
+      this.speakController = controller;
+      try {
+        const path = await this.ensureCached(
+          cleanedText,
+          this.currentVoiceCode,
+          controller.signal,
+        );
+        if (path) {
+          await this.playAudioFromPath(path);
+          return;
+        }
+      } catch (e) {
+        logger.warn('[VbeeTtsService] Tải audio Vbee thất bại, dùng Local TTS.', e);
+      } finally {
+        if (this.speakController === controller) {
+          this.speakController = null;
+        }
+      }
+    }
+
+    // ── 3) Cuối cùng mới dùng giọng đọc của máy ─────────────────────────────
+    logger.info('[VbeeTtsService] Không có audio sẵn, dùng Local TTS.');
+    try {
+      if (SimpleAudioPlayer) {
+        await SimpleAudioPlayer.stop();
+      }
+    } catch {
+      // Bỏ qua: không dừng được audio cũ cũng không nên chặn việc đọc.
+    }
     await this.localTts.speak(text, 'vi-VN');
   }
 

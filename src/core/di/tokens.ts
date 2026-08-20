@@ -16,6 +16,7 @@ export const TOKENS = {
   FavoriteRepository: Symbol('FavoriteRepository'),
   UsageHistoryRepository: Symbol('UsageHistoryRepository'),
   SettingsRepository: Symbol('SettingsRepository'),
+  PecsRepository: Symbol('PecsRepository'),
 
   TtsService: Symbol('TtsService'),
   BackupService: Symbol('BackupService'),

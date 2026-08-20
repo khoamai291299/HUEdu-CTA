@@ -18,6 +18,7 @@ import {
   ChartColumn,
   Activity,
   Lightbulb,
+  Play,
 } from 'lucide-react-native';
 import { SettingsScreenProps } from '@presentation/navigation/types';
 import { useTheme } from 'react-native-paper';
@@ -43,6 +44,9 @@ export const SettingsHomeScreen: React.FC<
   return (
     <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}>
       <List.Section>
+        {item(<Play size={24} color={theme.colors.primary} />, 'Cài đặt Bước 1 (1 thẻ)', () =>
+          navigation.navigate('Pecs'),
+        )}
         {item(<Activity size={24} color={theme.colors.onSurface} />, t('settings.activity'), () =>
           navigation.navigate('ActivityList'),
         )}
@@ -87,7 +91,7 @@ export const SettingsHomeScreen: React.FC<
       </List.Section>
       <Divider />
       <List.Item
-        title="HUEdu-CTA v1.0.0"
+        title="HUEdu-CTA v1.6.0"
         left={() => <List.Icon icon={() => <Settings2 size={24} color={theme.colors.onSurface} />} />}
       />
     </ScrollView>

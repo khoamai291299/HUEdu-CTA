@@ -14,6 +14,7 @@ import {useSettingsStore} from '@presentation/stores/useSettingsStore';
 import {useChildStore} from '@presentation/stores/useChildStore';
 import {useVocabularyStore} from '@presentation/stores/useVocabularyStore';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
+import {usePecsStore} from '@presentation/stores/usePecsStore';
 import {logger} from '@core/utils/logger';
 
 interface InitState {
@@ -45,6 +46,8 @@ export const useAppInit = (): InitState => {
         await useSettingsStore.getState().load();
         await useChildStore.getState().load();
         await useChildStore.getState().ensureActive();
+        // Cấu hình Bước 1 PECS — cần trước khi SplashScreen quyết định điều hướng.
+        await usePecsStore.getState().load();
 
         // Khởi tạo TTS và load cache TRƯỚC khi app sẵn sàng để lần bấm đầu tiên phát ngay.
         const ttsAvailable = true;

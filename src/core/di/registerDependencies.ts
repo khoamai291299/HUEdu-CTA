@@ -20,6 +20,7 @@ import {ChildRepositoryImpl} from '@data/repositories/ChildRepositoryImpl';
 import {FavoriteRepositoryImpl} from '@data/repositories/FavoriteRepositoryImpl';
 import {UsageHistoryRepositoryImpl} from '@data/repositories/UsageHistoryRepositoryImpl';
 import {SettingsRepositoryImpl} from '@data/repositories/SettingsRepositoryImpl';
+import {PecsRepositoryImpl} from '@data/repositories/PecsRepositoryImpl';
 
 import {VbeeTtsService} from '@data/services/VbeeTtsService';
 import {BackupService} from '@data/services/BackupService';
@@ -71,6 +72,10 @@ export const registerDependencies = (
   container.registerSingleton(
     TOKENS.SettingsRepository,
     c => new SettingsRepositoryImpl(db(c)),
+  );
+  container.registerSingleton(
+    TOKENS.PecsRepository,
+    c => new PecsRepositoryImpl(db(c)),
   );
 
   // TTS: dùng VbeeTtsService (Vbee API + fallback LocalTtsService).

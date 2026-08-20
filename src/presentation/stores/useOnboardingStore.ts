@@ -22,8 +22,11 @@ export const useOnboardingStore = create<OnboardingState>(set => ({
   region: 'North',
   diagnosis: 'Unknown',
   birthYear: 2020,
-  themeColor: 'light',
-  voiceId: 'neutral',
+  // Mặc định theo tài liệu: màu vàng nhạt, giọng nữ trẻ em.
+  // 'nganha' PHẢI là một id có thật trong VBEE_VOICES — nếu không, VbeeTtsService
+  // sẽ rơi xuống nhánh local và đọc sai giọng phụ huynh đã chọn.
+  themeColor: 'lemon',
+  voiceId: 'nganha',
   username: '',
   setSkinTone: v => set({skinTone: v}),
   setRegion: v => set({region: v}),

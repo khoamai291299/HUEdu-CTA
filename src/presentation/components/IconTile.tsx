@@ -37,7 +37,9 @@ const IconTileComponent: React.FC<Props> = ({
   const bg = accentColor ?? theme.colors.secondaryContainer;
   const label = vocabulary.label();
   
-  // Tỷ lệ ảnh 45% để chữ có đủ không gian và không bị sát viền
+  // Ảnh dùng flex nên tự co lại khi thẻ nhỏ, nhãn chữ LUÔN được ưu tiên chỗ
+  // -> không còn bị cắt chân chữ như trước. Giá trị này chỉ dùng cho nhánh
+  // ArasaacImage (component đó cần một con số cụ thể).
   const imageSize = Math.max(size * 0.45, 30);
 
   return (
@@ -91,13 +93,9 @@ const IconTileComponent: React.FC<Props> = ({
         </Pressable>
       ) : null}
 
-      <View
-        style={[
-          styles.imageWrap,
-          {width: imageSize, height: imageSize},
-        ]}>
+      <View style={styles.imageWrap}>
         {(vocabulary.imagePath && !vocabulary.imagePath.startsWith('lucide:')) ? (
-          <Image source={{uri: vocabulary.imagePath}} style={{width: '100%', height: '100%', resizeMode: 'contain', borderRadius: 12}} />
+          <Image source={{uri: vocabulary.imagePath}} style={styles.image} />
         ) : (
           <ArasaacImage keyword={label} bgColor={bg} size={imageSize} />
         )}
@@ -126,13 +124,17 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   imageWrap: {
+    // flex: 1 -> ảnh nhận phần không gian CÒN LẠI sau khi nhãn chữ đã lấy đủ.
+    flex: 1,
+    width: '100%',
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
   },
+  image: {width: '100%', height: '100%', resizeMode: 'contain', borderRadius: 12},
   letter: {fontWeight: '700', color: '#3A3A3A'},
-  label: {textAlign: 'center', paddingHorizontal: 2},
+  label: {textAlign: 'center', paddingHorizontal: 2, flexShrink: 0},
   favBtn: {position: 'absolute', top: 0, right: 0, zIndex: 2, padding: 8},
   settingsBtn: {position: 'absolute', top: 0, left: 0, zIndex: 2, padding: 8},
   directPlayIcon: {position: 'absolute', top: 6, left: 6, zIndex: 2, opacity: 0.6},

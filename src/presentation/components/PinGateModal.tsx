@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
   Modal,
+  Pressable,
   TouchableOpacity,
   Animated,
   Easing,
@@ -20,6 +21,16 @@ interface Props {
   onDismiss: () => void;
   onSuccess: () => void;
   onMaxFailures?: () => void;
+  /**
+   * Chạm ra ngoài thẻ là đóng. Mặc định TẮT để không đổi hành vi các màn cũ.
+   * Bật ở chế độ trẻ: bé chạm bừa ra ngoài thì quay lại màn của bé ngay.
+   */
+  dismissOnBackdropPress?: boolean;
+  /**
+   * Sai mã là đóng luôn (không đếm đủ số lần). Mặc định TẮT.
+   * Bật ở chế độ trẻ để bé bấm loạn không bị kẹt lại ở màn nhập mã.
+   */
+  dismissOnWrongPin?: boolean;
 }
 
 const MAX_FAILURES = 2;
@@ -34,6 +45,8 @@ export const PinGateModal: React.FC<Props> = ({
   onDismiss,
   onSuccess,
   onMaxFailures,
+  dismissOnBackdropPress = false,
+  dismissOnWrongPin = false,
 }) => {
   const theme = useTheme();
   const parentPin = useSettingsStore(s => s.settings.parentPin);
@@ -93,7 +106,9 @@ export const PinGateModal: React.FC<Props> = ({
         playShake();
         const newFail = failures + 1;
         setFailures(newFail);
-        if (newFail > MAX_FAILURES) {
+        if (dismissOnWrongPin) {
+          setTimeout(() => onDismiss(), 700);
+        } else if (newFail > MAX_FAILURES) {
           setTimeout(() => {onDismiss(); onMaxFailures?.();}, 900);
         } else {
           setTimeout(() => {
@@ -122,8 +137,11 @@ export const PinGateModal: React.FC<Props> = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
-      <View style={styles.overlay}>
-        <View style={styles.card}>
+      <Pressable
+        style={styles.overlay}
+        onPress={dismissOnBackdropPress ? onDismiss : undefined}>
+        {/* Chặn sự kiện chạm lọt xuống lớp nền khi bấm trong thẻ */}
+        <Pressable style={styles.card} onPress={() => {}}>
 
           {/* Nút đóng */}
           <TouchableOpacity style={styles.closeBtn} onPress={onDismiss} hitSlop={16}>
@@ -206,8 +224,8 @@ export const PinGateModal: React.FC<Props> = ({
             </View>
           </View>
 
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
