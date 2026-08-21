@@ -1,11 +1,10 @@
 /**
  * src/data/datasources/sqlite/migrations/migration_013_pecs.ts
- * Mục đích: Tạo bảng pecs_interactions lưu từng lượt tương tác của trẻ ở Bước 1 PECS
- *           (thành công / độc lập / thời gian phản hồi / số lần hủy kéo).
- *           Dùng để tính cờ isReadyForNextStage (20 lượt gần nhất, >= 80%).
+ * Mục đích: Tạo bảng pecs_interactions lưu từng lượt tương tác của trẻ ở Bước 1 PECS (thành công / độc lập / thời gian phản hồi / số lần hủy kéo).
+ * Dùng để tính cờ isReadyForNextStage (20 lượt gần nhất, >= 80%).
  * Lưu ý: KHÔNG đặt khóa ngoại tới activities (thẻ có thể bị xoá) — theo tiền lệ migration 003.
  */
-import {Migration} from './Migration';
+import { Migration } from './Migration';
 
 export const migration013Pecs: Migration = {
   version: 13,

@@ -15,7 +15,6 @@ import {
 import {Button, Text, useTheme} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Volume2} from 'lucide-react-native';
-import {ActivityIndicator} from 'react-native-paper';
 import {PecsScreenProps} from '@presentation/navigation/types';
 import {PecsProgressBar} from '@presentation/components/pecs/PecsProgressBar';
 import {useOnboardingStore} from '@presentation/stores/useOnboardingStore';
@@ -40,7 +39,6 @@ export const PecsVoiceScreen: React.FC<PecsScreenProps<'PecsVoice'>> = ({
   const {voiceId, setVoiceId, username} = useOnboardingStore();
   const childName = username.trim() || 'bé';
 
-  const [loadingId, setLoadingId] = React.useState<string | null>(null);
   /** Chỉ lượt bấm MỚI NHẤT được phát — tránh nghe nhầm giọng bấm trước đó. */
   const latestPickRef = React.useRef(0);
 
@@ -54,7 +52,7 @@ export const PecsVoiceScreen: React.FC<PecsScreenProps<'PecsVoice'>> = ({
   const handlePick = async (id: string) => {
     const ticket = ++latestPickRef.current;
     setVoiceId(id);
-    setLoadingId(id);
+    
     try {
       const tts = getTts();
       await tts.stop();
@@ -63,13 +61,12 @@ export const PecsVoiceScreen: React.FC<PecsScreenProps<'PecsVoice'>> = ({
       if (latestPickRef.current !== ticket) {
         return;
       }
-      await tts.speak(PREVIEW_TEXT, 'vi-VN');
+      
+      tts.speak(PREVIEW_TEXT, 'vi-VN').catch(e => {
+        logger.warn('[PecsVoiceScreen] nghe thử giọng thất bại', e);
+      });
     } catch (e) {
-      logger.warn('[PecsVoiceScreen] nghe thử giọng thất bại', e);
-    } finally {
-      if (latestPickRef.current === ticket) {
-        setLoadingId(null);
-      }
+      logger.warn('[PecsVoiceScreen] thiết lập giọng thất bại', e);
     }
   };
 
@@ -122,21 +119,14 @@ export const PecsVoiceScreen: React.FC<PecsScreenProps<'PecsVoice'>> = ({
                         : 'transparent',
                     },
                   ]}>
-                  {loadingId === v.id ? (
-                    <ActivityIndicator
-                      size="small"
-                      color={theme.colors.primary}
-                    />
-                  ) : (
-                    <Volume2
-                      size={circle * 0.4}
-                      color={
-                        selected
-                          ? theme.colors.primary
-                          : theme.colors.onSurfaceVariant
-                      }
-                    />
-                  )}
+                  <Volume2
+                    size={circle * 0.4}
+                    color={
+                      selected
+                        ? theme.colors.primary
+                        : theme.colors.onSurfaceVariant
+                    }
+                  />
                 </Pressable>
                 <Text variant="titleSmall" style={styles.voiceLabel}>
                   {v.label}
