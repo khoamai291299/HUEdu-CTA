@@ -46,9 +46,10 @@ export const PecsHandoffScreen: React.FC<PecsScreenProps<'PecsHandoff'>> = ({
     [activities, config.selectedCardId],
   );
 
-  const isTapMode = config.motorLevel === 'basic';
-  const actionText = isTapMode
-    ? 'Khi bé chạm thẻ thành công và máy phát ra âm thanh'
+  // Trẻ luôn thấy khung nhận. Với mức 'basic', trẻ chạm vào thẻ thì thẻ sẽ TỰ ĐỘNG hút vào khung.
+  const isBasicMotor = config.motorLevel === 'basic';
+  const actionText = isBasicMotor
+    ? 'Khi bé chạm và máy phát ra âm thanh'
     : 'Khi bé kéo thẻ vào ô nhận và máy phát ra âm thanh';
 
   const openPinningGuide = () => {

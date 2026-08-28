@@ -107,7 +107,7 @@ export const DirectCommonScreen: React.FC<MainTabScreenProps<'DirectCommon'>> = 
   }, [commonActivities, preloadWords]);
 
   const onTilePress = (v: Vocabulary) => {
-    speakWord(v);
+    // Không phát âm khi chạm vào thẻ, chỉ dùng kéo thả
   };
 
   const onTileDrop = (v: Vocabulary) => {

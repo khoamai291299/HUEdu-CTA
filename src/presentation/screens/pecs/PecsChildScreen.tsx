@@ -40,7 +40,6 @@ import {
   PecsZoneLayout,
 } from '@presentation/components/pecs/PecsDropZone';
 import {X} from 'lucide-react-native';
-import {PecsConfetti} from '@presentation/components/pecs/PecsConfetti';
 import {PinGateModal} from '@presentation/components/PinGateModal';
 import {usePecsStore} from '@presentation/stores/usePecsStore';
 import {useActivityStore} from '@presentation/stores/useActivityStore';
@@ -67,7 +66,9 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
     [activities, config.selectedCardId],
   );
 
-  const isTapMode = config.motorLevel === 'basic';
+  // Yêu cầu mới: luôn sử dụng kéo thả (standard), bỏ chức năng chạm để đọc (basic)
+  const isTapMode = false;
+  const isBasicMotor = config.motorLevel === 'basic';
 
   const cardRef = useRef<PecsCardFaceRef>(null);
   const zoneRef = useRef<PecsDropZoneRef>(null);
@@ -75,7 +76,6 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
   const [showExitGate, setShowExitGate] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [confettiTrigger, setConfettiTrigger] = useState(0);
 
   // ── Trạng thái một "lượt tương tác" ────────────────────────────────────────
   const attemptStartRef = useRef<number>(Date.now());
@@ -153,7 +153,6 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
     // Phản hồi cho trẻ: thẻ sáng lên + nảy nhẹ, đồng thời phát âm to rõ.
     cardRef.current?.playSuccess();
     zoneRef.current?.triggerHighlight();
-    setConfettiTrigger(n => n + 1);
     // recordUsage = false: lượt PECS được ghi vào bảng riêng, không lẫn lịch sử bảng giao tiếp.
     speakWord(card, false);
 
@@ -165,9 +164,10 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
     });
 
     setTimeout(() => {
-      tx.value = withSpring(0);
-      ty.value = withSpring(0);
-      scale.value = withTiming(1, {duration: 200});
+      // Bay về vị trí cũ một cách nhẹ nhàng và chậm rãi để trẻ không bị hoảng
+      tx.value = withTiming(0, {duration: 500});
+      ty.value = withTiming(0, {duration: 500});
+      scale.value = withTiming(1, {duration: 300});
       hovering.value = 0;
       resetAttempt();
       setBusy(false);
@@ -200,7 +200,7 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
   const panGesture = useMemo(
     () =>
       Gesture.Pan()
-        .enabled(!isTapMode && !busy)
+        .enabled(!isBasicMotor && !busy)
         .onStart(() => {
           'worklet';
           scale.value = withSpring(1.08);
@@ -216,7 +216,8 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
           const cy = cardBox.value.y + cardBox.value.height / 2 + ty.value;
 
           // "Hút thẻ": nới rộng biên vùng nhận để trẻ không cần thả chính xác
-          const pad = Pecs.DROP_ZONE_PADDING;
+          // Ở mức basic: nhân 3 padding để hút mạnh hơn.
+          const pad = isBasicMotor ? Pecs.DROP_ZONE_PADDING * 3 : Pecs.DROP_ZONE_PADDING;
           const inside =
             cx > zone.value.x - pad &&
             cx < zone.value.x + zone.value.width + pad &&
@@ -266,13 +267,30 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
   const tapGesture = useMemo(
     () =>
       Gesture.Tap()
-        .enabled(isTapMode && !busy)
-        .runOnJS(true)
+        .enabled(isBasicMotor && !busy)
+        .onStart(() => {
+          'worklet';
+          runOnJS(markTouched)();
+        })
         .onEnd(() => {
-          markTouched();
-          handleSuccess();
+          'worklet';
+          const targetX =
+            zone.value.x +
+            zone.value.width / 2 -
+            (cardBox.value.x + cardBox.value.width / 2);
+          const targetY =
+            zone.value.y +
+            zone.value.height / 2 -
+            (cardBox.value.y + cardBox.value.height / 2);
+          tx.value = withTiming(targetX, {duration: 250});
+          scale.value = withTiming(1, {duration: 250});
+          ty.value = withTiming(targetY, {duration: 250}, (finished) => {
+            if (finished) {
+              runOnJS(handleSuccess)();
+            }
+          });
         }),
-    [isTapMode, busy, handleSuccess, markTouched],
+    [isBasicMotor, busy, handleSuccess, markTouched, zone, cardBox, tx, ty, scale],
   );
 
   const composed = useMemo(
@@ -304,10 +322,7 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
   // ── Kích thước thẻ ────────────────────────────────────────────────────────
   const shortSide = Math.min(width, height);
   const baseSize = shortSide * 0.42;
-  const cardSize = Math.min(
-    isTapMode ? baseSize * Pecs.BASIC_HITBOX_SCALE : baseSize,
-    shortSide * 0.72,
-  );
+  const cardSize = Math.min(baseSize, shortSide * 0.72);
   const zoneHeight = Math.max(height * 0.24, 150);
 
   if (!card) {
@@ -385,8 +400,6 @@ export const PecsChildScreen: React.FC<RootScreenProps<'PecsChild'>> = ({
           </View>
         </View>
       )}
-
-      <PecsConfetti trigger={confettiTrigger} />
 
       <PinGateModal
         visible={showExitGate}

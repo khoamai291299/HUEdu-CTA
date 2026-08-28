@@ -26,7 +26,7 @@ export const PecsFirstCardScreen: React.FC<
   const activities = useActivityStore(s => s.activities);
   const config = usePecsStore(s => s.config);
   const save = usePecsStore(s => s.save);
-  const {speakWord, preloadWords} = useTts();
+  const {speakWord, preloadWords, stop} = useTts();
   const username = useOnboardingStore(s => s.username);
   const childName = username.trim() || 'bé';
 
@@ -64,6 +64,7 @@ export const PecsFirstCardScreen: React.FC<
     if (selectedId == null) {
       return;
     }
+    stop();
     await save({selectedCardId: selectedId});
     navigation.navigate('PecsPinSetup');
   };

@@ -39,8 +39,8 @@ export const PecsCardFace = forwardRef<PecsCardFaceRef, Props>(
     useImperativeHandle(ref, () => ({
       playSuccess: () => {
         scale.value = withSequence(
-          withTiming(1.12, {duration: 140}),
-          withSpring(1, {damping: 6, stiffness: 160}),
+          withTiming(1.05, {duration: 140}),
+          withSpring(1, {damping: 10, stiffness: 120}),
         );
         glow.value = withSequence(
           withTiming(1, {duration: 140}),
@@ -56,7 +56,8 @@ export const PecsCardFace = forwardRef<PecsCardFaceRef, Props>(
     const glowStyle = useAnimatedStyle(() => ({opacity: glow.value}));
 
     const label = card.label();
-    const imageSize = size * 0.62;
+    // Giảm kích thước ảnh xuống 52% (thay vì 62%) để nhường chỗ cho chữ và tránh sát viền
+    const imageSize = size * 0.52;
     const hasBitmap = !!card.imagePath && !card.imagePath.startsWith('lucide:');
 
     return (
@@ -99,7 +100,7 @@ export const PecsCardFace = forwardRef<PecsCardFaceRef, Props>(
 
         {showLabel ? (
           <Text
-            variant="headlineSmall"
+            variant="titleLarge"
             numberOfLines={2}
             adjustsFontSizeToFit
             minimumFontScale={0.5}
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
+    padding: 16,
     overflow: 'hidden',
     elevation: 6,
     shadowColor: '#000',
